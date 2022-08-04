@@ -18,6 +18,12 @@
     <Released>false</Released>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DUTs\IO\stError_AnalogueInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\IO\stHMI_AnalogueInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\IO\stHMI_DigitalInput.TcDUT">
       <SubType>Code</SubType>
     </Compile>

@@ -3,12 +3,37 @@
   <POU Name="fbIO_AnalogueInput" Id="{805e4ee0-1d54-44f1-bb8f-ec68bf186558}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK fbIO_AnalogueInput
 VAR_INPUT
+	iInMode:		INT;
+	wInValue:		WORD;
+	iInSensorType:	INT;
+	rInEngUnitsMin:	REAL;
+	rInEngUnitsMax:	REAL;
+	rInLowLow:		REAL;
+	rInLow:			REAL;
+	rInHigh:		REAL;
+	rInHighHigh:	REAL;
+	rInLowLowDeadband: REAL;
+	rInLowDeadband:REAL;
+	rInHighDeadband:REAL;
+	rInHighHighDeadband:REAL;
+	bInResetError:BOOL;
 END_VAR
 VAR_OUTPUT
+	rOutEngUnitsValue:REAL (*Engineering units scaled value*)
+	bOutLowLow:BOOL (*Low low alarm is active*)
+	bOutLow:BOOL (*Low warning is active*)
+	bOutHigh:BOOL (*High warning is active*)
+	bOutHighHigh:BOOL (*High high alarm is active*)
+	bOutAuto:BOOL (*Input is in auto mode*)
+	bOutError:BOOL (*Error Exists*)
+	ERROR_IO_AnalogueIn:stError_AnalogueInput;
 END_VAR
 VAR
 END_VAR
-]]></Declaration>
+
+VAR_IN_OUT
+	HMI_IO_AnalogueInput:stHMI_AnalogueInput;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
