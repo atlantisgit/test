@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stHMI_Permissive" Id="{32e1f274-a185-43b3-ae23-c8599e1c3fee}">
+    <Declaration><![CDATA[TYPE stHMI_Permissive :
+STRUCT
+	abPermissives: ARRAY[1..16] OF BOOL;
+	asPermissiveNames: ARRAY[1..16] OF STRING[20];
+	bPermissiveOk:BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

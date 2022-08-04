@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stIOSensorTypes" Id="{851dca04-9a8c-497e-9748-e34195cfdc8d}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE stIOSensorTypes :
+(
+	AIType_4To20ma := 0,
+	AIType_PT100	:= 1,
+	AIType_0To10V	:=2,
+	AIType_0To5V	:=3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

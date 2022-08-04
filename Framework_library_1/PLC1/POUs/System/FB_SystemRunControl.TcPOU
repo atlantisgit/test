@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_SystemRunControl" Id="{d1f54bc4-65a9-4496-aa16-abc8d134e9a1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SystemRunControl
+VAR_INPUT
+	bInEnableStart:BOOL; (*Interlocks the system from being able to start running*)
+	bInEnableStop:BOOL; (*Interlocks the system FROM being able TO stop*)
+	bInStartAuto:BOOL;	(*Starts the system running in auto mode*)
+	bInStopAuto:BOOL;	(*Stop the system in auto mode*)
+END_VAR
+VAR_OUTPUT
+	bOutRunCmd:BOOL;
+END_VAR
+
+VAR_IN_OUT
+	HMI_SystemRunControl:stHMI_SystemRunControl;
+END_VAR
+
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="FB_SystemRunControl">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Permissive" Id="{c64f0967-209e-4d2d-a7e8-fc31b8d99e6e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Permissive
+VAR_INPUT
+	bPermissive1:BOOL;
+	bPermissive2:BOOL;
+	bPermissive3:BOOL;
+	bPermissive4:BOOL;
+	bPermissive5:BOOL;
+	bPermissive6:BOOL;
+	bPermissive7:BOOL;
+	bPermissive8:BOOL;
+	bPermissive9:BOOL;
+	bPermissive10:BOOL;
+	bPermissive11:BOOL;
+	bPermissive12:BOOL;
+	bPermissive13:BOOL;
+	bPermissive14:BOOL;
+	bPermissive15:BOOL;
+	bPermissive16:BOOL;
+END_VAR
+
+VAR_OUTPUT
+	bOutPermissiveOk:BOOL;	(*1=System ok to operate*)
+END_VAR
+
+VAR_IN_OUT
+	HMI_Permissive:stHMI_Permissive;
+END_VAR
+
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Permissive">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stHMI_DigitalInput" Id="{359ee3e1-d251-4453-9b9b-0213ff2a4fff}">
+    <Declaration><![CDATA[TYPE stHMI_DigitalInput :
+STRUCT
+	iMode:INT;	 (*Current mode*)
+	bOn:BOOL; 	(*The status OF the digital input block*)
+	bOnActual:BOOL; (*The status OF the physical digital input, ignoring manual overrides*)
+	bPB_On:BOOL; (*Command on override pushbutton*)
+	bPB_Off:BOOL; (*Command off override pushbutton*)
+	bPBEN_On:BOOL; (*Command on override pushbutton enabled*)
+	bPBEN_Off:BOOL; (*Command off override pushbutton enabled*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

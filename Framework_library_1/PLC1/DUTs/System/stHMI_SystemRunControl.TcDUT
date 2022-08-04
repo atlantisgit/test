@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stHMI_SystemRunControl" Id="{8c2f54b7-6ef5-4289-b2b6-c1ee7aefe0fe}">
+    <Declaration><![CDATA[TYPE stHMI_SystemRunControl :
+STRUCT
+	bRunning:BOOL; 	  (*System is running*)
+	bPB_Start:BOOL;    (*Start command pushbutton*)
+	bPB_Stop:BOOL;	  (*Stop command pushbutton*)
+	bPBEN_Start:BOOL;  (*Start command pushbutton enable*)
+	bPBEN_Stop:BOOL;  (*Stop command pushbutton enable*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

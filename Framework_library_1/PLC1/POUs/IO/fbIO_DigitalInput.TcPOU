@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fbIO_DigitalInput" Id="{7bbb57fe-5d2d-459e-bc69-663c3558574f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fbIO_DigitalInput
+VAR_INPUT
+	iInMode:INT;
+	bInInput:BOOL; (*The raw digital input signal*)
+	tInOnDebounce:TIME:=T#0MS;	(*Optional debounce timer for rising edge of input (T#0ms to disable)*)
+	tInOffDebounce:TIME:=T#0MS;	(*Optional debounce timer for falling edge of input (T#0ms to disable)*)
+END_VAR
+VAR_OUTPUT
+	bOutAuto:BOOL;		  (* Block in auto mode*)
+	bOutOn:BOOL;		  (*The status of the digital input*)
+	bOutRisingEdge:BOOL;  (*The status of the input transitioned FROM low TO high. TRUE FOR exactly 1 scan*)
+	bOutFallingEdge:BOOL; (*The status of the input transitioned FROM high TO low. TRUE FOR exactly 1 scan*)
+END_VAR
+
+VAR_IN_OUT
+	HMI_DigitalInput:stHMI_DigitalInput;
+END_VAR
+
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="fbIO_DigitalInput">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

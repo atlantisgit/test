@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="HMI" Id="{fa5c5102-a945-490b-8da5-d2bea235a446}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	stTest01_Intlk:stHMI_Interlock;
+	stTest02_Perm:stHMI_Permissive;
+	stTest03_RunCtrl:stHMI_SystemRunControl;
+	stTest04_DigitalInput:stHMI_DigitalInput;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

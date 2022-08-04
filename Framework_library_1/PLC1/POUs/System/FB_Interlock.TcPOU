@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Interlock" Id="{17567209-c7ad-45ce-92ca-d7611b58dd92}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Interlock
+VAR_INPUT
+	bInterlock1:BOOL;
+	bInterlock2:BOOL;
+	bInterlock3:BOOL;
+	bInterlock4:BOOL;
+	bInterlock5:BOOL;
+	bInterlock6:BOOL;
+	bInterlock7:BOOL;
+	bInterlock8:BOOL;
+	bInterlock9:BOOL;
+	bInterlock10:BOOL;
+	bInterlock11:BOOL;
+	bInterlock12:BOOL;
+	bInterlock13:BOOL;
+	bInterlock14:BOOL;
+	bInterlock15:BOOL;
+	bInterlock16:BOOL;
+END_VAR
+
+VAR_OUTPUT
+	bOutInterlockOk:BOOL;	(*1=System ok to operate*)
+END_VAR
+
+VAR_IN_OUT
+	HMI_Interlock:stHMI_Interlock;
+END_VAR
+
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[;
+HMI_Interlock.bInterlockOk:=1;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Interlock">
+      <LineId Id="9" Count="0" />
+      <LineId Id="40" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
