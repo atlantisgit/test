@@ -7,6 +7,7 @@ VAR_GLOBAL
 	stTest02_Perm:stHMI_Permissive;
 	stTest03_RunCtrl:stHMI_SystemRunControl;
 	stTest04_DigitalInput:stHMI_DigitalInput;
+	stTest05_DigitalInput:stHMI_DigitalInput;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

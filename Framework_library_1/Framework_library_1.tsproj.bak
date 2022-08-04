@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.32">
-	<Project ProjectGUID="{86ABF1E6-D89A-4AFA-B7A3-D1130C890D82}" TargetNetId="192.168.4.1.1.1" Target64Bit="true" ShowHideConfigurations="#x106">
+	<Project ProjectGUID="{86ABF1E6-D89A-4AFA-B7A3-D1130C890D82}" TargetNetId="192.168.4.1.1.1" ShowHideConfigurations="#x106">
 		<System>
 			<Licenses>
 				<Target>
@@ -15,7 +15,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{475E2DF4-6C51-4CE5-81D6-79401ACEB2A8}" Name="PLC1" PrjFilePath="PLC1\PLC1.plcproj" TmcFilePath="PLC1\PLC1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC1\PLC1.tmc" TmcHash="{AB9A0835-5E22-168E-277C-1A7AFDE889D9}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC1\PLC1.tmc" TmcHash="{78103749-D47D-14FC-0EC8-A076FB7BA318}">
 					<Name>PLC1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
