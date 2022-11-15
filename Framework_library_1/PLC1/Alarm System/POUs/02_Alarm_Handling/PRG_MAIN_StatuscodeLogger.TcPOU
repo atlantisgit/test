@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="PRG_MAIN_StatuscodeLogger" Id="{3f2cdaf1-1b17-4c78-8365-975e95c3657a}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_MAIN_StatuscodeLogger
 (**********************************************************************************)

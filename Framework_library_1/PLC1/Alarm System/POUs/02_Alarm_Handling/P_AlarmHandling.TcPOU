@@ -116,9 +116,6 @@ END_VAR]]></Declaration>
 
 (* Set new date for Alarm.txt file *)
 
-IF LibDetectNewDay THEN
-		PRG_MAIN_StatuscodeLogger.M_InitLoggerStatuscodes();
-END_IF
 
 ResetBrakePrograms();
 bManuRstBrakePrgAlarmOnSt := FALSE; (* Reset before every loop *)
@@ -336,7 +333,7 @@ FOR i := 1 TO iMaxAlarms DO
 
 END_FOR;
 
-fbSCLogger.M_CheckEvent();
+//fbSCLogger.M_CheckEvent();
 fbSCLogger();(*12012010*)
 UpdateAlarmHistory();
 bFirstAlarmSetCycle := FALSE;
@@ -628,29 +625,7 @@ END_IF
 
 				IF arrAlarms[i].b  AND arrAlarms[i].eBrakeProgram<=40  THEN   (* A.G. Inhibit call when brake prog LEQ  40*)
 					(* Call status code logger *)
-					PRG_MAIN_StatuscodeLogger(
-					TriggStatuscode:=		arrAlarms[i].b AND arrAlarms[i].eBrakeProgram<=40 ,
-					SendAlarm:=			bInitComplete,
-					EventKey:=			arrAlarms[i].sID,
-					TextInfo:=			arrAlarms[i].sName,
-					UserName:=			g_sOperUserName,
-					BrakeProgram:= 	'9',
-					PathNamePC:=		DirectoriesFiles.sSC_PathNamePC,
-					PathNameEmbPC:=	DirectoriesFiles.sSC_PathNameEmbeddedPC,
-
-					DailyFile:=			gbPlusDailyListStatuscodes,
-					FreezeList :=			gbFreezeListStatuscodes,
-					SCandOC:=			gbLogStatusAndOperationcodes,		(**)
-
-					CheckLog:=			gbCheckLogging,
-					ResetErrCnt:=			gbResetErrCntLog,
-
-					Error =>				gbErrorStatuscodeLogger,
-					iErrCounter=>			);								(*UINT*)
-
-
-					PRG_MAIN_StatuscodeLogger(
-					TriggStatuscode:=		FALSE);
+					
 
 
 					(* Make a buffer of statuscodes for HMI ********************)
@@ -844,7 +819,8 @@ END_FOR;]]></ST>
     <LineIds Name="P_AlarmHandling">
       <LineId Id="107" Count="2" />
       <LineId Id="255" Count="0" />
-      <LineId Id="110" Count="38" />
+      <LineId Id="110" Count="2" />
+      <LineId Id="116" Count="32" />
     </LineIds>
     <LineIds Name="P_AlarmHandling.ActiveShutdownAlarmCount">
       <LineId Id="0" Count="5" />
@@ -882,7 +858,8 @@ END_FOR;]]></ST>
       <LineId Id="72" Count="0" />
     </LineIds>
     <LineIds Name="P_AlarmHandling.AlarmSet">
-      <LineId Id="0" Count="85" />
+      <LineId Id="0" Count="39" />
+      <LineId Id="62" Count="23" />
     </LineIds>
     <LineIds Name="P_AlarmHandling.DeleteOldAlarmFile">
       <LineId Id="0" Count="25" />

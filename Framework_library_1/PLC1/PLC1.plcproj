@@ -216,6 +216,7 @@
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_StatusCodeLogger.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_WriteEventData.TcPOU">
       <SubType>Code</SubType>
@@ -225,6 +226,7 @@
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\PRG_MAIN_StatuscodeLogger.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\PRG_Systemtime.TcPOU">
       <SubType>Code</SubType>
