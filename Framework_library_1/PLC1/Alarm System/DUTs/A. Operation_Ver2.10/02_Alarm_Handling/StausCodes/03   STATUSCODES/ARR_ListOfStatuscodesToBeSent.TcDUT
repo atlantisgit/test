@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ARR_ListOfStatuscodesToBeSent" Id="{3b147a57-23bf-465e-8cc4-4b6198234c89}">
+    <Declaration><![CDATA[TYPE ARR_ListOfStatuscodesToBeSent :
+STRUCT
+	arrListOfStatuscodesToBeSent: 		ARRAY [1..50] OF STRING [120];
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

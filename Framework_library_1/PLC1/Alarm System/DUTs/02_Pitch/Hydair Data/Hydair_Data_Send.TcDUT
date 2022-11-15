@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="Hydair_Data_Send" Id="{313dd110-5604-4df1-989e-8fca107a33bd}">
+    <Declaration><![CDATA[TYPE Hydair_Data_Send :
+STRUCT
+	rRam1_LoadDemand:REAL;
+	rRam2_LoadDemand:REAL;
+
+	uiLoadsControl:ST_LoadSysCtrl;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="GlobVar_GeneralLog_Public" Id="{1a67a9b7-3c1c-4c2e-a297-86ac460252f8}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL	(*GlobVar_GeneralLog_Public*)
+
+(*-------------  General Log variables  --------------------------------------------------------------------------------------*)
+
+	(*Turbine Identification (Header for log  files):	*)
+	gsCompanyCode:				STRING[20]	:= 'AOUL';
+	gbyCountryCode	: 			UINT		:= 044;
+	gsFlowfarm		: 			STRING[20] 	:='EASME';
+	giTurbineNumber	: 			UINT		:= 1;
+	gsTurbineType	: 			STRING[10]	:= 'AR2000';
+
+(* --------------------------------------------------------------------------------------------------------------------------------------*)
+
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

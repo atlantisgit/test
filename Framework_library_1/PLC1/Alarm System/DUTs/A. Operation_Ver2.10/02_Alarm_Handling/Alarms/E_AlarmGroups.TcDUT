@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_AlarmGroups" Id="{8798f121-3e14-49ce-8987-ad6a8d76c44c}">
+    <Declaration><![CDATA[TYPE E_AlarmGroups :
+(
+	Operation := 1,
+	Safety := 2,
+	Converter := 3,
+	Pitch := 4,
+	Yaw := 5,
+	Nacelle := 6,
+	Generator := 7,
+	Gearbox := 8,
+	AuxPower := 9,
+	Grid := 10,
+	SCADA := 11,
+	BearingLube := 12,
+	SealLube := 13,
+	WaterMgt := 14,
+	Brake := 15
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

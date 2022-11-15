@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_BrakeProgram" Id="{c1ea078c-1b3e-4604-96c0-4a0138672431}">
+    <Declaration><![CDATA[TYPE E_BrakeProgram:
+(
+	B1		:=1,	(* *)
+	B2		:=2,	(*  *)
+	B3		:=3,	(*  *)
+	B4		:=4,	(*  *)
+	B5		:=5,	(*  *)
+	B6		:=6,	(*  *)
+	B7		:=7,	(*  *)
+	B8		:=8,	(*  *)
+	B9		:=9,	(*  *)
+	B10		:=10,	(*  *)
+
+	B11		:=11,
+	B12		:=12,
+	B13		:=13,
+	B14		:=14,
+	B15		:=15,
+	B16		:=16,
+	B17		:=17,
+	B18		:=18,
+	B19		:=19,
+
+	B20		:=20,		(* Normal Stops *)
+	B25		:=25,		(* Grid Fault i.e. T=f(t) *)
+	B30		:=30,		(* Fast Stop  i.e. T=f(w) *)
+
+	B40		:=40,		(* Fault in Standby *)
+
+	B99		:= 99,	(* Warning *)
+	B100	:=100	(* Event *)
+
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

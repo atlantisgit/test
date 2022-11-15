@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_AlarmResetAccessCtrl" Id="{90d359b3-5ce6-4319-a8cb-ff7e024ae2ae}" SpecialFunc="None">
+    <Declaration><![CDATA[(**************************************************************************************
+CopyRight Atlantis Operations UK Ltd 2015
+AR500 TCS
+
+Function Block Purpose:
+Need to ensure that we have access rights controls being verified here 
+even though this is also controlled by the SCADA. The Safety can also be
+managed through this function block. Use the TwinCAT user level controls
+to this end.
+
+Version history: Created with TwinCat V 2.11.2248
+04/08/15	V 0.01		NSM - ODT First Draft
+***************************************************************************************)
+
+FUNCTION_BLOCK FB_AlarmResetAccessCtrl
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	bDummy: BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bDummy:=FALSE;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_AlarmResetAccessCtrl">
+      <LineId Id="22" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

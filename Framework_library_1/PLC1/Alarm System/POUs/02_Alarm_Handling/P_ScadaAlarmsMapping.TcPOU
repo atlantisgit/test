@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="P_ScadaAlarmsMapping" Id="{b07e35a5-255d-4329-8314-96e0e17ff707}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_ScadaAlarmsMapping
+VAR
+		i: UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+FOR i := 1 TO iMaxAlarms DO
+
+	arrScadaAlarms[i].b := BOOL_TO_INT ( arrAlarms[i].b );
+
+END_FOR
+]]></ST>
+    </Implementation>
+    <LineIds Name="P_ScadaAlarmsMapping">
+      <LineId Id="7" Count="5" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

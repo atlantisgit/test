@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="GlobVar_LibStatuscodeLogger_Privat" Id="{6c74770e-81db-42ec-8776-7a3e9c98767b}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL CONSTANT	(*GlobVar_LibPowerCurves_Privat*)
+
+	guiKeyAndTextLen					: UINT := 91; 		(*max using length for Statuscode description is [uiKeyAndTextLen - sKeySize, e.g. 001-005-280]*)
+	NUMBER_OF_EVENT_DATAS			: UINT := 4; 		(* number of process values  *)
+	giGeneralLoggerChannelInUsed			: UINT := 75; 		(* how many  channels  the log file max. can contain*)
+(*	giNumberOfStatuscodes				: UINT := 850;		*)
+
+	giCountsOfKeyLetterForStatuscodeFile 	: UINT := 75; 		(* Length of minimize Key-string in the file better reading in the text file *)
+	giSizeARRListOfStatuscodesToBeSent: 	USINT:= 50;		(*must be tuned to the number given for the ARRAY*)
+	guiStrBufferSize: 						UINT:= 47000;		(*length of buffer for statuscode file writing *) (* header 1100 + row 200 * 218 sign = 44700*)
+
+	giHeaderLineLenght					: UINT := 100;		(*length of each line in the header, not the column description*)
+	giHeaderColumnLineLEN				: UINT :=4096; 	(*length of column text in the header *)
+	giGeneralLenghtOfName				: UINT := 40; 		(* lenght of the column description name *)
+
+END_VAR
+VAR_GLOBAL PERSISTENT
+//	gxStatuscode		: 				ARRAY[1..850] OF STRUC_Statuscode;
+	arrAllListsOfStatuscodesToBeSent: 	ARRAY [1..3] OF ARR_ListOfStatuscodesToBeSent;	(*List of triggered Statuscodes to be sent*)
+END_VAR
+VAR_GLOBAL
+
+(*  Statuscode Logger:	*)
+	gsSC_PathName						: T_MaxString ;	(* Set the Path name in the init program *)
+(*	gsSCunlimited_PathName 				: T_MaxString ;	(* Set the Path name with the actual day in the name *)
+	gsSCunlimited_PathNameEmbeddedPC	: T_MaxString		:= '\Hard Disk\WEC_Data\Statuscode\';
+	gsSCunlimited_PathNamePC 			: T_MaxString 	:='C:\temp\WEC_Data\Statuscode\'; (*Set general name without extension; .txt*)
+*)
+
+(*  General Set Values:	*)
+	CheckMemCpy_Min	: UDINT;
+	CheckMemCpy_Max	: UDINT;
+	iOneEntrySize		: INT;
+	iOneEntryLength		: INT;
+
+	fbSCLogger					: FB_StatusCodeLogger;
+	gwNewDayForLogger    		: WORD; 			(*For detection if we have a new day*)
+	giRingBufferFileOneEntryLength 	: UINT; 			(*Length of one entry in the ring buffer Statuscode file*)
+	giRingBufferFileHeaderLEN		: INT; 			(*Length of the whole header = header description + column description*)
+
+//	arLoggedSC	 : 				ARRAY[1..400] OF ST_LoggedEvent_SC;	(* Logged Trigger Event *)(* twice(200) - Normal and Transfer Buffers *)
+	gstrRingBufferFileColumnText: 	T_MaxString; 		(*first part of column decription*)
+
+
+
+	giPointer1AlarmList1: USINT;
+	giPointer2AlarmList1: USINT;
+	giPointer3AlarmList1: USINT;
+	giPointer4AlarmList1: USINT;
+	giPointer5AlarmList1: USINT;
+	giPointer6AlarmList1: USINT;
+	giPointer7AlarmList1: USINT;
+	giPointer8AlarmList1: USINT;
+	giPointer9AlarmList1: USINT;
+	giPointer10AlarmList1: USINT;
+
+	giPointer1AlarmList2: USINT;
+	giPointer2AlarmList2: USINT;
+	giPointer3AlarmList2: USINT;
+	giPointer4AlarmList2: USINT;
+	giPointer5AlarmList2: USINT;
+	giPointer6AlarmList2: USINT;
+	giPointer7AlarmList2: USINT;
+	giPointer8AlarmList2: USINT;
+	giPointer9AlarmList2: USINT;
+	giPointer10AlarmList2: USINT;
+
+	giPointer1AlarmList3: USINT;
+	giPointer2AlarmList3: USINT;
+	giPointer3AlarmList3: USINT;
+	giPointer4AlarmList3: USINT;
+	giPointer5AlarmList3: USINT;
+	giPointer6AlarmList3: USINT;
+	giPointer7AlarmList3: USINT;
+	giPointer8AlarmList3: USINT;
+	giPointer9AlarmList3: USINT;
+	giPointer10AlarmList3: USINT;
+
+	giPointer_fbSendAlarmBuffer1:		USINT;		(*TO_BE_DONE__HP*)	(*pointer must be managed ?????*)
+	giPointer_fbSendAlarmBuffer2:		USINT;								(*pointer must be managed ? ? ? ? ?*)
+	giPointer_fbSendAlarmBuffer3:		USINT;								(*pointer must be managed ? ? ? ? ?*)
+
+
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

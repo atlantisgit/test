@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_PitchState" Id="{b61b0a72-aa53-49c8-aee5-2d3d96f2d933}">
+    <Declaration><![CDATA[
+TYPE E_PitchState :
+(
+
+	ReadyToSwitchOn	:=  0,
+	ReadyToPrepare	:=  1,
+	ReadyToOperate	:=  2,
+	InOperation		:=  3,
+	PitchUtilsMode	:=  4,
+	ReferenceMode	:=  5,
+	ServiceMode		:=  6,
+	ManualRemote	:=  7
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

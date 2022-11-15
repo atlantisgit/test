@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="Operation" Id="{261deb15-f513-4219-9e45-0399418787c2}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL
+
+(*************************************** SYSTEM CONFIG  ****************************************)
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bSystemOnshoreCPU_Run :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemOnshoreCPU_Config :BOOL;
+   {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemOnshoreCPU_Offline :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemOnshoreIO_CountOk :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacellePriCPU_Run :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacellePriCPU_Config :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacellePriCPU_Offline  :BOOL;
+ {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacellePriCIO_CountOk :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacelleSecCPU_Run :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacelleSecCPU_Config :BOOL;
+   {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacelleSecCPU_Offline :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemNacelleSecIO_CountOk :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemCommsOnshoreToNacPriOk :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemCommsOnshoreToNacSecOk :BOOL;
+  {attribute 'OPC.UA.DA' := '1'}
+	g_bSystemCommsOnshoreToConverterOk :BOOL;  
+
+(*************************************** STATE MACHINE  ****************************************)
+{attribute 'OPC.UA.DA' := '1'}
+	eMainState :E_MainState := PLC_INIT;   
+	eOperBrakeCmd : E_OperBrakeCmd := OP_APPLY_ONE_BRAKE;
+
+//	ePowerSubState:		E_PowerSubStates := NotInPowerProduction;
+	eStateActivity:		E_StateActivity := StEntry;
+
+	//eActiveTideOrigin: E_TideDirection;	 {attribute 'OPC.UA.DA' := '1'}
+
+
+	g_bOperMaStInitSt: BOOL;
+	g_bOperMaStIndexSt : BOOL;
+	g_bOperMaStStopSt : BOOL;
+	g_bOperMaStIdleSt : BOOL;
+	g_bOperMaStStandbySt : BOOL;
+	g_bOperMaStNormalStopSt : BOOL;
+	g_bOperMaStEmergencyStopSt : BOOL;
+	g_bOperMaStPowerProductionSt : BOOL;
+	
+	g_bDelayOnStart: BOOL;
+	
+	
+	g_bOperMaStMotorSt : BOOL;
+	g_bOperMaStTrundleSt : BOOL;
+(*
+	g_bOperRequestEPTF: BOOL;
+
+	g_bOperRotorStaticSt: BOOL;
+	g_bOperRotorDynamicSt: BOOL;
+	g_bRotorStopped: BOOL;
+
+	g_bOperTurbineToProdCmd :BOOL; (*For demo only - remove from final build*)
+	g_bOperInhibitPcsStbyToProd :BOOL;
+	g_bOperConverterESTOP1 : BOOL := FALSE;
+	g_bOperConverterOFF : BOOL := FALSE;
+
+
+	g_bOperNormalShutdownTimeout : BOOL:=FALSE;
+
+	g_bOperPowerStartupSt : BOOL;
+	g_bOperPowerBelowRatedSt : BOOL;
+	g_bOperPowerAboveRatedSt : BOOL;
+
+	g_bOperTurbineStopComplete: BOOL;
+	g_bOperTurbineSystemsReady: BOOL;
+	g_bOperTurbineReadyForProduction: BOOL;
+	g_bOperStartupFlowCheckComplete: BOOL;
+//	eRotationDirection : E_RotationDirection;
+	g_bOperEndOfTideReached: BOOL;
+	  {attribute 'OPC.UA.DA' := '1'}
+	g_bOperAutoStartTurbineEnabled: BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bStartButtonPushed : BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperTurbineToIdleCmd: BOOL;	
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperTurbineToStopCmd: BOOL;	 
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperTurbineToStopInNextSlackCmd: BOOL;	
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperStartupTidalConditionsOk: BOOL;
+	g_bOperGearboxDerated :BOOL;
+	g_fOperManualModePowerSetpoint :REAL :=0;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_fOperManualModeSpeedSetpoint :REAL :=40.34;	 
+
+	
+
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperTestB14_Park : BOOL;
+	{attribute 'OPC.UA.DA' := '1'} 
+	g_bOperTestB17_GoToStandby : BOOL;
+	{attribute 'OPC.UA.DA' := '1'} 
+	g_bOperTestB30_GoToStandbyInSlack : BOOL;
+	{attribute 'OPC.UA.DA' := '1'} 
+	g_bOperTestB40_ParkInSlack : BOOL; 
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bOperTestBrakeProgramActive :BOOL; 
+		{attribute 'OPC.UA.DA' := '1'}
+
+	(*Bunny ears when there is a reverse flow*)
+	g_bOperTurbineInReverseFlow: BOOL;
+	g_bOperGoToStopInBunnyEars: BOOL;
+	g_bOperRotorInBunnyEars: BOOL;
+	g_bOperGoToStopInBunnyEarsEnabled: BOOL := FALSE; (*COMPLETE: LONG TERM DO WE WANT THIS TRUE*)
+
+*)
+(*************************************** OPERATING MODES  ****************************************)
+	{attribute 'OPC.UA.DA' := '1'}
+	eOpMode: E_OperatingMode;	
+	g_iOperOperatorSelectedOpMode : UINT;
+
+	g_bOperOpModeService: BOOL;
+	g_bOperOpModeAutomatic: BOOL;
+	g_bOperOpModeManual: BOOL;
+	g_bOperOpModeOff: BOOL;
+	g_bOperOpModeFAT: BOOL;
+	g_bOperOpModeChanged:BOOL;
+
+	g_bOperHallTestCoolingReady :BOOL;
+
+	g_bOperEnableTestGUI: BOOL;
+	g_bOperEnableBenchTestIO: BOOL;
+	g_bOperEnableHILtestMode: BOOL;
+	g_bOperEnableAlarmDisable :BOOL;
+
+(*************************************** ALARM HANDLING  ****************************************)
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperNormalResetCmd :BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperSafetyResetCmd :BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperLocalResetCmd :BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperAlarmManualReset: 	BOOL;		(* Manual reset of alarms *)
+	g_bOperAlarmManualResetREdge: 	BOOL;		(* Manual reset of alarms rising edge trigger of the above *)
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bOperAlarmManualSafetyReset: 	BOOL;
+	g_bOperAlarmManualSafetyResetREdge: BOOL;
+	g_bOperAlarmAutoReset: 		BOOL;		(* Automatic  reset of alarms	*)
+	g_iOperErrorAlarmsActive  : UINT;
+
+	g_sOperAlarmParkName:	STRING;
+	g_sOperAlarmTurbineName:	STRING;
+	g_sOperProjectName:STRING;
+	g_iOperAlarmParkId:	INT;
+	g_iOperAlarmTurbineId:	INT;
+	g_sOperUserName: STRING;
+
+	g_bBrakeProg1Cmd: BOOL;				(* Use these to command brake program from PLC - need all inc safety? *)
+	g_bBrakeProg2Cmd: BOOL;
+	g_bBrakeProg3Cmd: BOOL;
+	g_bBrakeProg4Cmd: BOOL;
+	g_bBrakeProg5Cmd: BOOL;
+	g_bBrakeProg6Cmd: BOOL;
+	g_bBrakeProg7Cmd: BOOL;
+	g_bBrakeProg8Cmd: BOOL;				(* Use these to command brake program from PLC - need all inc safety? *)
+	g_bBrakeProg9Cmd: BOOL;
+	g_bBrakeProg10Cmd: BOOL;
+	g_bBrakeProg11Cmd: BOOL;
+	g_bBrakeProg12Cmd: BOOL;
+	g_bBrakeProg13Cmd: BOOL;
+	g_bBrakeProg14Cmd: BOOL;
+	g_bBrakeProg15Cmd: BOOL;
+	g_bBrakeProg16Cmd: BOOL;
+	g_bBrakeProg17Cmd: BOOL;
+	g_bBrakeProg18Cmd: BOOL;
+	g_bBrakeProg19Cmd: BOOL;
+	g_bBrakeProg20Cmd: BOOL;
+	g_bBrakeProg25Cmd: BOOL;
+	g_bBrakeProg30Cmd: BOOL;
+	g_bBrakeProg40Cmd: BOOL;
+	g_bBrakeProg99Cmd: BOOL;
+	g_bBrakeProg100Cmd: BOOL;
+
+	g_bBrakeProg1Active: BOOL;				(* Provide indication of what Braking Programs are active *)
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg2Active: BOOL;	
+	g_bBrakeProg3Active: BOOL;
+	g_bBrakeProg4Active: BOOL;
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg5Active: BOOL;	
+	g_bBrakeProg6Active: BOOL;
+	g_bBrakeProg7Active: BOOL;
+	g_bBrakeProg8Active: BOOL;
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg9Active: BOOL;	
+	g_bBrakeProg10Active: BOOL;
+	g_bBrakeProg11Active: BOOL;
+	g_bBrakeProg12Active: BOOL;
+	g_bBrakeProg13Active: BOOL;
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg14Active: BOOL;	
+	g_bBrakeProg15Active: BOOL;
+	g_bBrakeProg16Active: BOOL;
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg17Active: BOOL;
+	g_bBrakeProg18Active: BOOL;
+	g_bBrakeProg19Active: BOOL;
+	g_bBrakeProg20Active: BOOL;
+	g_bBrakeProg25Active: BOOL;
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg30Active: BOOL;	
+		{attribute 'OPC.UA.DA' := '1'}
+	g_bBrakeProg40Active: BOOL;	
+	g_bBrakeProg99Active: BOOL;
+	g_bBrakeProg100Active: BOOL;
+
+	g_bBrakingProgActive:		BOOL;		(* There is an active braking program - not including B100 or  B99*)
+	g_sOperAlarmHighestActiveBrakeProgram: STRING; {attribute 'OPC.UA.DA' := '1'}
+	g_iBrakeProgNumber:		INT; 	(* Brake program number *)
+	(* g_sBraProgramNumber:		STRING; 	(* Brake program number *) *)
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperAlarmTripNormalShutdown: BOOL;	
+	g_bOperAlarmTripOverspeedN4: BOOL;
+	g_bOperAlarmTripOverspeedNA: BOOL;
+	g_bOperAlarmTripGridFault: BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	g_bOperTurbine4SendEmail: BOOL; 
+	{attribute 'OPC.UA.DA' := '1'}
+	g_iOperTurbine4SendEmailAlarmsActive: UINT; 
+
+(*************************************** TURBINE MOTORING CONTROLS  ********************************)
+	g_bOperRotorMotoringRequest: BOOL;
+	g_bOperTrundleRequest: BOOL;
+	g_bOperStopMotoring: BOOL;
+	g_fOperSpeedControlSetpointLimit: REAL;
+
+(*************************************** FAST LOG, STATUSCODES & XML ********************************)
+	g_stOperNTGetTime:TIMESTRUCT; (* Global time *)
+	g_iOperCycleTime:DINT;
+		{attribute 'OPC.UA.DA' := '1'}
+	g_fOperCycleTime:REAL; 
+	g_tOperCycleTime:TIME;
+	g_fOperTurbineAvailability:REAL; (*100 = 100 % , 0 = 0 % *)
+		{attribute 'OPC.UA.DA' := '1'}
+	g_fOperExecutionTime:REAL; 
+
+	g_sTimeString: STRING;
+	g_sTimeStringLong: STRING;
+	g_sDateStringLong:STRING;
+	g_sTurbineId: STRING;
+	g_sAlarmname:STRING;
+	g_stOperAlarmIniFileName:STRING;
+
+	eScopeServer: E_ScopeServerState;
+(*.................................................................................................................................................*)
+	g_iOperAlarmStructSizeInBytes:INT;
+	g_iOperIniStructSizeInBytes: INT; (* Ini structure size in bytes *)
+	g_bOperXMLWriteCmd:BOOL;
+	g_bOperXMLWriteCmd2:BOOL;(* Separate triggers for Ini and Alarms arrays, 02092010 MLe *)
+	g_sXMLTurbineDataPath: STRING := '\Hard Disk\DAT\';
+	g_iOperParamChangeCount:INT;
+	g_iOperIniChangeCount:INT;
+	g_bOperSendFromScope:BOOL;
+	g_bOperSendFrom10minLog:BOOL;
+	g_bOperSendFromXMLWrite:BOOL;
+	g_iOperScopeOnlineError:UDINT;
+	g_sSavePathName: STRING;
+	g_sAlarmXMLPathName: STRING;
+	g_sIniXMLPathName: STRING;
+	g_sFileNameFor10MinLog:STRING;
+
+	g_nOperEstimatedStartTime:INT;
+	g_nOperEstimatedStartDate:INT;
+
+	g_bFastLogSystemActive: BOOL;
+	g_fOperTotalEnergyGenerated :REAL;
+
+
+(*************************************** IO HANDLING  ****************************************)
+	g_bInOutHandlingSystemActive: BOOL;
+	g_bOperIOSelectSecondary :BOOL;
+
+(********************************* PUMP DOL CONTROLS **********************************)
+	g_bGearboxElecPumpLSManCmd:BOOL;
+	g_bGearboxElecPumpHSManCmd:BOOL;
+	g_bSealLubePump1ManCmd:BOOL;
+	g_bSealLubePump2ManCmd:BOOL;
+	g_bSealLubeTopUpTankPumpManCmd: BOOL;
+	g_bBearingLubePump1ManCmd: BOOL;
+	g_bBearingLubePump2ManCmd: BOOL;
+	g_bWaterMgtPumpAManCmd:BOOL;
+	g_bWaterMgtPumpBManCmd:BOOL;
+
+
+(*************************************** HSS BRAKES  ****************************************)
+	g_bOperApplyShaftBrakeCmd : BOOL;
+	g_bOperReleaseShaftBrakeCmd :BOOL;
+	g_bOperShaftBrakeAppliedSt : BOOL;
+	g_bOperShaftBrakeReleaseSt :BOOL;
+	g_bOperBrakeApplyRequest: BOOL;
+	g_bOperBrakeReleaseRequest: BOOL;
+	g_bOperBrakeReleaseToStandbyRequest: BOOL;
+
+
+(*************************************** DATABASE  ****************************************)
+
+
+(*************************************** ACTIVE DEVICE FLAGS  ****************************************)
+	g_bAlarmHandlingSystemActive: BOOL;
+	g_bOperParkingBrakeApplied :BOOL;
+	g_bOperSafetyShaftBrakeApplied :BOOL;
+
+	g_bDynamicCtrlSystemActive: BOOL;
+	g_bSafetySystemActive: BOOL;
+	g_bNacellePriSystemActive: BOOL;
+	g_bNacelleSecSystemActive: BOOL;
+	g_bConverterSystemActive: BOOL;
+	g_bBrakeSystemActive: BOOL;
+	g_bGearboxSystemActive: BOOL;
+	g_bMainSealSystemActive: BOOL;
+	g_bMainBearingSystemActive: BOOL;
+	g_bWaterMgtSystemActive: BOOL;
+	g_bAuxPowSystemActive: BOOL;
+
+	g_bNacelleVibSystemActive: BOOL;
+	g_bDrivetrainVibSystemActive: BOOL;
+	g_bFlowMeasurementSystemActive: BOOL;
+	g_bNacelleEnvSystemActive: BOOL;
+	g_bGridMtrSystemActive: BOOL;
+
+(*************************************** FACILITATE FAT ****************************************)
+
+	g_bOperFATtest:BOOL :=FALSE;
+	g_bLube_Simulation_Enable :BOOL;
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

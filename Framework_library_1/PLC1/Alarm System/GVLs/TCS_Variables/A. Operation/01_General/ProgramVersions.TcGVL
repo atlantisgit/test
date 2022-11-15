@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="ProgramVersions" Id="{358359b1-b0e6-4516-a566-4b6caf9abe9a}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL PERSISTENT
+
+	arrProgramVersions: ARRAY [1..20] OF ST_ProgramVersions :=[
+(sVersionDate := '2021_04_21', sChangesMade := 'First Demo Version by Jon Culley')];
+	iMaxProgVersions: INT := 20;
+END_VAR
+
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

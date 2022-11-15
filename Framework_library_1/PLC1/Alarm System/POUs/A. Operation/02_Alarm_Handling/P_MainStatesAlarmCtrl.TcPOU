@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="P_MainStatesAlarmCtrl" Id="{179d5d38-e740-47ef-bf40-533220b46bb0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_MainStatesAlarmCtrl
+VAR
+	tonOperatorTimeout: TON;
+	tonSyncTimeOut:TON;
+	sOperatorTimeoutET: STRING;
+	visu_iOperTimeoutPTmins: UDINT;
+	tOperTimeoutTime: TIME;
+	tTimeoutTime: TIME	:=t#5m;	(*ACTION VALUE ADDED AS ERROR ON ENTER TO MANAUL OPERATION< IS THIS NEEEDED USED TO BE DEAD MANS ON AR1500 i believe*)
+
+	tonIdle: TON;
+	rtrigAutoStart: R_TRIG;
+	tonTideStarting: TON;
+	tonLowSpeed: TON;
+	bEbbTideGenerationComplete: BOOL;
+	srEbbTideGenerationComplete: SR;
+	rtrigEbbTideTimeElapsed: R_TRIG;
+	bManuReset: BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*State change alarms*)
+arrAlarms[a_bOperMaStInitSt].a := g_bOperMaStInitSt;
+arrAlarms[a_bOperMaStStopSt].a := g_bOperMaStStopSt;
+arrAlarms[a_bOperMaStIdleSt].a := g_bOperMaStIdleSt;
+arrAlarms[a_bOperMaStStandbySt].a := g_bOperMaStStandbySt;
+arrAlarms[a_bOperMaStPowerProductionSt].a := g_bOperMaStPowerProductionSt;
+arrAlarms[a_bOperMaStNormalStopSt].a := g_bOperMaStNormalStopSt;
+arrAlarms[a_bOperMaStEmergencyStopSt].a := g_bOperMaStEmergencyStopSt;
+
+(*ACTION: Replace with new operator controls
+arrAlarms[a_bOperTestIdlingShutdown].a:= g_bOperTestIdlingShutdown;
+arrAlarms[a_bOperTestDisconnectIdlingShutdown].a:= g_bOperTestDisconnectIdlingShutdown;
+arrAlarms[a_bOperTestTorqueAssistShutdown].a:= g_bOperTestTorqueAssistShutdown;
+arrAlarms[a_bOperTestControllerBrakeShutdown].a:= g_bOperTestControllerBrakeShutdown;
+
+g_bOperTestBrakeProgramActive := 	arrAlarms[a_bOperTestIdlingShutdown].b OR
+									arrAlarms[a_bOperTestDisconnectIdlingShutdown].b OR
+									arrAlarms[a_bOperTestTorqueAssistShutdown].b OR
+									arrAlarms[a_bOperTestControllerBrakeShutdown].b;
+*)
+(*a_bOperTestIdlingShutdown
+a_bOperTestBrakingShutdown
+a_bOperTestSafetyVCTripShutdown
+a_bOperTestSafetyBrakeShutdown
+a_bOperTestSafetyVCTripAndBrakeShutdown*)
+(*
+arrAlarms[a_bOperCmdNormalShutdownToStop].a := g_bOperTurbineToStopCmd;
+
+(*scada cut out velocity is writing to an ini param?*)
+arrAlarms[a_bOperFlowSpeedAtCutOut].a := FALSE;
+
+(*Autostart enabled*)
+rtrigAutoStart(CLK:=g_bOperAutoStartTurbineEnabled);
+arrAlarms[a_bOperAutostartCmdActive].a := rtrigAutoStart.Q;
+
+(*Auto go to standby at end of tide*)
+
+
+
+(*Trigger on start of Flood Tide State*)
+rtrigEbbTideTimeElapsed(CLK:=FALSE);	(*Perhaps also include reference to rotor direction being negative*)
+
+(*Latch condition to end production and reset when tide changes out of Ebb*)
+srEbbTideGenerationComplete(	SET1:= bEbbTideGenerationComplete,
+								RESET:= rtrigEbbTideTimeElapsed.Q OR bManuReset,
+								Q1=> );
+
+(**Activate alarm when latch true*)
+arrAlarms[a_bOperEbbTideGenerationComplete].a := srEbbTideGenerationComplete.Q1;
+
+
+(**********************************************************************************************************************************************)
+(*					THESE USED TO BE THE "STOP TO IDLE" CONDITIONS								   *)
+(**********************************************************************************************************************************************)
+(*Add a catch all condition for if the brakes are not released in IDLE?*)
+arrAlarms[a_bOperBrakesInIdle].a :=
+									g_bOperMaStIdleSt AND
+									NOT g_bOperShaftBrakeReleaseSt;
+
+(***********************************************************************************************************************************************)
+(*					T E S T   B R A K E   P R O G R A M S   F O R   C O M M I S S I O N I N G						    *)
+(***********************************************************************************************************************************************)
+
+
+*)]]></ST>
+    </Implementation>
+    <LineIds Name="P_MainStatesAlarmCtrl">
+      <LineId Id="18" Count="29" />
+      <LineId Id="59" Count="34" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

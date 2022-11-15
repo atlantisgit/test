@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="TestAlarmFB" Id="{faa7c60d-2ac0-409a-98f2-ab8518de51bd}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM TestAlarmFB
+VAR
+	arrFbAlarm : ARRAY[1..10] OF FB_HandleAlarms;
+	arrbRaiseAlarm:	ARRAY[1..10] OF BOOL;
+	bClearAllAlarms:BOOL;
+	index:USINT;
+	index2:USINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[clearAllAlarms();
+
+mapAlarmTexts();
+
+setEventClass();
+
+raiseAlarms();
+
+mapEvents();
+
+mapSourceName();
+
+]]></ST>
+    </Implementation>
+    <Action Name="clearAllAlarms" Id="{26c7d649-505b-4a40-a428-7d1224000042}">
+      <Implementation>
+        <ST><![CDATA[//clear all alarms
+IF bClearAllAlarms THEN
+	FOR index:=1 TO 10 DO 
+		arrFbAlarm[index].ClearAlarm();
+	END_FOR
+	
+	IF index=10 THEN
+		bClearAllAlarms:=0;
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="mapAlarmTexts" Id="{a2bc7ecb-fb0e-442c-8530-15623a4c0e12}">
+      <Implementation>
+        <ST><![CDATA[
+FOR index:=1 TO 10 DO 
+	arrFbAlarm[index].sEventClass:='AlarmSystem';
+END_FOR
+	
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="mapEvents" Id="{afefe776-dc76-46ff-9e31-4104b86e2cde}">
+      <Implementation>
+        <ST><![CDATA[//map alarm texts
+arrFbAlarm[1].sEvent:='Alarm1';
+arrFbAlarm[2].sEvent:='Alarm2';
+arrFbAlarm[3].sEvent:='Alarm3';
+arrFbAlarm[4].sEvent:='Alarm4';
+arrFbAlarm[5].sEvent:='Alarm5';
+arrFbAlarm[6].sEvent:='Alarm6';
+arrFbAlarm[7].sEvent:='Alarm7';
+arrFbAlarm[8].sEvent:='Alarm8';
+arrFbAlarm[9].sEvent:='Alarm9';
+arrFbAlarm[10].sEvent:='Alarm10';
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="mapSourceName" Id="{5d57aed9-8c83-4f59-9bb7-96581da15f06}">
+      <Implementation>
+        <ST><![CDATA[//map alarm texts
+arrFbAlarm[1].sSourceName:='Source 1';
+arrFbAlarm[2].sSourceName:='Source 2';
+arrFbAlarm[3].sSourceName:='Source 3';
+arrFbAlarm[4].sSourceName:='Source 4';
+arrFbAlarm[5].sSourceName:='Source 5';
+arrFbAlarm[6].sSourceName:='Source 6';
+arrFbAlarm[7].sSourceName:='Source 7';
+arrFbAlarm[8].sSourceName:='Source 8';
+arrFbAlarm[8].sSourceName:='Source 9';
+arrFbAlarm[10].sSourceName:='Source 10';
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="raiseAlarms" Id="{06ed3250-47aa-4867-a5dd-fb15d340b8aa}">
+      <Implementation>
+        <ST><![CDATA[IF arrbRaiseAlarm[1] THEN 
+	arrFbAlarm[1].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[2] THEN 
+	arrFbAlarm[2].RaiseAlarm();
+END_IF
+
+
+IF arrbRaiseAlarm[3] THEN 
+	arrFbAlarm[3].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[4] THEN 
+	arrFbAlarm[4].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[5] THEN 
+	arrFbAlarm[5].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[6] THEN 
+	arrFbAlarm[6].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[7] THEN 
+	arrFbAlarm[7].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[8] THEN 
+	arrFbAlarm[8].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[9] THEN 
+	arrFbAlarm[9].RaiseAlarm();
+END_IF
+
+IF arrbRaiseAlarm[10] THEN 
+	arrFbAlarm[10].RaiseAlarm();
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="setEventClass" Id="{2c43a8a8-10f5-4cef-b64b-af73d3b18252}">
+      <Implementation>
+        <ST><![CDATA[
+//map alarm texts
+arrFbAlarm[1].sAlarmText:='Alarm 1';
+arrFbAlarm[2].sAlarmText:='Alarm 2';
+arrFbAlarm[3].sAlarmText:='Alarm 3';
+arrFbAlarm[4].sAlarmText:='Alarm 4';
+arrFbAlarm[5].sAlarmText:='Alarm 5';
+arrFbAlarm[6].sAlarmText:='Alarm 6';
+arrFbAlarm[7].sAlarmText:='Alarm 7';
+arrFbAlarm[8].sAlarmText:='Alarm 8';
+arrFbAlarm[9].sAlarmText:='Alarm 9';
+arrFbAlarm[10].sAlarmText:='Alarm 10';
+]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="TestAlarmFB">
+      <LineId Id="35" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="45" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAlarmFB.clearAllAlarms">
+      <LineId Id="2" Count="9" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAlarmFB.mapAlarmTexts">
+      <LineId Id="13" Count="4" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAlarmFB.mapEvents">
+      <LineId Id="2" Count="10" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAlarmFB.mapSourceName">
+      <LineId Id="2" Count="1" />
+      <LineId Id="12" Count="7" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAlarmFB.raiseAlarms">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="20" Count="3" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="25" Count="2" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="29" Count="2" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="33" Count="2" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="37" Count="2" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="41" Count="2" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="45" Count="2" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="48" Count="2" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAlarmFB.setEventClass">
+      <LineId Id="2" Count="0" />
+      <LineId Id="14" Count="10" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

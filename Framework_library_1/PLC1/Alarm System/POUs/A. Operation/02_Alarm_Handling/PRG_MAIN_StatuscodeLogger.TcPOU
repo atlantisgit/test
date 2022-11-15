@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="PRG_MAIN_StatuscodeLogger" Id="{3f2cdaf1-1b17-4c78-8365-975e95c3657a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_MAIN_StatuscodeLogger
+(**********************************************************************************)
+(**********************************************************************************)
+(*  	VERSION:				001.001
+
+  	PROGRAMMED BY:		Robert Müller
+  	Changed BY:				
+	DATE:					2009-10-30
+*)							               				 			
+(*-------------------------------------------------------------------------------------------------------*)
+ (*  	REVISIONS:
+   	Date		|	Version/Author 		|	Remark
+	----------------------------------------------------------------------------------------------------
+	2009-10-30	|	001.001     RM			|	Prepared for Library
+       									 
+*)
+(*--------------------------------------------------------------------------------------------------------*)
+(*  	DESCRIPTION:
+
+*)
+(**********************************************************************************)
+(**********************************************************************************)
+VAR_INPUT
+	TriggStatuscode:	BOOL;
+	SendAlarm:		BOOL;
+	EventKey:		STRING[11];
+	TextInfo:			STRING[50];
+	UserName:		STRING[24];
+	BrakeProgram: STRING[4];
+	PathNamePC:		T_MaxString;
+	PathNameEmbPC:	T_MaxString;
+	DailyFile:		BOOL;
+	FreezeList :		BOOL;
+	SCandOC:		BOOL;
+
+	CheckLog:		BOOL;
+	ResetErrCnt:		BOOL;
+END_VAR
+VAR_OUTPUT
+	Error:	BOOL;
+	iErrCounter:	UDINT;
+END_VAR
+VAR
+	rTriggSC: 			R_TRIG;
+	fbHeaderForLogging: 	FB_HeaderForLogging;
+
+	bInitDone: 			BOOL ;
+	iFirstHeaderLEN: 		INT;
+	iColumnLineLEN: 		INT;
+
+	fbF_TRIG: F_TRIG;
+
+	bInitComplete: BOOL;			(*Inhibits status code logger until the init is complete*)
+
+
+(*	fbToggle: FB_Toggle;	*)
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*========== START OF FUNCTION_BLOCK / PROGRAMM ============*)
+
+(* INHIBIT SC  LOGGER UNTIL INIT COMPLETE - 09/02/17  AG. *)
+fbF_TRIG(CLK:=g_bOperMaStInitSt);
+
+IF fbF_TRIG.Q THEN
+	bInitComplete:=TRUE;
+END_IF
+(*fbToggle(bEnable:=TRUE , tOffDelay:=T#80ms, tOnDelay:=T#10ms , bToggle=>);	*)
+(*=======================================================================*)
+(*			INIT  LOGGING			    									*)
+(*=======================================================================*)
+	IF NOT bInitDone THEN
+
+		M_InitLoggerStatuscodes();			(*Initializing the header and the path name*)
+		bInitDone:=	TRUE;
+
+(*===========================================================================*)
+(* 				General information for rising and falling edge of Statuscode 			*)
+(*===========================================================================*)
+	ELSE
+		fbSCLogger(
+			bWriteDayFile:=  DailyFile);
+
+		rTriggSC (CLK:=	TriggStatuscode );
+
+
+	(*===========================================================================*)
+	(*   			RINGBUFFER for Statuscodes / BUFFER  for Sending Alarms			*)
+	(*===========================================================================*)
+
+		IF rTriggSC.Q THEN
+
+			(*Logger for logging on PLC hard disc:  _____________________________*)
+			fbSCLogger.M_AddEvent(
+					bTrigEvent 			:= TRUE ,
+					sTimeStamp			:= gsLocalSystemTime,
+					sTrigEventKey		:= EventKey,							(* Key of the Statuscode *)
+					sTrigEventText		:= TextInfo,							(* Name / Description of the Statuscode *)
+					sUserName			:= UserName,							(* User name who owns access rights*)
+					sBrakeProgram		:= BrakeProgram,					(* Brake program *)
+
+					bWriteDayFile		:= DailyFile,
+					CheckLog			:= CheckLog,
+					ResetErrCnt			:= ResetErrCnt,
+
+					bError=>				Error,
+					nErrID=>				iErrCounter);
+
+
+
+
+			(*Log List for sending alarms:  _____________________________________ POISTETTU KÄYTÖSTÄ TURHANA??? MLe*)
+			(*IF SendAlarm THEN
+
+				PRG_SendBuffAlarms( 	EventKey:=		EventKey,
+									TextInfo:= 		TextInfo);
+			END_IF POISTA*)
+
+
+		END_IF
+
+	END_IF
+
+(*=========== END OF FUNCTION_BLOCK / PROGRAMM =============*)]]></ST>
+    </Implementation>
+    <Action Name="M_InitLoggerStatuscodes" Id="{8e52cf1c-b6e5-4af3-be6c-63ef31ff53b8}">
+      <Implementation>
+        <ST><![CDATA[(*    START OF METHOD   ( M_InitLoggerStatuscodes) 			*)
+(*======================================================	*)
+
+(********************************************************************************************)
+
+(*  	VERSION:			002.001
+							                									 
+  	PROGRAMMED BY:	Hardy Patommel		  					
+  	DATE:				2008-03-04
+*)							               				 					
+(*---------------------------------------------------------------------------------------------------*)
+	(* Version history:
+	Date		|	Version/Author 		|	Remark
+	----------------------------------------------------------------------------------------------------
+	2008-03-04	|	001.000     HP			|	
+ 	2009-10-30	|	002.001 RM			|	Prepared for Library
+						                									 
+*)
+(*-----------------------------------------------------------------------------------------------------*)
+(*  	DESCRIPTION:		Initialisations of all basic information for the
+						Statuscode logger (for writing the log to a file on hard disc)
+
+	NOTE:				the path / directory  information depends on
+						which hardware and which operating system the
+						project is running. That's important, when you will run the 
+						software not only on the real target system but for testing  
+						also on your office PC or any other PC
+*)
+(********************************************************************************************)
+
+	(* Set the Path name:   ----------------------------------------------------- *)
+	IF NOT gbOperatingSystemCEDetected THEN
+		gsSC_PathName			:= DirectoriesFiles.sSC_PathNamePC;
+(*		gsSCunlimited_PathName 	:= gsSCunlimited_PathNamePC;	*)
+
+	ELSE
+		gsSC_PathName			:= DirectoriesFiles.sSC_PathNameEmbeddedPC;
+(*		gsSCunlimited_PathName	:= gsSCunlimited_PathNameEmbeddedPC;	*)
+	END_IF
+
+	(* Ringbuffer File setup  ---------------------------------------------------- *)
+	fbSCLogger.stFileSetup.sNetId 				:= '';					(* Set the NetId *)
+	fbSCLogger.stFileSetup.sPathName 		:= gsSC_PathName;		(* Set the Path name *)
+	fbSCLogger.stFileSetup.sFileDescription 	:= 'Statuscode ring buffer file';
+
+	(* Buffer File setup for Day-File  ---------------------------------- *)
+	fbSCLogger.stFileSetupDayFile.sNetId 		:= '';					(* Set the NetId *)
+
+	(* Path name with File name include the date*)
+	fbSCLogger.stFileSetupDayFile.sPathName 		:=  '3';(*FUN_DateFileNameWithSpace(gsSC_PathName, Lib_strucSystemTime,'') ;	(* New Path name with date *)	ACTION*)
+	fbSCLogger.stFileSetupDayFile.sPathName 		:=  CONCAT(fbSCLogger.stFileSetupDayFile.sPathName,'  ') ;	(* add space *)
+	fbSCLogger.stFileSetupDayFile.sName			:= 'BufferStatuscodes.txt';
+	fbSCLogger.stFileSetupDayFile.sTotalName		:=  CONCAT(fbSCLogger.stFileSetupDayFile.sPathName,fbSCLogger.stFileSetupDayFile.sName);
+	fbSCLogger.stFileSetupDayFile.sFileDescription  	:= 'Statuscode file for one day';
+
+//ACTION	fbSCLogger.dwLoggedEventAdr	:= ADR(arLoggedSC);		(* Adress of buffer where the logged events are to be stored *)
+	fbSCLogger.udLoggedEventSize := SIZEOF(arLoggedSC);	(* sizeof buffer where the logged events are to be stored *)
+
+	fbSCLogger.udNumberOfEventDatas	:= 4;
+
+	(* Init used data, size and address*)
+	fbSCLogger.eDataType[1]			:= eReal;
+//ACTION	fbSCLogger.dwArrDataAdr[1] 		:= ADR(Lib_rGeneratorPower);				(* Power *)
+	fbSCLogger.udArrDataSize[1] 		:= SIZEOF(Lib_rGeneratorPower);
+	fbSCLogger.sHeaderOfEventData[1]	:= 'GeneratorPower';
+
+	fbSCLogger.eDataType[2]			:= eReal;
+//ACTION	fbSCLogger.dwArrDataAdr[2] 		:= ADR(Lib_rFlowSpeed);					(* FlowSpeed *)
+	fbSCLogger.udArrDataSize[2] 		:= SIZEOF(Lib_rFlowSpeed);
+	fbSCLogger.sHeaderOfEventData[2]	:= 'FlowSpeed';
+	
+	fbSCLogger.eDataType[3] 			:= eReal;
+//ACTION	fbSCLogger.dwArrDataAdr[3] 		:= ADR(Lib_rGeneratorSpeed);				(* GenSpeed *)
+	fbSCLogger.udArrDataSize[3] 		:= SIZEOF(Lib_rGeneratorSpeed);
+	fbSCLogger.sHeaderOfEventData[3] 	:= 'GeneratorSpeed';
+
+(*	fbSCLogger.eDataType[4] 			:= eReal;
+	fbSCLogger.dwArrDataAdr[4] 		:= ADR(Lib_rPitchAngle);					(* Pitch Angle *)
+	fbSCLogger.udArrDataSize[4] 		:= SIZEOF(Lib_rPitchAngle);
+	fbSCLogger.sHeaderOfEventData[4] 	:= 'PitchAngle';	*)
+
+
+	(*=====================================================================*)
+	(*					make header only for the length account				     *)
+	(*=====================================================================*)
+	giRingBufferFileOneEntryLength := 100;(*Length of one entry in the ring buffer Statuscode file*)
+	gstrRingBufferFileColumnText :=  '$TTrigKey$TUserName$TBrakeProgram';
+
+	fbHeaderForLogging(
+			st_TurbineIdent		:= st_xTurbineIdent ,		(*general machine info*)
+			s_FileDescription		:= fbSCLogger.stFileSetup.sFileDescription,
+			s_ColumnText 		:= gstrRingBufferFileColumnText,
+			ar_ColumnText		:= fbSCLogger.sHeaderOfEventData,	(*array of column description*)
+			iCountsOfColumns		:= UDINT_TO_INT(fbSCLogger.udNumberOfEventDatas),	(*counts of columns*)
+			iOneEntryLength		:= giRingBufferFileOneEntryLength,(*length of every entry, all lines with the same length, see init-logger*)
+			adr_sHeader1		:=  ,						(*part one of the header*)
+			adr_sColumnLine		:=  ,						(*part two of the header*)
+			iCountsOfLine			=> ,						(*lines of the part one header*)
+			iHeaderLEN			=> iFirstHeaderLEN,		(*length of the part one header*)
+			iColumnLineLEN		=> iColumnLineLEN);		(*length of the part two header*)
+
+	giRingBufferFileHeaderLEN := iFirstHeaderLEN + iColumnLineLEN;
+
+(*===============  END OF METHOD  ==========================================*)]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="PRG_MAIN_StatuscodeLogger">
+      <LineId Id="57" Count="64" />
+    </LineIds>
+    <LineIds Name="PRG_MAIN_StatuscodeLogger.M_InitLoggerStatuscodes">
+      <LineId Id="0" Count="103" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

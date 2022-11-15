@@ -1,0 +1,904 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="P_AlarmHandling" Id="{d8f4301f-d26f-4d50-88d3-44607aee06a8}" SpecialFunc="None">
+    <Declaration><![CDATA[(**************************************************************************************
+CopyRight Atlantis Operations UK Ltd 2015
+AR500 Turbine Control System 
+
+Program Purpose:
+This program takes care of alarm handling and includes following functions:
+	- sets a new alarm
+	- resets not valid alarms
+	- selects correct brake program if needed
+	- selects operations associated with alarm 
+
+Version history: Created with TwinCat V 2.11.2248
+04/09/15	V 1.00	NSM - ODT First Release
+
+Version history: Created with TwinCat V 2.9.0
+19.01.2005	V 1.0.0	MLe
+Initial Version
+17.8.-24.8.2005 V 1.0.1 MLe
+-Changes in alarm SMS; AlarmProgramAction, AddEmailToList
+31.8.2005 V 1.0.2 MLe
+-Service mode sms message comes trough in any circumstances
+-Leading zeros added for time in sms message
+8.9.2005 V 1.0.3 MLe
+-\n changed to | as CfLf
+6.10.2005 V 1.0.4 MLe
+- 10 min Flow speed added to alarm SMS text
+***************************************************************************************)
+
+PROGRAM P_AlarmHandling
+VAR
+	arrAlarmSetDelay: ARRAY [1..1400] OF DINT;
+	i: INT;
+	arrAlarmResetDelay: ARRAY [1..1400] OF DINT;
+
+	fbResets: FB_AlarmResets;
+	bNoBrakeProgramSt: BOOL;
+	(* AlarmProgramAction*)
+	bEmailSentSt: BOOL;
+	fbSendEmail: FB_SendEmail;										(* EN ABLED BY NM TEMPORARILY  *)
+	bManuRstBrakePrgAlarmOnSt :BOOL;
+	bNewAlarmSt: BOOL;
+	bServiceModeBlockSt: BOOL;
+	AlarmTime:TIMESTRUCT;
+
+	(*Intouch communication*)
+
+
+	WriteTime: BOOL;
+	bGetTimeFlipFlop:BOOL;
+	bGetTimeBusy:BOOL;
+	bGetTimeErr: BOOL;
+	iGetTimeErrId: DINT;
+
+	(* Email for alarms *)
+	arrEmailWaitList: ARRAY [1..5] OF STRING(255);
+	iEmailPointer: INT := 0;
+	bEmailSendingBusy: BOOL;
+	sAlarmName: STRING(255);
+	bStartEmailSending: BOOL;
+	iEmailListCounter: INT;
+	tonEmailDelay: TON;
+	bSendEmailStartOff: BOOL;
+	Step: INT := 10;
+	tonSpaceDelay: TON;
+	bDummy: BOOL;
+
+	arrAlarmRepetitions: ARRAY [1..1400] OF ST_RepetitionArray;
+	iRepetitionCntr: INT;
+	iRemoveRepetitionCntr: INT;
+	j: INT;
+
+	alarmData: STRING(255);
+	bFirstCycle: BOOL :=FALSE;
+	rtrigManualReset: R_TRIG;
+
+	tonFirstCycle: TON;
+
+	TempCounter: INT;
+	n: INT;
+	TempCounterTest: INT;
+
+	sTest: INT;
+
+	iNumberOfAlarmsInHistory: INT := 200;
+
+	k: INT;
+	fbFileDelete: FB_FileDelete;
+	bDelete_Busy: BOOL;
+	bDelete_Error: BOOL;
+	nDelete_ErrID: UDINT;
+	fbFileDeleteOn: BOOL;
+
+	sPreviousPathName				: T_MaxString ;	(* Set the previous Path name in the init program, added 15022010 MLe *)
+
+	bFirstAlarmSetCycle: BOOL := TRUE;
+	(*bFirstCycle2: BOOL;*)
+	(*tonFirstCycle2: TON :=(PT:=t#1s);*)
+
+	bInitComplete: BOOL;
+	fbF_TRIG: F_TRIG;
+
+	test: INT;
+	tonCheckForEmails: TON;
+	srSendEmailLatch: SR;
+	bEngineerSendEmailTest: BOOL;
+	ftrigEngineerSendEmailTest: F_TRIG;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*TEMP ALARMS FOR TESTING*)
+//P_ALARMS();
+//P_Event_Logger();		For calling TC sysem events
+
+
+(* Set new date for Alarm.txt file *)
+
+IF LibDetectNewDay THEN
+		PRG_MAIN_StatuscodeLogger.M_InitLoggerStatuscodes();
+END_IF
+
+ResetBrakePrograms();
+bManuRstBrakePrgAlarmOnSt := FALSE; (* Reset before every loop *)
+
+(* Reset repeating alarm *)
+IF g_bOperAlarmManualReset THEN
+	arrAlarms[a_bOperRepeatingAlarm].a := FALSE;
+END_IF;
+
+IF bFirstCycle THEN (* to avoid alarms with 0 time *)
+	AlarmLoop();
+END_IF;
+
+(* 5 sec delay in a start up that Clock is synchronized *)
+tonFirstCycle(IN:=TRUE , PT:= t#5.0s);
+bFirstCycle:=tonFirstCycle.Q;
+
+
+(* No Manu reset alarms with brake program on => New email can be sent when next preceding alarm occurs *)
+IF NOT bManuRstBrakePrgAlarmOnSt THEN
+	bEmailSentSt := FALSE;
+END_IF;
+
+TakeEmailFromList();
+fbResets();
+
+(* Delete previous Alarm.txt file *)
+DeleteOldAlarmFile();
+
+g_iOperAlarmStructSizeInBytes:=SIZEOF(arrAlarms[1]);
+g_iOperIniStructSizeInBytes := SIZEOF(arrIni[1]);
+
+P_AlarmTable();]]></ST>
+    </Implementation>
+    <Action Name="ActiveShutdownAlarmCount" Id="{197237d9-28e2-4cc1-b9a0-1c7dcf2c4050}">
+      <Implementation>
+        <ST><![CDATA[(*NSM 231016*)
+IF 	arrAlarms[i].b (*AND
+	arrAlarms[i].eBrakeProgram < 99*)
+THEN
+	g_iOperErrorAlarmsActive := g_iOperErrorAlarmsActive  + 1;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AddEmailToList" Id="{259011e9-e03e-443a-8939-bca68eacb2c0}">
+      <Implementation>
+        <ST><![CDATA[(* Add new alarm to email list to wait sending *)
+IF iEmailPointer < 5 THEN
+
+	(* Alarm short message includes: Park name, turbine name, brake program, alarm name, date and time.*)
+	alarmData := CONCAT('"|Alarm|', g_sOperAlarmParkName);
+	alarmData := CONCAT(alarmData, ' ');
+	alarmData := CONCAT(alarmData, INT_TO_STRING(g_iOperAlarmParkId));
+	alarmData := CONCAT(alarmData, '|');
+	alarmData := CONCAT(alarmData, g_sOperAlarmTurbineName);
+	alarmData := CONCAT(alarmData, ' ');
+	alarmData := CONCAT(alarmData, INT_TO_STRING(g_iOperAlarmTurbineId));
+	alarmData := CONCAT(alarmData, '|B');
+	alarmData := CONCAT(alarmData, INT_TO_STRING(arrAlarms[i].eBrakeProgram));
+	alarmData := CONCAT(alarmData, '|');
+	alarmData := CONCAT(alarmData, arrAlarms[i].sName);
+
+	(*alarmData := CONCAT(alarmData, '_');
+	alarmData := CONCAT(alarmData, LEFT(REAL_TO_STRING(g_fOperFlowSpeedMean10minMe), 4)); (* Add Flow speed after alarm with 4 number *)
+	alarmData := CONCAT(alarmData, 'm/s');*)
+
+	alarmData := CONCAT(alarmData, '|B');
+	alarmData := CONCAT(alarmData, INT_TO_STRING(arrAlarms[i].eBrakeProgram));
+	alarmData := CONCAT(alarmData, '|');
+
+	(* Leading zeros added for date*)
+	IF arrAlarms[i].TimeOcc.wDay < 10 THEN
+		alarmData := CONCAT(alarmData, CONCAT('0', WORD_TO_STRING(arrAlarms[i].TimeOcc.wDay)));
+	ELSE
+		alarmData := CONCAT(alarmData, WORD_TO_STRING(arrAlarms[i].TimeOcc.wDay));
+	END_IF;
+	alarmData := CONCAT(alarmData, '.');
+	IF arrAlarms[i].TimeOcc.wMonth < 10 THEN
+		alarmData := CONCAT(alarmData, CONCAT('0', WORD_TO_STRING(arrAlarms[i].TimeOcc.wMonth)));
+	ELSE
+		alarmData := CONCAT(alarmData, WORD_TO_STRING(arrAlarms[i].TimeOcc.wMonth));
+	END_IF;
+	alarmData := CONCAT(alarmData, '.');
+	alarmData := CONCAT(alarmData, RIGHT (WORD_TO_STRING(arrAlarms[i].TimeOcc.wYear), 2));
+	alarmData := CONCAT(alarmData, ' ');
+
+(* Leading zeros added for time *)
+	IF arrAlarms[i].TimeOcc.wHour < 10 THEN
+		alarmData := CONCAT(alarmData, CONCAT('0', WORD_TO_STRING(arrAlarms[i].TimeOcc.wHour)));
+	ELSE
+		alarmData := CONCAT(alarmData, WORD_TO_STRING(arrAlarms[i].TimeOcc.wHour));
+	END_IF;
+	alarmData := CONCAT(alarmData, ':');
+	IF	arrAlarms[i].TimeOcc.wMinute < 10 THEN
+		alarmData := CONCAT(alarmData, CONCAT('0', WORD_TO_STRING(arrAlarms[i].TimeOcc.wMinute)));
+	ELSE
+		alarmData := CONCAT(alarmData, WORD_TO_STRING(arrAlarms[i].TimeOcc.wMinute));
+	END_IF;
+	alarmData := CONCAT(alarmData, '|');
+	(* alarmData := CONCAT(alarmData, LEFT(REAL_TO_STRING(g_fOperFlowSpeedMean10minMe), 4)); (* Add Flow speed 251005 KKa *) 	DISABLED BY NIHAL MALIK *)
+	alarmData := CONCAT(alarmData, ' m/s 10 min av.');
+	alarmData := CONCAT(alarmData, '|');
+(* Add reset mode *)
+	IF arrAlarms[i].eResetMode=AUTO THEN
+	alarmData := CONCAT(alarmData, 'AUTO reset mode ');
+	ELSE
+	alarmData := CONCAT(alarmData, 'MANUAL reset mode ');
+	END_IF;
+	alarmData := CONCAT(alarmData, '|');
+
+(* Add fault comment *)
+
+	alarmData := CONCAT(alarmData, 'Comment: ');
+	alarmData := CONCAT(alarmData, arrAlarms[i].Comment);
+	alarmData:= CONCAT(AlarmData,'|"');
+
+
+(* Creating a subject to an email *)
+	alarmData := CONCAT(alarmData, ' "Alarm Message from ');
+//	alarmData:= CONCAT(AlarmData,stTurbineData.sOperAlarmParkName);	(*Action UPDATE This*)
+	alarmData:= CONCAT(AlarmData,'"');
+(*
+(* Attach also a scopeViewFile *)
+	alarmData := CONCAT(alarmData, ' "');
+	alarmData:= CONCAT(AlarmData,stTurbineData.sOperScopeLocation);
+	alarmData:= CONCAT(AlarmData,'"');
+*)
+
+
+	iEmailPointer := iEmailPointer + 1;
+	arrEmailWaitList[iEmailPointer] := alarmData;
+
+END_IF;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmAcknowledgement" Id="{b5372d4d-393d-4ad0-b41c-73167cd34a63}">
+      <Implementation>
+        <ST><![CDATA[(* Alarm acknowledge *)(* 12012010 *)
+	IF g_bOperAlarmManualResetREdge THEN
+		IF arrAlarms[i].b THEN
+			arrAlarms[i].iState := ActiveAcknowledged;(* Aktiivinen kuitattu *)
+		ELSIF arrAlarms[i].iState = InactiveUnacknowledged THEN
+			arrAlarms[i].iState := InactiveAcknowledged;(* Poistunut kuittaamaton => poistunut(kuitattu) *)
+		ELSIF arrAlarms[i].iState = ActiveUnacknowledged    THEN(*12012010*)
+			arrAlarms[i].iState := InactiveAcknowledged;
+		END_IF
+	END_IF
+
+	IF ((arrAlarms[i].iState = ActiveUnacknowledged) AND (NOT arrAlarms[i].b)) THEN(*12012010*)
+		arrAlarms[i].iState := InactiveUnacknowledged;
+	ELSIF ((arrAlarms[i].iState = ActiveAcknowledged) AND (NOT arrAlarms[i].b)) THEN
+		arrAlarms[i].iState := InactiveAcknowledged;
+	END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmBrake" Id="{80726293-8825-4a1b-a186-a0a622b433c2}">
+      <Implementation>
+        <ST><![CDATA[(* Set brake program *)
+	IF arrAlarms[i].b = TRUE THEN
+		CASE arrAlarms[i].eBrakeProgram OF
+
+			B1:		g_bBrakeProg1Cmd := TRUE;
+			B2:		g_bBrakeProg2Cmd := TRUE;
+			B3:		g_bBrakeProg3Cmd := TRUE;
+			B4:		g_bBrakeProg4Cmd := TRUE;
+			B5:		g_bBrakeProg5Cmd := TRUE;
+			B6:		g_bBrakeProg6Cmd := TRUE;
+			B7:		g_bBrakeProg7Cmd := TRUE;
+			B8:		g_bBrakeProg8Cmd := TRUE;
+			B9:		g_bBrakeProg9Cmd := TRUE;
+			B10:		g_bBrakeProg10Cmd := TRUE;
+			B11:		g_bBrakeProg11Cmd := TRUE;
+			B12:		g_bBrakeProg12Cmd := TRUE;
+			B13:		g_bBrakeProg13Cmd := TRUE;
+			B14:		g_bBrakeProg14Cmd := TRUE;
+			B15:		g_bBrakeProg15Cmd := TRUE;
+			B16:		g_bBrakeProg16Cmd := TRUE;
+			B17:		g_bBrakeProg17Cmd := TRUE;
+			B18:		g_bBrakeProg18Cmd := TRUE;
+			B19:		g_bBrakeProg19Cmd := TRUE;
+			B20:		g_bBrakeProg20Cmd := TRUE;
+			B25:		g_bBrakeProg25Cmd := TRUE;
+			B30:		g_bBrakeProg30Cmd := TRUE;
+			B40:		g_bBrakeProg40Cmd := TRUE;
+
+		ELSE
+			bNoBrakeProgramSt := TRUE;
+		END_CASE;
+	END_IF;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmLoop" Id="{0ad06fe1-4f0d-4d47-a482-d030622afbfa}">
+      <Implementation>
+        <ST><![CDATA[(* Copy process values to right variables *)			(*NSM 231016*)
+//MAIN_R();
+
+(*Reset non end of tide shutdown alarms counter - NSM 31.10.16*)
+g_iOperErrorAlarmsActive  := 0;
+
+(*Reset count of number of active send email alarms*)(*Added NSM 28.9.17*)
+g_iOperTurbine4SendEmailAlarmsActive := 0;
+
+(* Do alarm actions *)
+FOR i := 1 TO iMaxAlarms DO
+
+	AlarmSet();
+	AlarmRepetition();
+	AlarmReset();
+	AlarmBrake();
+	AlarmProgramAction();
+	AlarmParams();
+	AlarmAcknowledgement();
+	ActiveShutdownAlarmCount();
+	SendEmail();
+
+END_FOR;
+
+fbSCLogger.M_CheckEvent();
+fbSCLogger();(*12012010*)
+UpdateAlarmHistory();
+bFirstAlarmSetCycle := FALSE;
+
+(*If number of active send email alarms is > 0  then set flag to send email*)(*Added NSM 28.9.17*)
+tonCheckForEmails(IN:=NOT tonCheckForEmails.Q, PT:=t#10s);
+
+srSendEmailLatch(	SET1:= g_iOperTurbine4SendEmailAlarmsActive > 0,
+					RESET:= g_iOperTurbine4SendEmailAlarmsActive = 0,
+					Q1 => g_bOperTurbine4SendEmail	);
+
+(*Added by NSM 20.02.18 to test alarm sending from SCADA*)
+ftrigEngineerSendEmailTest(CLK:=bEngineerSendEmailTest);
+
+IF 	FALSE AND	(*visu_bOperEnableTwinCAT_GUI	ACTION ADD LOGIC*)
+	bEngineerSendEmailTest THEN
+		g_bOperTurbine4SendEmail := TRUE;
+ELSIF ftrigEngineerSendEmailTest.Q OR
+		g_bOperOpModeService THEN			(*Added to stop emails being sent during pitching - NMS 26/06/18*)
+		g_bOperTurbine4SendEmail := FALSE;
+END_IF
+
+(*IF g_iOperTurbine4SendEmailAlarmsActive > 0 THEN	(*Replaced above by NSM 25.10.17*)
+		g_bOperTurbine4SendEmail := TRUE;
+ELSE	g_bOperTurbine4SendEmail := FALSE;
+END_IF*)]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmParams" Id="{69eabfcc-6b2c-4672-b074-7b35e5699614}">
+      <Implementation>
+        <ST><![CDATA[(* Check the parameter limits for Set1 *)
+
+	(* Check that Min is lower than Max *)
+IF arrAlarms[i].param1.SetMin > arrAlarms[i].param1.SetMax THEN
+arrAlarms[i].param1.SetMin:=arrAlarms[i].param1.SetMax;
+END_IF;
+	(* Check that set is lower than MAX *)
+IF arrAlarms[i].Param1.Set >arrAlarms[i].param1.SetMax THEN
+	arrAlarms[i].param1.Set := arrAlarms[i].param1.SetMax;
+ELSE
+	arrAlarms[i].param1.Set := arrAlarms[i].param1.Set;
+END_IF;
+	(* Check that set is higher than Min *)
+IF arrAlarms[i].param1.Set < arrAlarms[i].param1.SetMin THEN
+	arrAlarms[i].param1.Set := arrAlarms[i].param1.SetMin;
+ELSE
+arrAlarms[i].param1.Set :=  arrAlarms[i].param1.Set;
+
+END_IF;
+
+(* Check the parameter limits for Set2 *)
+
+	(* Check that Min is lower than Max *)
+IF arrAlarms[i].param2.SetMin > arrAlarms[i].param2.SetMax THEN
+arrAlarms[i].param2.SetMin:=arrAlarms[i].param2.SetMax;
+END_IF;
+	(* Check that set is lower than Max *)
+IF arrAlarms[i].Param2.Set >arrAlarms[i].param2.SetMax THEN
+	arrAlarms[i].param2.Set := arrAlarms[i].param2.SetMax;
+ELSE
+	arrAlarms[i].param2.Set := arrAlarms[i].param2.Set;
+END_IF;
+	(* Check that set is higher than Min *)
+IF arrAlarms[i].param2.Set < arrAlarms[i].param2.SetMin THEN
+	arrAlarms[i].param2.Set := arrAlarms[i].param2.SetMin;
+ELSE
+arrAlarms[i].param2.Set :=  arrAlarms[i].param2.Set;
+
+END_IF;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmProgramAction" Id="{6aac88d8-8027-419e-9e61-cba4837fde01}">
+      <Implementation>
+        <ST><![CDATA[(* UPDATES MADE BY NSM ON 25/08/15 TO INCLUDE B99 WITH B100 GROUP *)
+
+IF arrAlarms[i].b THEN
+	(* Service mode is read directly from input, not from alarm *)
+	(* Service mode blocks all emails *)
+	(* Service mode announcement must come trough in any case *)
+	(* IF ((NOT in_bOperOpModeService) OR (arrAlarms[i].sName = 'a_bOperServModeSt')) THEN *)
+		(* Send email just once for alarms which have manual reset, brake program and email selection *)
+		IF (arrAlarms[i].eResetMode = MANU) AND (NOT (arrAlarms[i].eBrakeProgram = B100)) AND (NOT (arrAlarms[i].eBrakeProgram = B99)) THEN (* Manual reset and brake program *)
+			bManuRstBrakePrgAlarmOnSt := TRUE;(* Prevents consecutive alarms if stopping conditions are still valid *)
+			IF (bNewAlarmSt AND (NOT bEmailSentSt) AND (arrAlarms[i].eAlarmProgram = Email)) THEN (* No email sent earlier and alarm program action is email *)
+				AddEmailToList();
+				bEmailSentSt := TRUE;
+				(* Add alarm name to global variable for Scope View *)
+				(* Prevent new alarm name as long as previous has been sent*) (*29012010*)
+				IF g_sAlarmname = '' THEN
+					g_sAlarmname:=arrAlarms[i].sName;
+				END_IF
+			END_IF;
+		END_IF;
+		(* Send email for alarms which do not have brake program but email selection; warnings and announcements....and
+			also alarms which have auto reset send email if 'Email' selection is valid *)
+		IF (arrAlarms[i].eBrakeProgram = B100) OR (arrAlarms[i].eBrakeProgram = B99) OR (arrAlarms[i].eResetMode = AUTO) THEN
+				IF NOT(arrAlarms[i].eBrakeProgram = B100) AND NOT(arrAlarms[i].eBrakeProgram = B99) THEN
+					IF bNewAlarmSt THEN
+					(* Add alarm name to global variable for Scope View *)
+					(* Prevent new alarm name as long as previous has been sent*) (*29012010*)
+						IF g_sAlarmname = '' THEN
+							g_sAlarmname:=arrAlarms[i].sName;
+						END_IF
+					END_IF;
+				END_IF;
+			IF (arrAlarms[i].eAlarmProgram = Email) THEN
+				IF bNewAlarmSt THEN
+					(* Add alarm name to global variable for Scope View *)
+					(* Prevent new alarm name as long as previous has been sent*) (*29012010*)
+					(* B100 alarms do not trigger scopeview file sending to server. That's why Alarmname cannot be set for them, 20100930 MLe *)
+						 IF ((g_sAlarmname = '') AND (NOT(arrAlarms[i].eBrakeProgram = B100)) AND (NOT(arrAlarms[i].eBrakeProgram = B99))) THEN
+							g_sAlarmname:=arrAlarms[i].sName;
+						END_IF
+					(* Service mode alarm must be sent every time it occurres *)
+					IF ((NOT bEmailSentSt OR (arrAlarms[i].sName = 'a_bOperServModeSt')) AND (NOT arrAlarms[i].bRepetitionLimitExceeded)) THEN
+						AddEmailToList();
+					END_IF;
+				END_IF;
+			END_IF;
+		END_IF;
+	(* END_IF; *)
+	bNewAlarmSt := FALSE;
+END_IF;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmRepetition" Id="{92fcfc4f-02f3-4c78-ae08-9fe70a3b0adc}">
+      <Implementation>
+        <ST><![CDATA[(*  Repeating alarm with AUTO reset causes special alarm.
+    Repetition number 0 disables the whole function*)
+
+IF (arrAlarms[i].eResetMode = AUTO) AND (arrAlarms[i].iRepetitionNumber <> 0) THEN
+
+	(* Remove too old alarms from array , time period is minutes*)
+	WHILE (((DT_TO_DWORD(SYSTEMTIME_TO_DT(g_stOperNTGetTime)) - arrAlarmRepetitions[i].arrRepetition[1]) / 60) > arrAlarms[i].iRepetitionPeriod) AND (arrAlarmRepetitions[i].arrRepetition[1] <> 0) DO
+		(* Move every alarm time one step further *)
+		iRemoveRepetitionCntr := 1;
+		WHILE ((arrAlarmRepetitions[i].arrRepetition[iRemoveRepetitionCntr + 1] <> 0) AND (iRemoveRepetitionCntr < 10)) DO
+			arrAlarmRepetitions[i].arrRepetition[iRemoveRepetitionCntr] := arrAlarmRepetitions[i].arrRepetition[iRemoveRepetitionCntr + 1];
+			iRemoveRepetitionCntr :=  iRemoveRepetitionCntr + 1;
+		END_WHILE;
+		arrAlarmRepetitions[i].arrRepetition[iRemoveRepetitionCntr] := 0;
+	END_WHILE;
+
+
+	(* Count old repeated alarms. iRepetitionCntr points to first  unoccupied place in array *)
+	iRepetitionCntr := 1;
+	WHILE (arrAlarmRepetitions[i].arrRepetition[iRepetitionCntr] <> 0) DO
+		iRepetitionCntr := iRepetitionCntr + 1;
+	END_WHILE;
+
+	(* Add  new alarm time to array *)
+	IF bNewAlarmSt AND  (iRepetitionCntr < 11) THEN
+		arrAlarmRepetitions[i].arrRepetition[iRepetitionCntr] := DT_TO_DWORD(SYSTEMTIME_TO_DT(g_stOperNTGetTime));
+		iRepetitionCntr := iRepetitionCntr + 1;
+	END_IF
+
+
+	(* If repetitions are equal to limit value then set 'Repeating error' on and mark the alarm which caused the error.*)
+	IF (iRepetitionCntr > 1) THEN
+		IF ((iRepetitionCntr - 1) >= arrAlarms[i].iRepetitionNumber) THEN
+			arrAlarms[a_bOperRepeatingAlarm].a := TRUE;
+			arrAlarms[i].bRepetitionLimitExceeded := TRUE;
+		END_IF;
+	END_IF;
+
+END_IF;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmReset" Id="{20ea24a6-c813-4144-beb0-be000b71c59f}">
+      <Implementation>
+        <ST><![CDATA[(* UPDATED BY NSM ON 25/08/15 TO INCLUDE B99 BRAKE PROGRAM FOR RESETS AND IDLE STATE REMOVED *)
+(* UPDATED BY NSM ON 01/12/16 TO REINSTATE ORIGINAL APPROACH TO RESETTING THESE ALARMS *)
+(* Alarm Resetting *)
+
+	(*AUTO*)
+	IF arrAlarms[i].eResetMode = AUTO THEN
+		(* No active alarm *)
+		IF 	(arrAlarms[i].b AND  (NOT arrAlarms[i].a)) 
+			(* No brake program or machine stopped => enable reset count *)
+				(*g_eMainState = STOP OR
+				g_eMainState = SAFETY_TRIPPED*)  (*action re-instate make it less spaghetti code*)
+		(*	(	(arrAlarms[i].eBrakeProgram = B100) OR
+				(arrAlarms[i].eBrakeProgram = B99) OR
+				g_bOperMaStStopSt OR
+				g_bOperMaStIdleSt OR			///ACTION Re enable to state mc when built
+				g_bOperMaStStandbySt		)*)
+				
+		THEN
+			arrAlarmResetDelay[i] := arrAlarmResetDelay[i] + g_iOperCycleTime;
+			(* If time elapsed then reset alarm *)
+			IF arrAlarmResetDelay[i] >= (arrAlarms[i].iResetDelay  * 100) THEN
+				arrAlarms[i].b := FALSE;
+			ELSE
+				arrAlarms[i].b := TRUE;
+			END_IF;
+		(* Alarm is active or there has not been alarm *)
+		ELSE
+			arrAlarmResetDelay[i] := 0; (* Alarm activated again or no alarm *)
+		END_IF;
+
+		(* Reset repeating error  *)
+		IF arrAlarms[i].bRepetitionLimitExceeded AND g_bOperAlarmManualReset THEN
+			arrAlarms[i].bRepetitionLimitExceeded := FALSE;
+			FOR j := 1 TO 10 DO
+				arrAlarmRepetitions[i].arrRepetition[j] := 0;
+			END_FOR;
+		END_IF;
+	ELSE
+
+	(*MANU*)
+		(* No active alarm *)
+		IF (arrAlarms[i].b) AND (NOT arrAlarms[i].a)  THEN
+			(* Non Safety Alarm without brake program OR machine stopped OR Idling mode On AND manual reset *)
+
+(*Removed by NSM on 17/03/16*)
+(*arrAlarms[i].eBrakeProgram = B100 OR arrAlarms[i].eBrakeProgram = B99 OR *)
+
+			IF 	(*(g_bOperMaStStopSt OR g_bOperMaStIdleSt OR g_bOperMaStStandbySt) AND*) g_bOperAlarmManualResetREdge AND arrAlarms[i].eBrakeProgram > 10 THEN
+				arrAlarms[i].b := FALSE;
+
+			ELSIF (*NOT(g_bOperMaStNormalStopSt OR g_bOperMaStEmergencyStopSt) AND *) g_bOperAlarmManualResetREdge AND (arrAlarms[i].eBrakeProgram = 99 OR arrAlarms[i].eBrakeProgram = 100) THEN
+				arrAlarms[i].b := FALSE;
+			(* Safety Alarm Manual Reset *)
+(*			ELSIF (g_bOperMaStStopSt OR g_bOperMaStIdleSt) AND arrAlarms[i].eBrakeProgram < 10 AND g_bOperAlarmManualSafetyResetREdge THEN	*)
+			ELSIF (*(g_bOperMaStStopSt OR g_bOperMaStIdleSt) AND*) g_bOperAlarmManualSafetyResetREdge THEN
+				arrAlarms[i].b := FALSE;
+			END_IF;
+		END_IF;
+	END_IF;
+
+	(*Alarm Disabled*)
+		(* No active alarm *)
+		IF (arrAlarms[i].b) AND (NOT arrAlarms[i].Enable)  THEN
+			(* Alarm disabled AND manual reset *)
+			(*IF 	(NOT arrAlarms[i].Enable) AND (g_bOperAlarmManualReset THEN	*)(*Replcaed by NSM 28.05.16*)
+			IF 	(NOT arrAlarms[i].Enable) AND (g_bOperAlarmManualResetREdge OR g_bOperAlarmManualSafetyResetREdge) THEN
+				arrAlarms[i].b := FALSE;
+				arrAlarms[i].iState := InactiveAcknowledged;(*12012010*)
+			END_IF;
+		END_IF;
+
+
+	arrAlarms[i].iResetDelayElapsed := arrAlarmResetDelay[i]/100;
+
+            arrAlarmStatus[i] := arrAlarms[i].b;
+			 arrAlarmGroup[i] := arrAlarms[i].iGroup;
+            arrAlarmGroup[i] := arrAlarms[i].iGroup;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="AlarmSet" Id="{2afe6e35-7d98-4858-b7a8-209e0e3be05c}">
+      <Implementation>
+        <ST><![CDATA[(* Alarm Setting *)
+(*========== START OF FUNCTION_BLOCK / PROGRAMM ============*)
+ arrAlarms[i].eBrakeProgram;
+(* INHIBIT SC  LOGGER UNTIL INIT COMPLETE - 09/02/17  AG. *)
+fbF_TRIG(CLK:=g_bOperMaStInitSt);
+
+
+IF fbF_TRIG.Q THEN
+	bInitComplete:=TRUE;
+END_IF
+
+	(* In case of PLC restart old b-alarms have to be picked up to alarm screen *)
+	IF bFirstAlarmSetCycle AND arrAlarms[i].b AND arrAlarms[i].Enable THEN
+		(* Copy old b-alarms to history *)
+					(*n:=1;*)
+					FOR n := 1 TO iNumberOfAlarmsInHistory - 1 DO
+						arrLastAlarms[iNumberOfAlarmsInHistory + 1 - n] := arrLastAlarms[iNumberOfAlarmsInHistory - n];
+					END_FOR;
+					arrLastAlarms[1]:=arrAlarms[i];
+					arrLastAlarms[1].Index:=i;
+	END_IF
+
+
+	(* Normal case *)
+	IF (arrAlarms[i].a AND (NOT arrAlarms[i].b) AND arrAlarms[i].Enable)  THEN (* Enable condition added *)
+		IF arrAlarmSetDelay[i]  >= (arrAlarms[i].iSetDelay * 100) THEN
+			arrAlarms[i].b := TRUE;
+			bNewAlarmSt := TRUE; (*Send email if needed *)
+			arrAlarms[i].sTimeOcc := gsLocalSystemTime;
+			arrAlarms[i].TimeOcc := g_stOperNTGetTime;
+			arrAlarms[i].iState := ActiveUnacknowledged; (* 12012010 *)
+			(* Process variables *)
+			arrAlarms[i].stProcessVariables.fGeneratorSpeed :=0; (* g_fOperGenSpeedFromConverterRpmMe;	*)	(*NSM 231016*)
+			arrAlarms[i].stProcessVariables.fPitchAngle := 0(*g_fPitchAngleFilteredDeg*);	
+			arrAlarms[i].stProcessVariables.fPower := 0(*g_fOperGenPowerFromConverterMe*);
+			arrAlarms[i].stProcessVariables.fFlowSpeed := 0(*g_fOperFlowSpeed10minAverage*);
+
+
+				IF arrAlarms[i].b  AND arrAlarms[i].eBrakeProgram<=40  THEN   (* A.G. Inhibit call when brake prog LEQ  40*)
+					(* Call status code logger *)
+					PRG_MAIN_StatuscodeLogger(
+					TriggStatuscode:=		arrAlarms[i].b AND arrAlarms[i].eBrakeProgram<=40 ,
+					SendAlarm:=			bInitComplete,
+					EventKey:=			arrAlarms[i].sID,
+					TextInfo:=			arrAlarms[i].sName,
+					UserName:=			g_sOperUserName,
+					BrakeProgram:= 	'9',
+					PathNamePC:=		DirectoriesFiles.sSC_PathNamePC,
+					PathNameEmbPC:=	DirectoriesFiles.sSC_PathNameEmbeddedPC,
+
+					DailyFile:=			gbPlusDailyListStatuscodes,
+					FreezeList :=			gbFreezeListStatuscodes,
+					SCandOC:=			gbLogStatusAndOperationcodes,		(**)
+
+					CheckLog:=			gbCheckLogging,
+					ResetErrCnt:=			gbResetErrCntLog,
+
+					Error =>				gbErrorStatuscodeLogger,
+					iErrCounter=>			);								(*UINT*)
+
+
+					PRG_MAIN_StatuscodeLogger(
+					TriggStatuscode:=		FALSE);
+
+
+					(* Make a buffer of statuscodes for HMI ********************)
+					(* Copy a new alarm to history *)
+					(*n:=1;*)
+					FOR n := 1 TO iNumberOfAlarmsInHistory - 1 DO
+						arrLastAlarms[iNumberOfAlarmsInHistory + 1 - n] := arrLastAlarms[iNumberOfAlarmsInHistory - n];
+					END_FOR;
+					arrLastAlarms[1]:=arrAlarms[i];
+					arrLastAlarms[1].Index:=i;
+
+					(* Make a buffer of statuscodes for HMI ********************)
+
+				END_IF
+
+		ELSE
+			arrAlarms[i].b := FALSE;
+		END_IF;
+		arrAlarmSetDelay[i] := arrAlarmSetDelay[i] + g_iOperCycleTime;
+	ELSE arrAlarmSetDelay[i] := 0;
+
+	END_IF
+	arrAlarms[i].iSetDelayElapsed := arrAlarmSetDelay[i]/100;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="DeleteOldAlarmFile" Id="{d23e139b-5ba3-4e78-9a99-9dcf6f129c30}">
+      <Implementation>
+        <ST><![CDATA[(* If a new day detected then delete an old alarm file in directory \Hard Disk\DAT\Transfer' *)
+(* A presumption is that file has been already copied to D:\DAT *)
+(* The FB shows error 1804 if directory is empty *)
+
+IF  (sPreviousPathName <> gsSC_PathName) OR fbFileDeleteOn THEN
+
+	fbFileDeleteOn := TRUE;
+
+	fbFileDelete(
+		sNetId:='',
+		sPathName:= sPreviousPathName,
+		ePath:= PATH_GENERIC,
+		bExecute:= TRUE,
+		tTimeout:= t#5s,
+		bBusy=> bDelete_Busy,
+		bError=> bDelete_Error,
+		nErrId=> nDelete_ErrID);
+	
+	IF NOT fbFileDelete.bBusy THEN
+		fbFileDelete(bExecute := FALSE);
+		fbFileDeleteOn := FALSE;
+	END_IF
+
+END_IF
+
+sPreviousPathName := gsSC_PathName;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ResetBrakePrograms" Id="{c8477264-ccd6-4b8a-a7b9-89e86a2b2f32}">
+      <Implementation>
+        <ST><![CDATA[g_bBrakeProg1Cmd := FALSE;
+g_bBrakeProg2Cmd := FALSE;
+g_bBrakeProg3Cmd := FALSE;
+g_bBrakeProg4Cmd := FALSE;
+g_bBrakeProg5Cmd := FALSE;
+g_bBrakeProg6Cmd := FALSE;
+g_bBrakeProg7Cmd := FALSE;
+g_bBrakeProg8Cmd := FALSE;
+g_bBrakeProg9Cmd := FALSE;
+	(* These need a different group to reset *)
+g_bBrakeProg10Cmd := FALSE;
+g_bBrakeProg11Cmd := FALSE;
+g_bBrakeProg12Cmd := FALSE;
+g_bBrakeProg13Cmd := FALSE;
+g_bBrakeProg14Cmd := FALSE;
+g_bBrakeProg15Cmd := FALSE;
+g_bBrakeProg16Cmd := FALSE;
+g_bBrakeProg17Cmd := FALSE;
+g_bBrakeProg18Cmd := FALSE;
+g_bBrakeProg19Cmd := FALSE;
+g_bBrakeProg20Cmd := FALSE;
+g_bBrakeProg25Cmd := FALSE;
+g_bBrakeProg30Cmd := FALSE;
+g_bBrakeProg40Cmd := FALSE;
+bNoBrakeProgramSt := FALSE;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SendEmail" Id="{ff926f80-71a1-435e-9821-6ba21d5ad328}">
+      <Implementation>
+        <ST><![CDATA[(*Added by NSM to count number of alarms that want to send emails - 28.9.17*)
+
+IF 	(*arrAlarms[i].eAlarmProgram = 1 AND*)(*ACTION: Set this up to use the correct attribute of an alarm from the excel sheet*)
+	arrAlarms[i].b AND
+	arrAlarms[i].eBrakeProgram <= 40 
+THEN
+	g_iOperTurbine4SendEmailAlarmsActive := g_iOperTurbine4SendEmailAlarmsActive + 1;
+END_IF
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="TakeEmailFromList" Id="{18e36f83-f150-48d9-8672-ac3ff608694f}">
+      <Implementation>
+        <ST><![CDATA[CASE Step OF
+
+	10:		IF iEmailPointer > 0 THEN
+				Step := 20;(* Send alarm *)
+			ELSE
+				Step := 30;(* 'Send' empty string *)
+			END_IF;
+
+			(* Alarm from wait list *)
+	20:		sAlarmName := arrEmailWaitList[1];
+			bStartEmailSending := TRUE;
+			iEmailListCounter := 1;
+			WHILE (iEmailListCounter < 5) AND (arrEmailWaitList[iEmailListCounter] <> '') DO
+				arrEmailWaitList[iEmailListCounter] := arrEmailWaitList[iEmailListCounter + 1];
+				iEmailListCounter := iEmailListCounter + 1;
+			END_WHILE;
+			iEmailPointer := iEmailPointer - 1;
+			IF iEmailPointer < 0 THEN
+				iEmailPointer := 0;
+			END_IF;
+			bDummy := TRUE;
+			Step := 50;
+
+			(* Reset sending ( bStartEmailSending := FALSE)*)
+	30:		sAlarmName := '';
+			bStartEmailSending := FALSE;
+			Step := 50;
+
+			(* Every second NT_StartProcess always fails, so that dummy alarm must be sent *)
+	35:		sAlarmName := 'DUMMY';
+			bStartEmailSending := TRUE;
+			Step := 50;
+
+	50:		fbSendEmail(sAlarmName:= sAlarmName, bStart:= bStartEmailSending , bNTProcessBusy=> bEmailSendingBusy);
+			IF sAlarmName = '' THEN
+				Step := 70;(* Set delay for NT_StartProcess after empty string *)
+			ELSE
+				Step := 60;(* Set delay for NT_StartProcess after alarm*)
+			END_IF;
+
+			(* Delay after sending *)
+	60:		tonEmailDelay(IN:=NOT  tonEmailDelay.Q, PT:= T#1s, Q=> , ET=> );
+			IF tonEmailDelay.Q THEN
+				Step := 30;
+			END_IF;
+
+			(* Delay after reseting *)
+	70:		tonSpaceDelay(IN:=NOT  tonSpaceDelay.Q, PT:= T#1s, Q=> , ET=> );
+			IF tonSpaceDelay.Q THEN
+				IF bDummy  THEN
+					Step := 35;
+					bDummy := FALSE;
+				ELSE
+					Step := 10;
+				END_IF;
+			END_IF;
+
+END_CASE;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="UpdateAlarmHistory" Id="{eb16df14-a55e-4ca5-8121-d9e3b6a5a29b}">
+      <Implementation>
+        <ST><![CDATA[(*12012010*)
+ (* Updating the statuscode attributes in the history *)
+FOR k := 1 TO iNumberOfAlarmsInHistory DO
+
+	IF arrLastAlarms[k].Index = 0 THEN
+		EXIT;(* It's no use to check further since there are no alarms *)
+	ELSE
+		IF arrLastAlarms[k].iState = ActiveUnacknowledged THEN
+			arrLastAlarms[k].iResetDelayElapsed:=arrAlarms[arrLastAlarms[k].Index].iResetDelayElapsed;
+		END_IF
+	END_IF
+
+	(* Change status in history array based on status in current alarm array *)
+	IF (arrLastAlarms[k].iState = ActiveUnacknowledged)  AND ((arrAlarms[arrLastAlarms[k].Index].iState = ActiveAcknowledged) OR
+	(arrLastAlarms[k].sTimeOcc <> arrAlarms[arrLastAlarms[k].Index].sTimeOcc)) THEN
+		arrLastAlarms[k].iState := ActiveAcknowledged;
+	ELSIF (arrLastAlarms[k].iState = InactiveUnacknowledged)  AND arrAlarms[arrLastAlarms[k].Index].iState = InactiveAcknowledged THEN
+		arrLastAlarms[k].iState := InactiveAcknowledged;
+	ELSIF (arrLastAlarms[k].iState = ActiveUnacknowledged)  AND arrAlarms[arrLastAlarms[k].Index].iState = InactiveUnacknowledged THEN
+		arrLastAlarms[k].iState := InactiveUnacknowledged;
+	ELSIF (arrLastAlarms[k].iState = ActiveAcknowledged)  AND arrAlarms[arrLastAlarms[k].Index].iState = InactiveAcknowledged THEN
+		arrLastAlarms[k].iState := InactiveAcknowledged;
+	ELSIF (arrLastAlarms[k].iState = ActiveUnacknowledged)  AND arrAlarms[arrLastAlarms[k].Index].iState = InactiveAcknowledged THEN
+		arrLastAlarms[k].iState := InactiveAcknowledged;
+	END_IF
+
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="P_AlarmHandling">
+      <LineId Id="107" Count="2" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="110" Count="38" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.ActiveShutdownAlarmCount">
+      <LineId Id="0" Count="5" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AddEmailToList">
+      <LineId Id="0" Count="86" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmAcknowledgement">
+      <LineId Id="0" Count="15" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmBrake">
+      <LineId Id="0" Count="31" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmLoop">
+      <LineId Id="0" Count="50" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmParams">
+      <LineId Id="0" Count="38" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmProgramAction">
+      <LineId Id="0" Count="49" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmRepetition">
+      <LineId Id="0" Count="28" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="29" Count="8" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmReset">
+      <LineId Id="0" Count="8" />
+      <LineId Id="75" Count="1" />
+      <LineId Id="9" Count="4" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="14" Count="57" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="72" Count="0" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.AlarmSet">
+      <LineId Id="0" Count="85" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.DeleteOldAlarmFile">
+      <LineId Id="0" Count="25" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.ResetBrakePrograms">
+      <LineId Id="0" Count="24" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.SendEmail">
+      <LineId Id="0" Count="4" />
+      <LineId Id="6" Count="3" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.TakeEmailFromList">
+      <LineId Id="0" Count="57" />
+    </LineIds>
+    <LineIds Name="P_AlarmHandling.UpdateAlarmHistory">
+      <LineId Id="0" Count="26" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

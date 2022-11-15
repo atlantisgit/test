@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="Hydair_Ram_DataType" Id="{e4ddc504-ea2e-4579-aa9f-b974a8a105f2}">
+    <Declaration><![CDATA[TYPE Hydair_Ram_DataType :
+STRUCT
+	rLoad_Pin1: REAL;
+	rAnnulusPressure:REAL;
+	rFullBorePressure:REAL;
+	rStroke:REAL;
+	rLoadDemand:REAL;
+	rLoadError:REAL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

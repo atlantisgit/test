@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_MainState" Id="{3c96e6f2-5d51-4c81-a005-30c47c063833}">
+    <Declaration><![CDATA[TYPE E_MainState :		//Is this the machine main state or the Hydraulics system??
+(
+	STOP:=0,
+	STARTING_HYDRAULICS:=1,
+	HYDRAULICS_READY:=2,
+	IN_OPERATION:=3,
+	PASSIVE:=5,
+	MANUAL:=6,
+	SAFETY_TRIPPED:=7,
+	SHUTDOWN:=8
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

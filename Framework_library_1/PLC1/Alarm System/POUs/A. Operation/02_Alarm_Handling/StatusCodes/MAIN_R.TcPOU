@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="MAIN_R" Id="{917bc865-00d3-4c7e-b262-e07ed975a7d7}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN_R
+VAR
+	bInitIdentDone:	BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Start  Statuscode Logger:	--------------------------------------------*)
+
+	PRG_TranslatorVarNames(
+		(* rGeneratorPower:=	g_fGridP,DISABLED BY NIHAL MALIK  *)
+		(* rGeneratorSpeed:=	g_fOperGenSpeedFromInverterRpm, ,DISABLED BY NIHAL MALIK  *)
+	(*	rFlowSpeed:=		g_fOperFlowSpeed10minAverage,*)
+(*		rPitchAngle:=		g_fPitchAngleFiltered,	*)
+		sOffsetUTC:=		gsLocalTimeOffsetUTC,
+
+		sLocalTime=>		gsLocalSystemTime,
+		sTimeZoneInfo=>		,
+		strucSystemTime=>	gstrucSystemTime,
+
+		bDetectNew100ms=>	gbDetectNew100ms,
+		bDetectNewSecond=>	gbDetectNewSecond,
+		bDetectNew30sec=>	gbDetectNew30sec,
+		bDetectNewMinute=>	gbDetectNewMinute,
+		bDetectNew5min=>	gbDetectNew5min,
+		bDetectNew10min=>	gbDetectNew10min,
+		bDetectNewHour=>	gbDetectNewHour,
+		bDetectNewDay=>	gbDetectNewDay,
+		bDetectNewMonth=>	gbDetectNewMonth,
+		bDetectNewYear=>	gbDetectNewYear	);]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN_R">
+      <LineId Id="4" Count="22" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

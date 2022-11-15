@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="TurbineData" Id="{9facde54-2bad-49f2-84ce-100f359c0597}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+(*VAR_GLOBAL PERSISTENT
+ {attribute 'OPC.UA.DA' := '1'}
+	stTurbineData: ST_TurbineData :=
+	(sOperAlarmParkName :='',
+	sOperAlarmTurbineName :='',
+	sOperAlarmParkId :='',
+	sOperAlarmTurbineId :='',
+	sOperCountryCode :='',
+	sOperTurbineManufacturer :='',
+	sOperTurbineType :='',
+	sOperBladeType := '',
+	sOperInverterType := '',
+	sOperTowerType := '',
+	sOperTowerBearing := '',
+	sTower1stBendFreg := '',
+	sTower2ndBendFreg := '',
+	sPitchGenNomSpeed := '');		
+
+END_VAR
+*)
+
+VAR_GLOBAL
+//	g_stTurbineRelatedData: ST_TurbineRelatedData;
+ {attribute 'OPC.UA.DA' := '1'}
+	g_bOperTurbineCommsFault: BOOL;
+	 {attribute 'OPC.UA.DA' := '1'}
+	g_fOperTurbineCapacityFactor :REAL;
+   {attribute 'OPC.UA.DA' := '1'}
+	g_fOperTurbineTotalEnergyGenerated :REAL;
+   {attribute 'OPC.UA.DA' := '1'}
+	g_tOperTurbineTimeSpentInFaultState :TIME;
+   {attribute 'OPC.UA.DA' := '1'}
+	g_tOperTurbineTimeSpentInOffState :TIME;
+   {attribute 'OPC.UA.DA' := '1'}
+	g_tOperTurbineTimeSpentInProduction :TIME;  
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

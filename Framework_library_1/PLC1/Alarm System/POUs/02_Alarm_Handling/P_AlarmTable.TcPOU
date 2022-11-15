@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="P_AlarmTable" Id="{d7c2884f-21ee-4272-9cfa-2787b3e16e8b}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_AlarmTable
+VAR
+	iCheckTestAlarms : UINT;
+	iCount_B17: UINT;
+	iCount_B1: UINT;
+	iCount_B9: UINT;
+	iCount_B14: UINT;
+	iCount_B4: UINT;
+	iCount_B5: UINT;
+	iCount_B2: UINT;
+	iCount_B20: UINT;
+	iCount_B99: UINT;
+	iTotalBrakeAlarms:	UINT;
+	arrAlarmsTableB9: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB9_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB1: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB1_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB17: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB17_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB4: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB4_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB14: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB14_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB2: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB2_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB20: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB20_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB5: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB5_names: ARRAY [1..20] OF STRING;
+	arrAlarmsTableB99: ARRAY [1..20] OF UINT;
+	arrAlarmsTableB99_names: ARRAY [1..20] OF STRING;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[iCount_B17 := 0;
+iCount_B1 := 0;
+iCount_B14 := 0;
+iCount_B4 := 0;
+iCount_B9 := 0;
+iCount_B5 := 0;
+iCount_B2 := 0;
+iCount_B20 := 0;
+iCount_B99 := 0;
+MEMSET( ADR( arrAlarmsTableB1 ), 0, SIZEOF( arrAlarmsTableB1 ) );
+MEMSET( ADR( arrAlarmsTableB1_names ), 0, SIZEOF( arrAlarmsTableB1_names ) );
+MEMSET( ADR( arrAlarmsTableB17 ), 0, SIZEOF( arrAlarmsTableB17 ) );
+MEMSET( ADR( arrAlarmsTableB17_names ), 0, SIZEOF( arrAlarmsTableB17_names ) );
+
+MEMSET( ADR( arrAlarmsTableB4 ), 0, SIZEOF( arrAlarmsTableB4 ) );
+MEMSET( ADR( arrAlarmsTableB4_names ), 0, SIZEOF( arrAlarmsTableB4_names ) );
+
+MEMSET( ADR( arrAlarmsTableB14 ), 0, SIZEOF( arrAlarmsTableB14 ) );
+MEMSET( ADR( arrAlarmsTableB14_names ), 0, SIZEOF( arrAlarmsTableB14_names ) );
+MEMSET( ADR( arrAlarmsTableB9 ), 0, SIZEOF( arrAlarmsTableB9 ) );
+MEMSET( ADR( arrAlarmsTableB9_names ), 0, SIZEOF( arrAlarmsTableB9_names ) );
+MEMSET( ADR( arrAlarmsTableB5 ), 0, SIZEOF( arrAlarmsTableB5 ) );
+MEMSET( ADR( arrAlarmsTableB5_names ), 0, SIZEOF( arrAlarmsTableB5_names ) );
+MEMSET( ADR( arrAlarmsTableB2 ), 0, SIZEOF( arrAlarmsTableB2 ) );
+MEMSET( ADR( arrAlarmsTableB2_names ), 0, SIZEOF( arrAlarmsTableB2_names ) );
+
+MEMSET( ADR( arrAlarmsTableB20 ), 0, SIZEOF( arrAlarmsTableB20 ) );
+MEMSET( ADR( arrAlarmsTableB20_names ), 0, SIZEOF( arrAlarmsTableB20_names ) );
+
+MEMSET( ADR( arrAlarmsTableB99 ), 0, SIZEOF( arrAlarmsTableB99 ) );
+MEMSET( ADR( arrAlarmsTableB99_names ), 0, SIZEOF( arrAlarmsTableB99_names ) );
+
+FOR iCheckTestAlarms := 1 TO iMaxAlarms DO
+
+	IF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 17 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B17 := iCount_B17 + 1;
+		arrAlarmsTableB17[iCount_B17] := iCheckTestAlarms;
+		arrAlarmsTableB17_names[iCount_B17] := arrAlarms[iCheckTestAlarms].sName;
+		
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 1 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B1 := iCount_B1 + 1;
+		arrAlarmsTableB1[iCount_B1] := iCheckTestAlarms;
+		arrAlarmsTableB1_names[iCount_B1] := arrAlarms[iCheckTestAlarms].sName;
+		
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 4 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B4 := iCount_B4 + 1;
+		arrAlarmsTableB4[iCount_B4] := iCheckTestAlarms;
+		arrAlarmsTableB4_names[iCount_B4] := arrAlarms[iCheckTestAlarms].sName;	
+		
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 14 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B14 := iCount_B14 + 1;
+		arrAlarmsTableB14[iCount_B14] := iCheckTestAlarms;
+		arrAlarmsTableB14_names[iCount_B14] := arrAlarms[iCheckTestAlarms].sName;
+
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 9 AND arrAlarms[iCheckTestAlarms].b THEN
+			iCount_B9 := iCount_B9 + 1;
+			arrAlarmsTableB9[iCount_B9] := iCheckTestAlarms;
+			arrAlarmsTableB9_names[iCount_B9] := arrAlarms[iCheckTestAlarms].sName;
+	
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 5 AND arrAlarms[iCheckTestAlarms].b THEN
+			iCount_B5 := iCount_B5 + 1;
+			arrAlarmsTableB5[iCount_B5] := iCheckTestAlarms;
+			arrAlarmsTableB5_names[iCount_B5] := arrAlarms[iCheckTestAlarms].sName;
+
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 2 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B2 := iCount_B2 + 1;
+		arrAlarmsTableB2[iCount_B2] := iCheckTestAlarms;
+		arrAlarmsTableB2_names[iCount_B2] := arrAlarms[iCheckTestAlarms].sName;
+		
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 20 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B20 := iCount_B20 + 1;
+		arrAlarmsTableB20[iCount_B20] := iCheckTestAlarms;
+		arrAlarmsTableB20_names[iCount_B20] := arrAlarms[iCheckTestAlarms].sName;
+
+
+	ELSIF  arrAlarms[iCheckTestAlarms].eBrakeProgram = 99 AND arrAlarms[iCheckTestAlarms].b THEN
+		iCount_B99 := iCount_B99 + 1;
+		arrAlarmsTableB99[iCount_B99] := iCheckTestAlarms;
+		arrAlarmsTableB99_names[iCount_B99] := arrAlarms[iCheckTestAlarms].sName;
+
+	END_IF
+
+END_FOR
+
+	iTotalBrakeAlarms	:=iCount_B1 + iCount_B2 + iCount_B9;]]></ST>
+    </Implementation>
+    <LineIds Name="P_AlarmTable">
+      <LineId Id="22" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="24" Count="2" />
+      <LineId Id="254" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="30" Count="7" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="253" Count="0" />
+      <LineId Id="38" Count="8" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="106" Count="2" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="118" Count="2" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="48" Count="18" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="185" Count="2" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="67" Count="9" />
+      <LineId Id="220" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

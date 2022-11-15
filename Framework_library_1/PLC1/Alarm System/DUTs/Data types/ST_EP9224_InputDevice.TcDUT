@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_EP9224_InputDevice" Id="{a10db007-6875-48aa-937b-2b6b1ada2f87}">
+    <Declaration><![CDATA[TYPE ST_EP9224_InputDevice :
+STRUCT
+	bGlobalErrorBit :	BOOL;
+	bSumCurrentWarning:	BOOL;
+	bSumCurrentError:	BOOL;
+	bResetInput : 		BOOL;
+(*	These take up too much space, so leave them out
+	nCurrentUs : 		INT;
+	nCurrentUp : 		INT;
+	nVoltageUs : 		INT;
+	nVoltageUp : 		INT;
+	nTemperature : 	INT;
+*)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

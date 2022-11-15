@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_FileSetup_SC" Id="{0002f30d-2dc0-465f-9bfc-f0194be9f805}">
+    <Declaration><![CDATA[TYPE ST_FileSetup_SC :
+STRUCT
+	sNetId			: T_AmsNetId;		(* NetID of PC where the file is to be written *)
+	sPathName		: T_MaxString;		(* PathName where the file is to be written; file name is generated internally *)
+	sName			: T_MaxString;		(**)
+	sTotalName		: T_MaxString;		(*PathName & Name*)
+	sFileDescription	: T_MaxString;		(**)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

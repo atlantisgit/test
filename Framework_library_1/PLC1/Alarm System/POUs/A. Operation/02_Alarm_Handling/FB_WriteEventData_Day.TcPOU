@@ -1,0 +1,559 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_WriteEventData_Day" Id="{5af93abe-8eba-40f7-9883-62c730066094}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_WriteEventData_Day
+(**********************************************************************************)
+(**********************************************************************************)
+(*  	VERSION:			002.001
+							                									
+ 	PROGRAMMED BY:	Puja					  					
+  	Changed by:			Hardy Patommel							
+*)   																		 
+(*----------------------------------------------------------------------------------------------------------------------------------------------------------------*)
+(*  	REVISIONS:
+ 	Date		|	Version/Author 	|	Remark
+     ----------------------------------------------------------------------------------------------------
+     	2007-04-23	|	001.001     HP		|	Error in init state by nMode -  changed to FOPEN_MODEREAD only
+     	2007-10-08	|	001.002     HP		|	formatting the REAL value FOR the file output
+     	2008-03-04	|	002.000     HP		|   	add header function block	
+	2008-03-10	|	002.001     HP		|   	delete file enable					                									 
+*)
+(*----------------------------------------------------------------------------------------------------------------------------------------------------------------*)
+(*  	DESCRIPTION:
+
+*)						               				 					
+(*----------------------------------------------------------------------------------------------------------------------------------------------------------------*)
+VAR_INPUT
+	bExecute 				: BOOL;
+	sNetId					: T_AmsNetId;
+	sPathName				: T_MaxString;
+	dwTransferBufferStartAdr	: DWORD;
+	iNewValues				: INT;
+	udNumberofValues 		: UDINT;
+	udNumberOfEventDatas	: UDINT;
+	udArrDataSize			: ARRAY [1..NUMBER_OF_EVENT_DATAS] OF UDINT;
+	eDataType				: ARRAY [1..NUMBER_OF_EVENT_DATAS] OF E_DataType;
+	sHeaderOfEventData		: ARRAY [1..giGeneralLoggerChannelInUsed] OF STRING(giGeneralLenghtOfName);
+END_VAR
+VAR_OUTPUT
+	udValuesWritten			: UDINT;
+	bBusy					: BOOL;
+	bDone					: BOOL;
+	bError					: BOOL;
+	nErrId					: UDINT;
+END_VAR
+VAR
+	RExec_Trig				: R_TRIG;
+	hFile					: UINT;
+	fbFileOpen				: FB_FileOpen;
+	fbFileWrite				: FB_FileWrite;
+	fbFileClose				: FB_FileClose;
+	tAdsTimeOut				: TIME:= T#10s;
+	eFileState				: E_FileState_SC;
+	nMode					: DWORD;
+
+	sStrBuffer				: STRING(10000);
+	sStrHeader				: STRING(2160);
+	sVar					: STRING(255);
+	sHeader					: STRING(giHeaderColumnLineLEN);
+	sTab					: STRING[2] := '$T';
+	sLineFeed				: STRING[4] := '$R$N';
+	i						: INT;
+
+	dwCaptureTransferBufferStartAdr : DWORD;
+	sTimeStamp				: STRING[24];	(* Time the Statuscode becomes true *)
+	sTrigEvent				: STRING[guiKeyAndTextLen];	(* key and Text of Statuscode, like sKeyAndText[80] in M_AddEvent*)
+	sUserName				: STRING[24];	(* name of the user who had the Active Status to do the operation *)
+	sBrakeProgram			: STRING[4];
+	bVar 					: BOOL;
+	siVar					: SINT;
+	iVar						: INT;
+	diVar					: DINT;
+	usiVar					: USINT;
+	uiVar					: UINT;
+	udiVar					: UDINT;
+	rVar						: REAL;
+	lrVar					: LREAL;
+(*	eTime					:= 12,
+	eDate					:= 13,
+	eTime_OF_Day			:= 14,
+	eDateAndTime			:= 15,
+	eString					:= 16,	*)
+	byVar					: BYTE;
+	wVar					: WORD;
+	dwVar					: DWORD;
+	strVar					: STRING;
+
+	iCopyOffset				: INT;
+
+	iPrepIndex				: INT;
+	iStrBufferIdx				: INT; (*Index buffer*)
+	iStrLineIdx				: INT; (*Index line*)
+	iStuff					: INT;
+	iStartStuffIndex			: INT;
+	iEndStuffIndex			: INT;
+	iStartIndex				: INT;
+	iEndIndex				: INT;
+
+	iBatchValue				: INT := 20;(* in batch of how many entries is the data to be written *)
+	iEventsWrittenCurrent		: INT;		(* Event written in current cycle *)
+	iCaptureNewValues		: INT;		(* captures new values *)
+	iEventsInCycle			: INT;		(* In how many batches is data written *)
+	bHeader					: BOOL;		(* If a new file write then to write the header *)
+	iCounter					: INT;		(* Total number of entries written till now, so as to tally *)
+	iNumberOfEventDatas		: INT;
+	iEntriesWritten			: INT;
+	iFileOpenedCounter		: INT;
+	iFileClosedCounter		: INT;
+	sTimestampShort			: STRING[12];
+	sRealDataReduce		: STRING[10];
+	iLength					: INT;
+	iDiffenzLength				: INT;
+	iForIndex					: UINT;
+	fbHeaderForLogging		: FB_HeaderForLogging;
+	iFirstHeaderLEN			: INT;
+	iColumnLineLEN			: INT;
+	iHeaderLEN				: INT;  (*length of whole header; first header + column*)
+	uiCountsOfLine			: UINT;
+
+END_VAR
+VAR PERSISTENT
+	nNextPointerLoc			: DINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[RExec_Trig( CLK := bExecute );
+
+CASE eFileState OF
+   eInit_SC:
+		IF RExec_Trig.Q THEN	(* Rising edge triggered *)
+			bBusy 	:= TRUE;
+			bError	:= FALSE;
+			bDone 	:= FALSE;
+			nErrId	:= 0;
+			hFile	:= 0;
+			dwCaptureTransferBufferStartAdr := dwTransferBufferStartAdr;		(* capture the transfer buffer address *)
+			iCaptureNewValues	:= iNewValues;				(* make a copy of the input newvalues *)
+			iNumberOfEventDatas := UDINT_TO_INT(udNumberOfEventDatas);
+			nMode := FOPEN_MODEREAD OR FOPEN_MODEBINARY;
+			IF  iOneEntryLength <> 0 THEN										(*Added RM2008-07-18*)
+				iBatchValue := (SIZEOF(sStrBuffer)/iOneEntryLength) - 1;				(* calculate the batch size in which data is to be written *)
+			END_IF
+			IF iCaptureNewValues > 0 THEN
+				sTimestampShort :='2';(* FUN_TimeToString(Lib_strucSystemTime); (*access time *) TO ACTION*)
+				(* Open a file *)
+				fbFileOpen( bExecute	:= FALSE	);
+				fbFileOpen(	bExecute	:= TRUE,
+							sNetId		:= sNetID,
+							sPathName	:=sPathName,
+							nMode		:= nMode,
+							ePath		:= Path_Generic,
+							tTimeout	:= tAdsTimeOut );
+
+				eFileState := eFileOpen_SC;
+				(* reset the variables *)
+				iStartIndex := 1;
+				iStrBufferIdx := 0;
+				sStrBuffer := '';
+				sVar := '';
+				udValuesWritten := 0;
+			END_IF
+		END_IF
+
+		g_TriggSendExeAlarmListDay := FALSE;
+
+	eFileOpen_SC:	(* Wait for the file to be opened *)
+		fbFileOpen( );
+		IF NOT fbFileOpen.bBusy THEN
+			fbFileOpen(	bExecute := FALSE);
+
+			IF NOT fbFileOpen.bError THEN		(* if no error; File already exists *)
+
+				(* calculate the minimum of Captured values, Batch value and how many can fit *)
+				iEndIndex := MIN(iCaptureNewValues,iBatchValue);
+				iEventsWrittenCurrent := MIN(iCaptureNewValues,iBatchValue);
+
+				(* Close the file, nMode := FOPEN_MODEREAD *)
+				fbFileClose(	bExecute:= FALSE	);
+				fbFileClose(	bExecute:= TRUE,
+								sNetId	:= sNetID,
+								hFile	:= fbFileOpen.hFile,
+								tTimeout:= tAdsTimeOut	);
+
+				eFileState := eFileOpenExistFile_SC;
+
+			ELSE	(*if error, File does not exist; a new file is to be written *)
+				(*error by opening the file >> new file with header*)
+				nMode := FOPEN_MODEAPPEND  OR FOPEN_MODEPLUS OR FOPEN_MODEBINARY;
+				fbFileOpen( bExecute	:= FALSE	);
+				fbFileOpen(	bExecute	:= TRUE,
+							sNetId		:= sNetID,
+							sPathName	:= sPathName,
+							nMode		:= nMode,
+							ePath		:= Path_Generic,
+							tTimeout	:= tAdsTimeOut );
+				iFileOpenedCounter := iFileOpenedCounter + 1;
+
+				eFileState := eFileOpen_SC;
+				iCounter := 0;
+				(* if new file is being written then write down the header *)
+				bHeader := TRUE;
+
+				fbHeaderForLogging(
+						st_TurbineIdent		:= st_xTurbineIdent ,		(*general machine info*)
+						s_FileDescription		:= fbSCLogger.stFileSetupDayFile.sFileDescription,
+						s_ColumnText 		:= gstrRingBufferFileColumnText,
+						ar_ColumnText		:= sHeaderOfEventData ,	(*array of column description*)
+						iCountsOfColumns		:= iNumberOfEventDatas,	(*counts of columns*)
+						iOneEntryLength		:= giRingBufferFileOneEntryLength,(*length of every entry, all lines with the same length, see init-logger*)
+				//ACTION		adr_sHeader1		:= ADR(sStrHeader) ,		(*part one of the header*)
+				//ACTION		adr_sColumnLine		:= ADR(sHeader),			(*part two of the header*)
+						iCountsOfLine			=> uiCountsOfLine,			(*lines of the part one header*)
+						iHeaderLEN			=> iFirstHeaderLEN,		(*length of the part one header*)
+						iColumnLineLEN		=> iColumnLineLEN);		(*length of the part two header*)
+
+				iHeaderLEN := iFirstHeaderLEN + iColumnLineLEN;
+
+			END_IF
+		END_IF
+
+
+
+	eFileOpenExistFile_SC:
+		fbFileClose( );
+		IF NOT fbFileClose.bBusy THEN
+			fbFileClose(	bExecute := FALSE);
+			IF NOT fbFileClose.bError THEN
+
+				nMode := FOPEN_MODEAPPEND  OR FOPEN_MODEPLUS OR FOPEN_MODEBINARY;
+				fbFileOpen( bExecute	:= FALSE	);
+				fbFileOpen(	bExecute	:= TRUE,
+							sNetId		:= sNetID,
+							sPathName	:= sPathName,
+							nMode		:= nMode,
+							ePath		:= Path_Generic,
+							tTimeout	:= tAdsTimeOut );
+				iFileOpenedCounter := iFileOpenedCounter + 1;
+
+				eFileState := eFileSeek_SC;
+			ELSE
+				bBusy := FALSE;
+				bError := TRUE;
+				nErrId := fbFileClose.nErrId;
+				eFileState := eInit_SC;
+			END_IF
+		END_IF
+
+
+
+	eFileSeek_SC:
+		fbFileOpen( );
+		IF NOT fbFileOpen.bBusy THEN
+			fbFileOpen(	bExecute := FALSE);
+			IF NOT fbFileOpen.bError THEN
+
+				(* Prepare the data to be written *)
+				M_PrepareWriteData( );
+
+				(* Write into File *)
+				fbFileWrite( 	bExecute	:= FALSE	);
+				fbFileWrite(  	bExecute	:= TRUE,
+								sNetId		:= sNetID,
+								hFile		:= fbFileOpen.hFile,
+								pWriteBuff	:= ADR(sStrBuffer),
+								cbWriteLen	:= iStrBufferIdx,         (*Write not the whole Buffer, only new entries*)
+								tTimeout	:= tAdsTimeOut	);
+				eFileState := eFileWrite_SC;
+			ELSE
+				bBusy := FALSE;
+				bError := TRUE;
+				nErrId := fbFileOpen.nErrId;
+				eFileState := eInit_SC;
+			END_IF
+		END_IF
+
+	eFileWrite_SC:	(* Wait until  the file is written *)
+		fbFileWrite();
+		IF NOT fbFileWrite.bBusy THEN
+			fbFileWrite(bExecute := FALSE);
+			IF NOT fbFileWrite.bError THEN
+				bHeader := FALSE;
+				IF iCaptureNewValues > iEventsWrittenCurrent THEN		(* data is to be written into two or more parts *)
+					IF iEventsWrittenCurrent = iBatchValue THEN
+						(* sStrBuffer was insufficient to occupy all entries, Fitting entries were greater than that, continue writting at same file pointer *)
+						iCaptureNewValues := iCaptureNewValues - iEventsWrittenCurrent;
+						iEventsWrittenCurrent := iEndIndex := MIN( iCaptureNewValues , iBatchValue);
+						iStrBufferIdx := 0;				(* reset while new batch write *)
+
+						(* Prepare the next batch of data to be written *)
+						M_PrepareWriteData( );
+
+						(* Write into File *)
+						fbFileWrite( 	bExecute	:= FALSE	);
+						fbFileWrite(  	bExecute	:= TRUE,
+										sNetId		:= sNetID,
+										hFile		:= fbFileOpen.hFile,
+										pWriteBuff	:= ADR(sStrBuffer),
+										cbWriteLen	:= iStrBufferIdx,         (*Write not the whole Buffer, only new entries*)
+										tTimeout	:= tAdsTimeOut	);
+						eFileState := eFileWrite_SC;
+					END_IF
+				ELSE	(* if exact fit then reintialise pointer to start of file *)
+
+					(* Close the File *)
+					fbFileClose(	bExecute:= FALSE	);
+					fbFileClose(	bExecute:= TRUE,
+									sNetId	:= sNetID,
+									hFile	:= fbFileOpen.hFile,
+									tTimeout:= tAdsTimeOut	);
+					eFileState := eFileClose_SC;
+					iFileClosedCounter := iFileClosedCounter + 1;
+				END_IF
+			ELSE
+				bBusy := FALSE;
+				bError := TRUE;
+				nErrId := fbFileWrite.nErrId;
+				eFileState := eInit_SC;
+			END_IF
+		END_IF
+
+
+
+	eFileClose_SC:	(* Wait untill File is closed *)
+		fbFileClose();
+		IF NOT fbFileClose.bBusy THEN
+			fbFileClose( bExecute:= FALSE );
+			IF NOT fbFileClose.bError THEN
+				nNextPointerLoc := iEntriesWritten * iOneEntryLength;
+				IF iCounter >= UDINT_TO_INT(udNumberOfValues) THEN
+					iCounter := iCounter;
+				END_IF
+				(*eFileState := eInit_SC;*)
+				eFileState := eFileCopy_SC;
+				bBusy  := FALSE;
+				bDone  := TRUE;
+				bHeader := FALSE;
+				sStrBuffer := '';
+				iCaptureNewValues := 0;
+				iEventsInCycle := 0;
+			ELSE
+				bBusy := FALSE;
+				bError := TRUE;
+				nErrId := fbFileClose.nErrId;
+				eFileState := eInit_SC;
+			END_IF
+		END_IF
+
+	eFileCopy_SC:
+			g_TriggSendExeAlarmListDay := TRUE;
+			eFileState := eInit_SC;
+
+END_CASE]]></ST>
+    </Implementation>
+    <Action Name="M_PrepareWriteData" Id="{e1ad9e41-3f30-4a4e-bb59-096a3145c028}">
+      <Implementation>
+        <ST><![CDATA[IF bHeader THEN
+	(*Header part one*)
+	MEMCPY(ADR(sStrBuffer) ,ADR(sStrHeader),iFirstHeaderLEN);
+	(*Header part two, column description*)
+	MEMCPY(ADR(sStrBuffer)+iFirstHeaderLEN ,ADR(sHeader),iColumnLineLEN);
+	(*index for buffer entry after the header; iHeaderLEN := iFirstHeaderLEN + iColumnLineLEN;*)
+	iStrBufferIdx := iHeaderLEN;
+	(* Write into File *)
+END_IF
+
+(* Stuff the data to be written into a string buffer *)
+FOR iPrepIndex := iStartIndex  TO iEndIndex DO	(* for loop from new index value to the number of new values *)
+	iCopyOffset := (((iPrepIndex-1)+iEventsInCycle)*iOneEntrySize); (*iCopyOffset := Offset in array ringbuffer*)
+	sVar := '';
+	iStrLineIdx := 0; (*index for the line, function stuff line*)
+	(*gets the new dataset ####################*)
+	(*gets timestamp value ---------------*)
+	MEMCPY(
+		ADR(sTimeStamp),
+		dwCaptureTransferBufferStartAdr+iCopyOffset,
+		SIZEOF(sTimeStamp));
+	sVar := CONCAT('',sTimeStamp);
+	sVar := CONCAT(sVar,sTab);
+	iCopyOffset := iCopyOffset + SIZEOF(sTimeStamp);
+
+	(*gets trigger event string ---------------*)
+	MEMCPY(
+		ADR(sTrigEvent),
+		dwCaptureTransferBufferStartAdr+iCopyOffset,
+		SIZEOF(sTrigEvent));
+	(*look and fill to 50 sign*)
+	iLength := LEN(sTrigEvent);
+	IF (iLength<>giCountsOfKeyLetterForStatuscodeFile) THEN
+		iDiffenzLength := giCountsOfKeyLetterForStatuscodeFile - iLength ;
+		FOR iForIndex := 1 TO  iDiffenzLength DO
+			sTrigEvent := CONCAT(sTrigEvent,' ');
+		END_FOR
+	END_IF
+	sTrigEvent := sTrigEvent ;
+	sVar := CONCAT(sVar,sTrigEvent);
+	sVar := CONCAT(sVar,sTab);
+	iCopyOffset := iCopyOffset + SIZEOF(sTrigEvent); (*read data out of log-array*)
+
+	(*gets user name string ---------------*)
+	MEMCPY(
+		ADR(sUserName),
+		dwCaptureTransferBufferStartAdr+iCopyOffset,
+		SIZEOF(sUserName));
+	sVar := CONCAT(sVar,sUserName);
+	sVar := CONCAT(sVar,sTab);
+	iCopyOffset := iCopyOffset + SIZEOF(sUserName);
+
+	(*gets brake program string ---------------*)
+	MEMCPY(
+		ADR(sBrakeProgram),
+		dwCaptureTransferBufferStartAdr+iCopyOffset,
+		SIZEOF(sBrakeProgram));
+	sVar := CONCAT(sVar,sBrakeProgram);
+	sVar := CONCAT(sVar,sTab);
+	iCopyOffset := iCopyOffset + SIZEOF(sBrakeProgram);
+
+	(*gets configuration data  value ---------------*)
+	(* convert appropriate event datas into string format and concat into one string buffer *)
+	FOR i := 1 TO iNumberOfEventDatas DO
+		CASE eDataType[i] OF
+			eBool :
+				MEMCPY(ADR(bVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,BOOL_TO_STRING(bVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]);
+
+			eSint :
+				MEMCPY(ADR(siVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,SINT_TO_STRING(siVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eInt :
+				MEMCPY(ADR(iVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,INT_TO_STRING(iVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eDint :
+				MEMCPY(ADR(diVar),dwCaptureTransferBufferStartAdr+iCopyOffset,SIZEOF(diVar));
+				sVar := CONCAT(sVar,DINT_TO_STRING(diVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eByte :
+				MEMCPY(ADR(byVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,BYTE_TO_STRING(byVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eWord :
+				MEMCPY(ADR(wVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,WORD_TO_STRING(wVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eDword :
+				MEMCPY(ADR(dwVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,DWORD_TO_STRING(dwVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eLint :
+				;
+	
+			eUsint :
+				MEMCPY(ADR(usiVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,USINT_TO_STRING(usiVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eUint :
+				MEMCPY(ADR(uiVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,INT_TO_STRING(iVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eUdint :
+				MEMCPY(ADR(udiVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,UDINT_TO_STRING(udiVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eUlint :
+				;
+
+			eReal :
+				(*formatting the real value*)
+				MEMCPY(ADR(rVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sRealDataReduce := '3';(*FUN_Real_to_string(rVar,2);	TO ACTION*)
+
+				sVar := CONCAT(sVar,sRealDataReduce);
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eLreal :
+				MEMCPY(ADR(lrVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,LREAL_TO_STRING(lrVar));
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+			eTime :
+				;
+
+			eTime_OF_Day :
+				;
+
+			eWString :
+				MEMCPY(ADR(strVar),dwCaptureTransferBufferStartAdr+iCopyOffset,udArrDataSize[i]);
+				sVar := CONCAT(sVar,strVar);
+				sVar := CONCAT(sVar,sTab);	(* append tab *)
+				iCopyOffset := iCopyOffset + UDINT_TO_INT(udArrDataSize[i]) ;
+
+		END_CASE
+	END_FOR
+
+	iStrLineIdx := iStrLineIdx + LEN(sVar);			(*length of string in one row*)
+	iStartStuffIndex := iStrLineIdx + 1;				(*start address for stuff sign*)
+	iEndStuffIndex := iOneEntryLength-2;
+
+	(* append spaces to make every event of same length *)
+	IF iStrLineIdx < iEndStuffIndex THEN
+		FOR iStuff := iStartStuffIndex TO  iEndStuffIndex DO
+			sVar := CONCAT(sVar,' ');
+			iStrLineIdx := iStrLineIdx + 1;
+		END_FOR
+	END_IF
+	sVar := CONCAT(sVar,sLineFeed);			(* append line feed *)
+	iStrLineIdx := iStrLineIdx + LEN(sLineFeed);	(*length of string in one row*)
+
+	(* copy the event into the string buffer *)
+	IF bHeader THEN
+		MEMCPY(
+			ADR(sStrBuffer)+ iHeaderLEN + (iOneEntryLength * (iPrepIndex - 1)) ,
+			ADR(sVar),
+			iOneEntryLength);
+	ELSE
+		MEMCPY(
+			ADR(sStrBuffer)+ (iOneEntryLength * (iPrepIndex - 1)) ,
+			ADR(sVar),
+			iOneEntryLength);
+	END_IF
+	iStrBufferIdx := iStrBufferIdx + iOneEntryLength;
+	iStrLineIdx := 0;
+	iCounter := iCounter + 1;
+
+
+END_FOR
+
+udValuesWritten := udValuesWritten + iEndIndex;	(* output how many values already written *)
+iEventsInCycle := iEventsInCycle + iEndIndex;		(* Calculate the number of events written / in how many batches *)]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="FB_WriteEventData_Day">
+      <LineId Id="119" Count="226" />
+    </LineIds>
+    <LineIds Name="FB_WriteEventData_Day.M_PrepareWriteData">
+      <LineId Id="0" Count="195" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

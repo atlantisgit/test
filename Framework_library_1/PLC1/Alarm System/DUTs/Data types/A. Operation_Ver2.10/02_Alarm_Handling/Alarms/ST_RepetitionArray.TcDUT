@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_RepetitionArray" Id="{4238de6b-605c-4e86-823d-39c8da89ee6e}">
+    <Declaration><![CDATA[TYPE ST_RepetitionArray :
+STRUCT
+	arrRepetition : ARRAY[1..10] OF DWORD;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

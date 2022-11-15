@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_AlarmStructure" Id="{eacf315f-a89b-4d66-823e-4b69286047ad}">
+    <Declaration><![CDATA[TYPE ST_AlarmStructure :
+STRUCT
+	sName:STRING;
+	a:BOOL;
+	b:BOOL;
+	Changed:BOOL;
+	iGroup:INT;
+	iSetDelay:DINT;					(* 100ms *)
+	iSetDelayElapsed:DINT;			(* 100ms *)
+	iResetDelay:DINT;				(* 100ms *)
+	iResetDelayElapsed:DINT;		(*100ms*)
+	eResetMode:E_ResetMode;
+	eBrakeProgram:E_BrakeProgram;
+	eAlarmProgram:E_AlarmProgram;
+	Enable: BOOL;
+	TimeOcc: TIMESTRUCT;			(* Added 040405 KKa *)
+	sTimeOcc: STRING(24); (* New *)	(* Added 091130 KKa *)
+	Comment:STRING(255);
+
+	iRepetitionNumber: INT;
+	iRepetitionPeriod: INT; 					(*Minutes*)
+	bRepetitionLimitExceeded: BOOL;
+
+	Param1:ST_Parameters;
+	Param2:ST_Parameters;
+
+	iState:UDINT;(* New *)		(* Alarm state Active / Acked *)
+	sID:STRING(5);(* New *)
+	sClearName:STRING(90);(* New *)
+	Index:INT;(* New *)
+	bScope:BOOL;(* New *)
+
+	stProcessVariables:ST_ProcessVariables; (* New *)
+
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

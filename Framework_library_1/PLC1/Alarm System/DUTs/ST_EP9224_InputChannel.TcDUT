@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_EP9224_InputChannel" Id="{e1d0c5d0-9e95-45cf-9fd3-d8e638c0a1c0}">
+    <Declaration><![CDATA[TYPE ST_EP9224_InputChannel :
+STRUCT
+	bErrorUs 	: BOOL;
+	bErrorUp 	: BOOL;
+	bWarningUs	: BOOL;
+	bWarningUp	: BOOL;
+	bStatusUs 	: BOOL;
+	bStatusUp 	: BOOL;
+	bChannelError : BOOL;
+	bErrorSumCurrent 	      : BOOL;
+(* This takes up a bit too much space and isn't maped by LMC, so leave it for now
+	nCurrentUs 		: INT;
+	nCurrentUp 		: INT;
+*)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

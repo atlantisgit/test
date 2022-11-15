@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_AlarmProgram" Id="{1b58deea-5cb7-4f01-bd0d-28cadf5f5c30}">
+    <Declaration><![CDATA[TYPE E_AlarmProgram :
+(
+	NoAction			:=0,	(* Prg1 *)
+	Email				:=1,	(* Prg2 *)
+	SMS					:=2
+
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

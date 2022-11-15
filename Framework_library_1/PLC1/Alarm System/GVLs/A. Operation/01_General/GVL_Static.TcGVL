@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="GVL_Static" Id="{6f621e25-ae3b-45fe-ac7a-cb4139c3d805}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL
+	g_btempAlarmTrig:BOOL;
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

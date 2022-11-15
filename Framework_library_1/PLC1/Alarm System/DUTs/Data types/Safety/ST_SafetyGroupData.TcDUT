@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_SafetyGroupData" Id="{96f495d8-a523-4819-9023-6c342c5a072b}">
+    <Declaration><![CDATA[TYPE ST_SafetyGroupData :
+STRUCT
+	ibFBErr			AT%I*	:BOOL;
+	ibCommErr		AT%I*	:BOOL;
+	ibOUTErr		AT%I*	:BOOL;
+	ibModuleFault	AT%I*	:BOOL;
+	ibOtherErr		AT%I*	:BOOL;
+	ibCommStartUp	AT%I*	:BOOL;
+	ibFbRun			AT%I*	:BOOL;
+	ibFbDeactivate	AT%I*	:BOOL;
+	ibInRun			AT%I*	:BOOL;
+	ibSafetyResetOK	AT%I*	:BOOL;
+	//Local Inputs
+	ibHMI_Group_Reset	:BOOL;
+	ibViz_Group_Reset	:BOOL;
+	
+
+	qg_bSafetyRun		AT%Q*	:BOOL;
+	qbErrAck			AT%Q*	:BOOL;
+	bGroupError	:BOOL;
+
+	bEnableLocal		: BOOL;			// Enable processing of input signal
+	sTitle		:STRING(80);
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="GlobVar_GeneralLog_Privat" Id="{b418b1d4-fea5-4754-884f-cec540bacac3}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL	(*GlobVar_GeneralLog_Privat*)
+
+(*-------------  General  / multiple variables  for Operation  --------------------------------------------------------*)
+
+	Lib_rGeneratorPower: 		REAL;
+	Lib_rGeneratorSpeed: 		REAL;
+	Lib_rFlowSpeed: 			REAL;
+(*	Lib_rPitchAngle: 			REAL;	*)
+
+
+(*-------------  General Log variables  --------------------------------------------------------------------------------------*)
+
+	(* Turbine Identification (Header for log  files):	*)
+	Lib_st_xTurbineIdent : 			ST_xTurbineIdent;
+
+	(* System Time:   ---------------------------------------------*)
+	Lib_strucSystemTime: 		TIMESTRUCT;
+	Lib_sOffsetUTC:			STRING[20];
+	Lib_sLocalTime: 			STRING[24];
+	Lib_sTimeZoneInfo:		STRING[20];
+
+	(* Operating System:   --------------------------------------*)
+	Lib_OperatingSystemCEDetected: 	BOOL;		(*NSM 231016*)
+	g_dtLocalTime :DT;
+	g_iLocalTime: UDINT;
+	g_fLocalTime: LREAL;
+
+(*-------------   In General need for all Logger  --------------------------------------------------------------------------------*)
+
+	LibDetectNewYear	:	BOOL;
+	LibDetectNewMonth	:	BOOL;
+	LibDetectNewDay		:	BOOL;
+	LibDetectNewHour	:	BOOL;
+	LibDetectNew10min	:	BOOL;
+	LibDetectNew5min	:	BOOL;
+	LibDetectNewMinute	:	BOOL;
+	LibDetectNew30sec	:	BOOL;
+	LibDetectNewSecond	:	BOOL;
+	LibDetectNew100ms	:	BOOL;
+
+(* --------------------------------------------------------------------------------------------------------------------------------------*)
+
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

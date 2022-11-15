@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stHMI_AnalogueInput" Id="{79b40e3d-632c-4e3d-a815-da2786f10845}">
+    <Declaration><![CDATA[TYPE stHMI_AnalogueInput :
+STRUCT
+	iMode:INT 			(*Current mode*)
+	iErrorCode: INT 	(*Error code*)
+	iStatus:INT 		(*Overall HMI Status*)
+	rActiveValue:REAL	(* Used Value, Input OR Override*)
+	rInputValue:REAL 	(*Input Value*)
+	rManualValue:REAL 	(*Manual mode simulated value*)
+	bPB_ResetError:BOOL  (*Reset errors pushbutton*)
+	bPBEN_ResetError:BOOL (*Reset error pushbutton enabled*)
+	bError:BOOL 
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

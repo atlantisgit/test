@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_MakeLoggString" Id="{a0c992da-0fce-443b-920f-59ce1054dc2c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MakeLoggString
+(*=================================================================================================*)
+(*
+	VERSION:				01.02
+	PROGRAMMED BY:		RM					DATE:  2007-09-26 
+	REVISED BY:				RM					DATE:  2007-12-10	
+
+	Date		|	Version/Author 		|	Remark
+	----------------------------------------------------------------------------------------------------
+	2009-08-09	|	001.02     HP		|	change length of sTimeStamp[24], sText[120]	
+
+	DESCRIPTION:		
+*)
+(*=================================================================================================*)
+
+VAR_INPUT
+	EventKey:		STRING[11];
+	TextInfo: 			STRING[50];
+END_VAR
+VAR_OUTPUT
+	LogText:			STRING [120];
+END_VAR
+VAR
+	sKey:		 	STRING[12];
+	iPower: 			INT;
+	iFlowSpeed: 		INT;
+	iGenSpeed: 		INT;
+	iPitchAngle: 		INT;
+	sText: 			STRING [120];
+	sPower: 			STRING [4];
+	sFlowSpeed: 	STRING [4];
+	sGenSpeed: 		STRING [5];
+	sPitchAngle: 		STRING [4];
+	sTimeStamp:		STRING[24];
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*=============== START OF FUNCTION_BLOCK / PROGRAMM ===============*)
+
+(*===========================================================================*)
+(*  			Preparing the additional information which will be added 					*)
+(*===========================================================================*)
+(*	iPower:=					REAL_TO_INT (Lib_rGeneratorPower);
+	iFlowSpeed:=			REAL_TO_INT (Lib_rFlowSpeed * 10);
+	iGenSpeed:=				REAL_TO_INT (Lib_rGeneratorSpeed * 100);
+	iPitchAngle:=				REAL_TO_INT (Lib_rPitchAngle * 10);
+	sTimeStamp:=			Lib_sLocalTime;
+
+	sPower:=			INT_TO_STRING (iPower);				(*to get for the entry a fixed number of characters *)
+		IF iPower < 10 THEN
+			sPower:= CONCAT('___', sPower);
+		ELSIF iPower < 100 THEN
+			sPower:= CONCAT('__', sPower);
+		ELSIF iPower < 1000 THEN
+			sPower:= CONCAT('_', sPower);
+		END_IF
+
+	sFlowSpeed:=	INT_TO_STRING (iFlowSpeed);			(*to get for the entry a fixed number of characters *)
+		IF iFlowSpeed < 10 THEN
+			sFlowSpeed:= CONCAT('___', sFlowSpeed);
+		ELSIF iFlowSpeed < 100 THEN
+			sFlowSpeed:= CONCAT('__', sFlowSpeed);
+		ELSIF iFlowSpeed < 1000 THEN
+			sFlowSpeed:= CONCAT('_', sFlowSpeed);
+		END_IF
+
+	sGenSpeed:=		INT_TO_STRING (iGenSpeed);			(*to get for the entry a fixed number of characters *)
+		IF iGenSpeed < 10 THEN
+			sGenSpeed:= CONCAT('___', sGenSpeed);
+		ELSIF iGenSpeed < 100 THEN
+			sGenSpeed:= CONCAT('__', sGenSpeed);
+		ELSIF iGenSpeed < 1000 THEN
+			sGenSpeed:= CONCAT('_', sGenSpeed);
+		END_IF
+
+	sPitchAngle:=		INT_TO_STRING (iPitchAngle);			(*to get for the entry a fixed number of characters *)
+		IF iPitchAngle < 10 THEN
+			sPitchAngle:= CONCAT('___', sPitchAngle);
+		ELSIF iPitchAngle < 100 THEN
+			sPitchAngle:= CONCAT('__', sPitchAngle);
+		ELSIF iPitchAngle < 1000 THEN
+			sPitchAngle:= CONCAT('_', sPitchAngle);
+		END_IF
+*)
+	sTimeStamp:=	Lib_sLocalTime;
+	sPower:= 		REAL_TO_STRING(Lib_rGeneratorPower);
+	sFlowSpeed:= 	REAL_TO_STRING(Lib_rFlowSpeed);
+	sGenSpeed:= 	REAL_TO_STRING(Lib_rGeneratorSpeed);
+(*	sPitchAngle:= 	REAL_TO_STRING(Lib_rPitchAngle);	*)
+
+(*===========================================================================*)
+(* 					Putting together the String for logging							*)
+(*===========================================================================*)
+	sKey := CONCAT ( MID(EventKey, 9, 3),'   '); 	(*9+1*)
+
+	sText := CONCAT(sTimeStamp,'  ');  			(*24*)
+	sText := CONCAT(sText, sPower);			(*5*)
+	sText := CONCAT(sText,'  ');
+	sText := CONCAT(sText, sFlowSpeed);		(*5*)
+	sText := CONCAT(sText,'  ');
+	sText := CONCAT(sText, sGenSpeed);		(*5*)
+	sText := CONCAT(sText,'  ');
+	sText := CONCAT(sText, sPitchAngle);  		(*5*)
+
+	sText := CONCAT(sText,'  ');
+	sText := CONCAT(sText, sKey); 				(*12*)
+	sText := CONCAT(sText,'  ');
+	sText := CONCAT(sText, TextInfo); (*summary 56 + 12 + 50 >> 118*)
+
+(*===========================================================================*)
+(*						Copy to VAR_OUTPUT								*)
+(*===========================================================================*)
+	LogText:= sText;
+
+(*========== END OF FUNCTION_BLOCK / PROGRAMM ======================*)]]></ST>
+    </Implementation>
+    <LineIds Name="FB_MakeLoggString">
+      <LineId Id="35" Count="77" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

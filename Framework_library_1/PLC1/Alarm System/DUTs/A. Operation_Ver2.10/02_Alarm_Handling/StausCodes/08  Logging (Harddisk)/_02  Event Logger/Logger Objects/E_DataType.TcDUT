@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_DataType" Id="{be56a9c9-2188-44bf-98f6-5dd1b679f90c}">
+    <Declaration><![CDATA[TYPE E_DataType :
+(
+	eDataNoValid_ZERO := 0,
+	eBOOL 		:= 1,
+	eSint		:= 2,
+	eInt			:= 3,
+	eDint		:= 4,
+	eLint		:= 5,
+	eUsint		:= 6,
+	eUint		:= 7,
+	eUdint		:= 8,
+	eUlint		:= 9,
+	eReal		:= 10,
+	eLreal		:= 11,
+	eTime		:= 12,
+	eDate		:= 13,
+	eTime_OF_Day:= 14,
+	eDateAndTime:= 15,
+	eString		:= 16,
+	eByte		:= 17,
+	eWord		:= 18,
+	eDword		:= 19,
+	eLword		:= 20,
+	eWString	:= 	21
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="Global_Variables" Id="{f2837964-79a1-4661-ad4b-a07264056bf5}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL
+	in_iArrayWatchdogCounter AT%I* :USINT;
+(*************************************** WW Legacy Code ****************************************)
+
+	DirectoriesFiles:ST_Directories:=
+	(sSendExeLocation:='\Hard Disk\DAT\ExecutableFiles\Send.exe',
+	sEnergySaveDirectory:='\Hard Disk\DAT\Energy\energy.csv',
+	sSC_PathNamePC:='C:\DAT\RingBufferStatusCodes.txt',
+	sSC_PathNameEmbeddedPC:='\Hard Disk\DAT\RingBufferStatuscodes.txt');
+
+	g_bSaving10MinData: BOOL;				(* Saves 10 min Data *)
+
+	g_iNACPRollingCount : USINT;
+	g_iNACSRollingCount : USINT;
+	g_bSystemNACP_WatchdogErr: BOOL;
+	g_bSystemNACS_WatchdogErr: BOOL;
+END_VAR
+
+VAR_GLOBAL CONSTANT
+	MAX_CSV_ROWS 			: UDINT := 60500;
+	MAX_CSV_COLUMNS 		: UDINT := 5;
+	MAX_CSV_FIELD_LENGTH	: UDINT := 10;
+END_VAR
+(*
+VAR_GLOBAL PERSISTENT
+	arrFlowSpeed			: ARRAY[0..MAX_CSV_ROWS, 0..0 ] OF STRING(MAX_CSV_FIELD_LENGTH);(* Target PLC database *)
+END_VAR
+*)]]></Declaration>
+  </GVL>
+</TcPlcObject>

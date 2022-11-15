@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_HeaderForLogging" Id="{bc1d3b7d-ecb7-4b98-9b6c-e60b9a7bf8d6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_HeaderForLogging
+(**********************************************************************************)
+(**********************************************************************************)
+(*  	VERSION:			001.000
+							                										
+  	PROGRAMMED BY:	Hardy Patommel	  								
+*)  																		
+(*----------------------------------------------------------------------------------------------------------------------------*)
+(*	Version history:														 *)
+(*    	Date		|	Version/Author 	|	Remark
+	----------------------------------------------------------------------------------------------------
+	2008-03-03	|	001.000     HP		|	
+	2008-03-07	|	001.001     HP		|	changed header building
+	
+						                								
+*)
+(*----------------------------------------------------------------------------------------------------------------------------*)
+(*  	DESCRIPTION:
+	combine the header for the log file e.g.
+
+			1.	CompanyCode:	Name of comany
+			2.	CountryCode:		xx
+			3.	Flowfarm:		Flow energy park 24
+			4.	TurbineNumber:	1
+			5.	TurbineType:		123
+			6.
+			7.	Comment:	Statuscode ring buffer file
+			8.
+			9.
+			10.	
+			11.	TimeStampUTC				TrigKey	
+
+*)
+(**********************************************************************************)
+(**********************************************************************************)
+VAR_INPUT
+	st_TurbineIdent			: ST_xTurbineIdent;	(*info structure*)
+	s_FileDescription			: T_MaxString;
+	s_ColumnText 			: T_MaxString;
+(*	ar_ColumnText			: ARRAY [1..giNumberOf10minMeanChannels] OF STRING(giGeneralLenghtOfName);*)
+	ar_ColumnText			: ARRAY [1..75] OF STRING(40);
+	iCountsOfColumns 		: UINT;				(*counts of columns*)
+	iOneEntryLength			: UINT; 				(*length of of entry*)
+	adr_sHeader1			: DWORD; 			(*address of string: general description of machine, lenght = description + 6*255 *)
+	adr_sColumnLine			: DWORD;	 		(*address of string: column description of table, lenght min.= 100*80 *)
+END_VAR
+VAR_OUTPUT
+	iCountsOfLine				: UINT; 	(*counts of rows*)
+	iHeaderLEN				: INT;	(*counts of byte*)
+	iColumnLineLEN			: INT;	(*counts of byte*)
+END_VAR
+VAR
+(*	sHeader					: STRING[giHeader1LEN]; 		*)		(*address of string: general description of machine, lenght = description + 6*255 *)
+(*	sColumnLine				: STRING[giHeaderColumnLineLEN];	*)	(*address of string: column description of table, lenght min.= 100*80 *)
+
+	sHeader					: STRING[1100]; 						(*address of string: general description of machine, lenght = description + 6*255 *)
+	sColumnLine				: STRING[4096];						(*address of string: column description of table, lenght min.= 100*80 *)
+	sTab					: STRING[2] := '$T';
+	sLineFeed				: STRING[4] := '$R$N';
+	sStrVar					: T_MaxString;
+	sStrHeaderLine			: T_MaxString;
+	udiStrWriteIndex			: UDINT;
+	i: INT; (*for index*)
+
+	iStrLEN: DINT;
+	udiSize: UDINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*=============== START OF FUNCTION_BLOCK / PROGRAMM ===============*)
+	MEMSET(ADR(sHeader) , 0, LEN(sHeader));
+	MEMSET(ADR(sColumnLine) , 0, LEN(sColumnLine));
+
+(*=====================================================================*)
+(*					HEADER PART 1 (general description)				     *)
+(*=====================================================================*)
+	iHeaderLEN 		:= 0;
+	udiStrWriteIndex 	:= 0;
+	(*Line: 1*)
+	sStrHeaderLine 	:= '';
+	sStrHeaderLine := CONCAT(sStrHeaderLine,'CompanyCode:');
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sTab);
+	sStrHeaderLine := CONCAT(sStrHeaderLine, st_xTurbineIdent.sCompanyCode);
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 2*)
+	sStrHeaderLine 	:= '';
+	sStrHeaderLine := CONCAT(sStrHeaderLine,'CountryCode:');
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sTab);
+	sStrHeaderLine := CONCAT(sStrHeaderLine, UINT_TO_STRING(st_xTurbineIdent.byCountryCode));
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 3*)
+	sStrHeaderLine 	:= '';
+	sStrHeaderLine := CONCAT(sStrHeaderLine,'Flowfarm:');
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sTab);
+	sStrHeaderLine := CONCAT(sStrHeaderLine,st_xTurbineIdent.sFlowfarm);
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 4*)
+	sStrHeaderLine 	:= '';
+	sStrHeaderLine := CONCAT(sStrHeaderLine,'TurbineNumber:');
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sTab);
+	sStrHeaderLine := CONCAT(sStrHeaderLine,UINT_TO_STRING(st_xTurbineIdent.iTurbineNumber));
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 5*)
+	sStrHeaderLine 	:= '';
+	sStrHeaderLine := CONCAT(sStrHeaderLine,'TurbineType:');
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sTab);
+	sStrHeaderLine := CONCAT(sStrHeaderLine,st_xTurbineIdent.sTurbineType);
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 6*)
+	sStrHeaderLine := '';			(* empty row *)
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 7*)
+	sStrHeaderLine 	:= '';
+	(* Add description of file to the header ---------------------------*)
+	sStrHeaderLine := CONCAT(sStrHeaderLine,'Comment:');
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sTab);
+	sStrHeaderLine := CONCAT(sStrHeaderLine,s_FileDescription);
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 8*)
+	sStrHeaderLine := '';			(* first empty row *)
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 9*)
+	sStrHeaderLine := '';			(* second empty row *)
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+	(*Line: 10*)
+	sStrHeaderLine := '';			(* third empty row *)
+
+	iHeaderLEN := LEN(sStrHeaderLine);
+	IF iHeaderLEN < giHeaderLineLenght THEN
+		FOR i := iHeaderLEN+1 TO (giHeaderLineLenght-2) DO
+			sStrHeaderLine := CONCAT(sStrHeaderLine,' ');		(* concat with stuff spaces *)
+		END_FOR
+	END_IF
+	sStrHeaderLine := CONCAT(sStrHeaderLine,sLineFeed); (* concat Linefeed *)
+	udiSize :=  LEN(sStrHeaderLine);
+	MEMCPY( ADR(sHeader)+udiStrWriteIndex, ADR(sStrHeaderLine),udiSize);
+	udiStrWriteIndex := udiStrWriteIndex + udiSize;
+
+
+	(*Write to output - variable*)
+	iCountsOfLine	:= 10;
+	iHeaderLEN :=UDINT_TO_INT(udiStrWriteIndex);
+	MEMCPY(adr_sHeader1,ADR(sHeader),udiStrWriteIndex);
+
+
+(*=====================================================================*)
+(*					HEADER PART 2  (column descriptions)				     *)
+(*=====================================================================*)
+	 (*Description with s_ColumnText, direct input string *)
+	MEMSET(ADR(sColumnLine),0,SIZEOF(sColumnLine));
+	udiStrWriteIndex := 0;
+	IF s_ColumnText<>'' THEN
+		sStrVar := CONCAT(s_ColumnText,sTab);
+		iStrLEN := LEN(sStrVar);
+		MEMCPY( ADR(sColumnLine)+udiStrWriteIndex, ADR(sStrVar), iStrLEN);
+		udiStrWriteIndex := udiStrWriteIndex + LEN(sStrVar);
+	ELSE
+		sColumnLine := '';
+	END_IF
+
+	 (*Description with text out of the ARRAY, not direct - over input array*)
+	FOR i:=1 TO (iCountsOfColumns) DO
+		sStrVar := '';
+		MEMCPY(ADR(sStrVar), ADR(ar_ColumnText[i]), SIZEOF(ar_ColumnText[i]));
+		sStrVar := CONCAT(sStrVar,sTab);
+		iStrLEN := LEN(sStrVar);
+		MEMCPY( ADR(sColumnLine)+udiStrWriteIndex, ADR(sStrVar), iStrLEN);
+		udiStrWriteIndex := udiStrWriteIndex + LEN(sStrVar);
+	END_FOR
+
+	(* fill the line to entry length  neccessarry for Statuscode !*)
+	iColumnLineLEN := LEN(sColumnLine);
+	IF iColumnLineLEN < iOneEntryLength THEN
+		sStrVar := ' ';
+		udiSize :=  LEN(sStrVar);
+		FOR i := iColumnLineLEN+1 TO (iOneEntryLength-2) DO (* concat with stuff spaces *)
+			MEMCPY( ADR(sColumnLine)+udiStrWriteIndex, ADR(sStrVar), udiSize);
+			udiStrWriteIndex := udiStrWriteIndex + LEN(sStrVar);
+		END_FOR
+	END_IF
+
+	sStrVar := sLineFeed; 	(* concat Linefeed *)
+	udiSize :=  LEN(sStrVar);
+	MEMCPY( ADR(sColumnLine)+udiStrWriteIndex, ADR(sStrVar),udiSize);
+
+	(*Write to output - variable*)
+	iColumnLineLEN :=LEN(sColumnLine);
+	MEMCPY(adr_sColumnLine,ADR(sColumnLine),iColumnLineLEN);
+
+
+(*=============== END OF FUNCTION_BLOCK / PROGRAMM =================*)]]></ST>
+    </Implementation>
+    <LineIds Name="FB_HeaderForLogging">
+      <LineId Id="67" Count="220" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

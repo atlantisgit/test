@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="stSSB_TCSInterface" Id="{051b59fe-bf24-4f3a-932a-302ce61f7cb8}">
+    <Declaration><![CDATA[TYPE stSSB_TCSInterface :
+STRUCT
+	(*Setpoints and on-line parameters*)
+	rTargetPosition_1: REAL:=75;			(*blade position demand; limited PPI #005.012 and #005.013*)
+	iSpeedReferenceByBus_1: INT;		(*motor speed; needed in speed regulation mode*)
+	iSendRandom: INT;
+	rSpeedvA0_1: REAL;				    	(*blade speed feather direction; limited: 2 .. 4.*)
+	rSpeedvA90_1: REAL;			    		(*blade speed fine direction; limited: 1 .. 4*)
+	rTargetSpeed_1: REAL;				 (*blade speed; slow speed to move from 1st limit switch;limited: 0.1 .. 0.5., ID 10080*)
+	rTargetSpeed_2: REAL;				(*blade speed; slow speed TO MOVE TO park position;limited: 0.1 .. 0.2., D 10080*)
+	lFeedbackBladeencoder_1: REAL;		(*blade position; feedback of the blade encoder position 1*)
+	lFeedbackBladeencoder_2: REAL;		(*blade position; feedback of the blade encoder position 2*)
+(*Pitch Control*)
+	bNoEFC:BOOL ;   			(*1=no EFC*)
+	bPitchStartCmd: BOOL;
+	bReset: BOOL;
+	bMoveToRefCmd:BOOL;
+	bParkCmd:BOOL;
+	bOpenLoopCtrlCmd:BOOL;
+	bPitchStopCmd: BOOL;
+	bRefEncoderCmd:BOOL;
+	bEnablePrepareCmd:BOOL;
+	bReleaseBrakeCmd: BOOL;
+	bMoveReadySwitchOnCmd:BOOL;
+(*axis control*)
+	bBypassHwEFC:BOOL;    (*1=Bypass*)
+	bCloseCB24V: BOOL;
+	bCloseCBSupplyBackup: BOOL;
+	bCloseCBBackupPower: BOOL;
+	bCloseCBChargingBackup: BOOL;
+	bSelPosCtrlEnc: BOOL;      (*0= sensor 1,   1=Sensor 2*)
+	bSelSpeedCtrlEnc: BOOL;	(*0= sensor 1,   1=Sensor 2*)
+	bSetBusSpeedSource: BOOL;	(*set system into speed control mode*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

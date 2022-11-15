@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="PRG_TranslatorVarNames" Id="{a977574a-6137-498b-9e90-3e354d107fb7}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_TranslatorVarNames
+VAR_INPUT
+	rGeneratorPower:		REAL;
+	rGeneratorSpeed:		REAL;
+	rFlowSpeed:			REAL;
+(*	rPitchAngle:			REAL;	*)
+
+	sOffsetUTC: 			STRING[20];
+	LibIniActive:			BOOL;
+
+END_VAR
+VAR_OUTPUT
+	sLocalTime:			STRING[24];
+	sTimeZoneInfo:		STRING[20];
+	strucSystemTime:		TIMESTRUCT;
+
+	bDetectNewYear	:	BOOL;
+	bDetectNewMonth:	BOOL;
+	bDetectNewDay	:	BOOL;
+	bDetectNewHour	:	BOOL;
+	bDetectNew10min:	BOOL;
+	bDetectNew5min	:	BOOL;
+	bDetectNewMinute:	BOOL;
+	bDetectNew30sec:	BOOL;
+	bDetectNewSecond:	BOOL;
+	bDetectNew100ms:	BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*========== START OF FUNCTION_BLOCK / PROGRAMM ============*)
+
+(*===========================================================================*)
+(* 		Just translating the names of in the library multiple used project variables 		*)
+(*===========================================================================*)
+
+	(*Copy VAR_INPUT to Library Variables:   -------------------------------------------*)
+	Lib_rGeneratorPower:=		rGeneratorPower;
+	Lib_rGeneratorSpeed:=	rGeneratorSpeed;
+	Lib_rFlowSpeed:=			rFlowSpeed;
+(*	Lib_rPitchAngle:=			rPitchAngle;	*)
+
+	Lib_sOffsetUTC:=			sOffsetUTC;
+	LibIniActive:=				gbInitializationActive;
+
+	(*Copy Library Variables to VAR_OUTPUT :   -------------------------------------------*)
+	sLocalTime:=			Lib_sLocalTime;
+	sTimeZoneInfo:=		Lib_sOffsetUTC;
+	strucSystemTime:=	Lib_strucSystemTime;
+
+	bDetectNewYear:=	LibDetectNewYear;
+	bDetectNewMonth:=	LibDetectNewMonth;
+	bDetectNewDay:=		LibDetectNewDay;
+	bDetectNewHour:=	LibDetectNewHour;
+	bDetectNew10min:=	LibDetectNew10min;
+	bDetectNew5min:=	LibDetectNew5min;
+	bDetectNewMinute:=	LibDetectNewMinute;
+	bDetectNew30sec:=	LibDetectNew30sec;
+	bDetectNewSecond:=	LibDetectNewSecond;
+	bDetectNew100ms:=	LibDetectNew100ms;
+
+
+(*=========== END OF FUNCTION_BLOCK / PROGRAMM =============*)]]></ST>
+    </Implementation>
+    <LineIds Name="PRG_TranslatorVarNames">
+      <LineId Id="27" Count="32" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

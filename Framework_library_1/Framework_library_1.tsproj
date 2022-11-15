@@ -1,6 +1,193 @@
 <?xml version="1.0"?>
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.32">
-	<Project ProjectGUID="{86ABF1E6-D89A-4AFA-B7A3-D1130C890D82}" TargetNetId="192.168.4.1.1.1" ShowHideConfigurations="#x106">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{2F779C47-837D-4AB2-8E30-643A1FA136A6}" PersistentType="true">AlarmSystem</Name>
+			<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+			<EventId>
+				<Name Id="7">B99</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="1">B99_test</Name>
+				<DisplayName TxtId=""><![CDATA[Event_DisplayText]]></DisplayName>
+				<Severity>Warning</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="2">B20</Name>
+				<DisplayName TxtId=""><![CDATA[AlarmSystemEvent2_DisplayText]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="3">B40</Name>
+				<DisplayName TxtId=""><![CDATA[AlarmSystemEvent3_DisplayText]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="4">B100</Name>
+				<DisplayName TxtId=""><![CDATA[AlarmSystemEvent4_DisplayText]]></DisplayName>
+				<Severity>Info</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="6">AlarmSystemEvent6</Name>
+				<DisplayName TxtId=""><![CDATA[AlarmSystemEvent6_DisplayText]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<Hides>
+				<Hide GUID="{EAFD54B6-0530-4908-9FE6-E8E20A6768D6}"/>
+				<Hide GUID="{024FC034-92ED-42D0-8F15-FA3A5848C3FF}"/>
+				<Hide GUID="{E5B9FA7D-83D6-4327-A081-DF0D6F19DE48}"/>
+				<Hide GUID="{99F1CD1C-6C51-4176-A6D0-EF934D920B5D}"/>
+				<Hide GUID="{521347E8-C350-4A2E-9F75-45AE3200D39F}"/>
+				<Hide GUID="{9A5CD74F-541A-46FB-8A45-FD1F151DEA70}"/>
+				<Hide GUID="{BD8E73BC-E33F-4F57-A911-19E794A40046}"/>
+			</Hides>
+		</DataType>
+		<DataType>
+			<Name GUID="{59FAB171-4232-4B2E-B25F-3FCE071B2F13}" PersistentType="true">AlarmSystem</Name>
+			<DisplayName TxtId=""><![CDATA[AR1100 Events]]></DisplayName>
+			<EventId>
+				<Name Id="99">B99</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Warning</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="20">B20</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="25">B25</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="100">B100</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Info</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="4">B4</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="1">B1</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="7">B7</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="2">B2</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="3">B3</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="5">B5</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="6">B6</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="8">B8</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="9">B9</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="10">B10</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="11">B11</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="12">B12</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="30">B30</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="40">B40</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="13">B13</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="14">B14</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="15">B15</Name>
+				<DisplayName TxtId=""><![CDATA[AlarmSystemEvent21_DisplayText]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="16">B16</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="17">B17</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="18">B18</Name>
+				<DisplayName TxtId=""><![CDATA[{0}]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<Hides>
+				<Hide GUID="{EAFD54B6-0530-4908-9FE6-E8E20A6768D6}"/>
+				<Hide GUID="{024FC034-92ED-42D0-8F15-FA3A5848C3FF}"/>
+				<Hide GUID="{E5B9FA7D-83D6-4327-A081-DF0D6F19DE48}"/>
+				<Hide GUID="{99F1CD1C-6C51-4176-A6D0-EF934D920B5D}"/>
+				<Hide GUID="{521347E8-C350-4A2E-9F75-45AE3200D39F}"/>
+				<Hide GUID="{9A5CD74F-541A-46FB-8A45-FD1F151DEA70}"/>
+				<Hide GUID="{BD8E73BC-E33F-4F57-A911-19E794A40046}"/>
+				<Hide GUID="{2F779C47-837D-4AB2-8E30-643A1FA136A6}"/>
+				<Hide GUID="{0211DEF7-7621-4661-A62A-CEB29FBBA341}"/>
+				<Hide GUID="{5219A584-A19D-467D-8907-A8C339805354}"/>
+				<Hide GUID="{1B6C5F57-4EE0-461C-A131-5DA7953E94A3}"/>
+				<Hide GUID="{37986CAE-AA77-45F1-A239-27D5E875974E}"/>
+				<Hide GUID="{30DAD80B-F1A3-429B-94FB-806F479E4D64}"/>
+				<Hide GUID="{0F25A659-E51E-49AA-9961-9A9A1C758E96}"/>
+				<Hide GUID="{EF0BA51E-FE3F-4F0C-800D-A4DA97F8D900}"/>
+				<Hide GUID="{1B4B5F4D-E23B-4D15-9FCB-C10F69ADA951}"/>
+			</Hides>
+		</DataType>
+	</DataTypes>
+	<Project ProjectGUID="{86ABF1E6-D89A-4AFA-B7A3-D1130C890D82}" TargetNetId="39.29.206.228.1.1" Target64Bit="true" ShowHideConfigurations="#x106">
 		<System>
 			<Licenses>
 				<Target>
@@ -15,9 +202,16 @@
 		</System>
 		<Plc>
 			<Project GUID="{475E2DF4-6C51-4CE5-81D6-79401ACEB2A8}" Name="PLC1" PrjFilePath="PLC1\PLC1.plcproj" TmcFilePath="PLC1\PLC1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC1\PLC1.tmc" TmcHash="{FFFEB7F8-5B7A-A6E4-1234-CB4EC5E62657}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC1\PLC1.tmc" TmcHash="{A9706022-CAB0-AEA1-42CA-58A5D4B1FE5B}">
 					<Name>PLC1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="1">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>.in_iArrayWatchdogCounter</Name>
+							<Type>USINT</Type>
+						</Var>
+					</Vars>
 					<Contexts>
 						<Context>
 							<Id NeedCalleeCall="true">0</Id>

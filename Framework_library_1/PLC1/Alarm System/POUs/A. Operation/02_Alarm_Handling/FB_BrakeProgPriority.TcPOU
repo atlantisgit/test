@@ -1,0 +1,445 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_BrakeProgPriority" Id="{777623c4-0830-419b-abcd-276f13c6b363}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_BrakeProgPriority
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[g_iBrakeProgNumber := 0;
+g_sOperAlarmHighestActiveBrakeProgram:= '';
+
+IF g_bBrakeProg1Cmd THEN
+	g_bBrakeProg1Active := TRUE;
+	g_bBrakeProg2Active := FALSE;
+	g_bBrakeProg3Active := FALSE;
+	g_bBrakeProg4Active := FALSE;
+	g_bBrakeProg5Active := FALSE;
+	g_bBrakeProg6Active := FALSE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 1;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B1';
+
+ELSIF g_bBrakeProg2Cmd THEN
+	g_bBrakeProg2Active := TRUE;
+	g_bBrakeProg3Active := FALSE;
+	g_bBrakeProg4Active := FALSE;
+	g_bBrakeProg5Active := FALSE;
+	g_bBrakeProg6Active := FALSE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 2;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B2';
+
+ELSIF g_bBrakeProg3Cmd THEN
+	g_bBrakeProg3Active := TRUE;
+	g_bBrakeProg4Active := FALSE;
+	g_bBrakeProg5Active := FALSE;
+	g_bBrakeProg6Active := FALSE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 3;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B3';
+
+ELSIF g_bBrakeProg4Cmd THEN
+	g_bBrakeProg4Active := TRUE;
+	g_bBrakeProg5Active := FALSE;
+	g_bBrakeProg6Active := FALSE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 4;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B4';
+
+ELSIF g_bBrakeProg5Cmd THEN
+	g_bBrakeProg5Active := TRUE;
+	g_bBrakeProg6Active := FALSE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+	g_iBrakeProgNumber := 5;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B5';
+
+ELSIF g_bBrakeProg6Cmd THEN
+	g_bBrakeProg6Active := TRUE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 6;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B6';
+
+ELSIF g_bBrakeProg7Cmd THEN
+	g_bBrakeProg7Active := TRUE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 7;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B7';
+
+ELSIF g_bBrakeProg8Cmd THEN
+	g_bBrakeProg8Active := TRUE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 8;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B8';
+
+ELSIF g_bBrakeProg9Cmd THEN
+	g_bBrakeProg9Active := TRUE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 9;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B9';
+
+ELSIF g_bBrakeProg10Cmd THEN
+	g_bBrakeProg10Active := TRUE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 10;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B10';
+
+ELSIF g_bBrakeProg11Cmd THEN
+	g_bBrakeProg11Active := TRUE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 11;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B11';
+
+ELSIF g_bBrakeProg12Cmd THEN
+	g_bBrakeProg12Active := TRUE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 12;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B12';
+
+ELSIF g_bBrakeProg13Cmd THEN
+	g_bBrakeProg13Active := TRUE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 13;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B13';
+
+ELSIF g_bBrakeProg14Cmd THEN
+	g_bBrakeProg14Active:= TRUE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 14;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B14';
+
+ELSIF g_bBrakeProg15Cmd THEN
+	g_bBrakeProg15Active := TRUE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 15;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B15';
+
+ELSIF g_bBrakeProg16Cmd THEN
+	g_bBrakeProg16Active := TRUE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 16;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B16';
+
+ELSIF g_bBrakeProg17Cmd THEN
+	g_bBrakeProg17Active := TRUE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 17;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B17';
+
+ELSIF g_bBrakeProg18Cmd THEN
+	g_bBrakeProg18Active := TRUE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 18;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B18';
+
+ELSIF g_bBrakeProg19Cmd THEN
+	g_bBrakeProg19Active := TRUE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 19;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B19';
+
+ELSIF g_bBrakeProg20Cmd THEN
+	g_bBrakeProg20Active:= TRUE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 20;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B20';
+
+ELSIF g_bBrakeProg25Cmd THEN
+	g_bBrakeProg25Active:= TRUE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 25;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B25';
+
+ELSIF g_bBrakeProg30Cmd THEN
+	g_bBrakeProg30Active:= TRUE;
+	g_bBrakeProg40Active:= FALSE;
+
+	g_iBrakeProgNumber := 30;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B30';
+
+ELSIF g_bBrakeProg40Cmd THEN
+	g_bBrakeProg40Active:= TRUE;
+
+	g_iBrakeProgNumber := 40;
+	g_sOperAlarmHighestActiveBrakeProgram:= 'B40';
+
+END_IF
+
+
+(* Make  a variable if there is a braking program present*)
+IF g_iBrakeProgNumber <>0 THEN
+
+	g_bBrakingProgActive:=TRUE;
+
+ELSE
+	g_bBrakingProgActive :=FALSE;
+
+	g_bBrakeProg1Active := FALSE;
+	g_bBrakeProg2Active := FALSE;
+	g_bBrakeProg3Active := FALSE;
+	g_bBrakeProg4Active := FALSE;
+	g_bBrakeProg5Active := FALSE;
+	g_bBrakeProg6Active := FALSE;
+	g_bBrakeProg7Active := FALSE;
+	g_bBrakeProg8Active := FALSE;
+	g_bBrakeProg9Active := FALSE;
+	g_bBrakeProg10Active := FALSE;
+	g_bBrakeProg11Active := FALSE;
+	g_bBrakeProg12Active := FALSE;
+	g_bBrakeProg13Active := FALSE;
+	g_bBrakeProg14Active:= FALSE;
+	g_bBrakeProg15Active := FALSE;
+	g_bBrakeProg16Active := FALSE;
+	g_bBrakeProg17Active := FALSE;
+	g_bBrakeProg18Active := FALSE;
+	g_bBrakeProg19Active := FALSE;
+	g_bBrakeProg20Active:= FALSE;
+	g_bBrakeProg25Active:= FALSE;
+	g_bBrakeProg30Active:= FALSE;
+	g_bBrakeProg40Active:= FALSE;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_BrakeProgPriority">
+      <LineId Id="7" Count="427" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

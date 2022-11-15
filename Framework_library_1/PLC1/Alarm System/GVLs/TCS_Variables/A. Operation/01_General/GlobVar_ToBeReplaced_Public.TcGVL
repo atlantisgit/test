@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="GlobVar_ToBeReplaced_Public" Id="{ac9a3255-d1ee-43d2-a917-4292adaa6833}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL	(*GlobVar_ToBeReplaced_Public*)
+
+(*-------------  General  / multiple variables  for Operation  --------------------------------------------------------*)
+
+	gbInitializationActive: 		BOOL;
+	gbCheckLogging: 			BOOL;
+	gbResetErrCntLog:		BOOL;
+	gSTR_NameOfUserWithActiveRights:	STRING [24];
+	gbOperatingSystemCEDetected: 		BOOL;
+
+
+(*-------------  Statuscode Logger  ------------------------------------------------------------------------------------------*)
+
+	gbTriggerStatuscode:				BOOL;
+	gbSendAlarm:					BOOL;
+	gbErrorStatuscodeLogger:			BOOL;
+	gbFreezeListStatuscodes:			BOOL;
+	gbLogStatusAndOperationcodes:	BOOL;
+	gbPlusDailyListStatuscodes:		BOOL;
+
+	gsStatuscodeKey:					STRING[11];
+	gsStatuscodeDescription:			STRING[50];
+
+(*-------------  Time & Date Variables  -------------------------------------------------------------------------------------*)
+
+	st_xTurbineIdent : 				ST_xTurbineIdent;
+	gsLocalTimeOffsetUTC	: 	STRING[20];
+
+	gstrucSystemTime: 			TIMESTRUCT;
+	gsLocalSystemTime	: 		STRING[24];
+
+	gbDetectNewYear	:	BOOL;
+	gbDetectNewMonth:	BOOL;
+	gbDetectNewDay	:	BOOL;
+	gbDetectNewHour	:	BOOL;
+	gbDetectNew10min:	BOOL;
+	gbDetectNew5min	:	BOOL;
+	gbDetectNewMinute:	BOOL;
+	gbDetectNew30sec:	BOOL;
+	gbDetectNewSecond:	BOOL;
+	gbDetectNew100ms:	BOOL;
+
+(*-------------  Process Variables  ------------------------------------------------------------------------------------------*)
+
+(*	grGeneratorPower: 	REAL:=	999.9;
+	grGeneratorSpeed: 	REAL:=	16.5;
+	grFlowSpeed: 		REAL:=	8.77;
+	grPitchAngle: 		REAL:=	-1.5;*)
+
+(*-------------  Send.exe trigger from alarm list --------------------------------------------------------------------------*)
+
+	g_TriggSendExeAlarmList : BOOL;
+	g_TriggSendExeAlarmListDay : BOOL;
+
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

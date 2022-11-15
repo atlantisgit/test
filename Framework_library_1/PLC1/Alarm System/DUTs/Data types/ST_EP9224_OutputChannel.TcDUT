@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_EP9224_OutputChannel" Id="{ebfd0d57-cac7-485a-a2b2-c5c6e652cd14}">
+    <Declaration><![CDATA[TYPE ST_EP9224_OutputChannel :
+STRUCT
+	bOutputUs : BOOL;
+	bOutputUp : BOOL;
+	bResetUs : BOOL;
+	bResetUp : BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

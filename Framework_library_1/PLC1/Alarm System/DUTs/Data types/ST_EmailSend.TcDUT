@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_EmailSend" Id="{fd13828f-1702-481e-9e30-7caa42c5efea}">
+    <Declaration><![CDATA[TYPE ST_EmailSend :
+STRUCT
+	sMessage_HTML   : STRING(500);
+	nPriority 		: UDINT;
+	sFiles            : ARRAY [0..32] OF STRING(80);
+	sTo			:STRING(500);
+	
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

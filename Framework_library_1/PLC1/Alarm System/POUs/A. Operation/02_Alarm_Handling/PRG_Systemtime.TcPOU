@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="PRG_Systemtime" Id="{c1673a35-16b7-4cb4-921b-6d212793d955}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_Systemtime
+(***********************************************************************************************************)
+(***********************************************************************************************************)
+(*
+    	VERSION:				001.000
+
+    	PROGRAMMED BY:		Thomas Lange
+    	DATE:					2009-07-30											
+										
+	REVISED BY:								DATE:		
+*)
+(*-----------------------------------------------------------------------------------------------------------------------------------*)
+(*
+    DESCRIPTION:			
+	
+    NOTE: 
+*)
+(***********************************************************************************************************)
+(***********************************************************************************************************)
+VAR
+	fbLocalSystemTime: 		FB_LocalSystemTime;
+	fbGetTimeZoneInformation: 	FB_GetTimeZoneInformation;
+	eTimeZoneID: 			E_TimeZoneID;
+	strucTimeZoneInfo: 		ST_TimeZoneInformation;
+
+	bBusy: 			BOOL;
+	bError: 			BOOL;
+	bSyncEnable: 	BOOL;
+	bValid: 			BOOL;
+	bSyncManual : 	BOOL:= TRUE;
+	dwSyncTime: 	DWORD := 600;
+	udiErrID: 			UDINT;
+	udTimeZoneInfo : 	UDINT;
+	diTimeZoneInfo : 	DINT;
+	rTimeZoneInfo :	REAL;
+
+	fbSyncPulse:FB_Toggle;
+	tonStandardTime: TON;
+	
+	fbGetCurTaskIdx  : GETCURTASKINDEX;
+	  nCycleTime       : UDINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*call this toggle function which will be used to synchronise the function block FB_LocalSystemTime*)
+(*function block need to see a rising edge*)
+(*internally NT_GetTime is called which used the windows time of CX which should synchronised on the NTP server*)
+
+fbSyncPulse(bEnable:=TRUE , tOffDelay:=T#5s , tOnDelay:=T#50ms, bToggle=>bSyncManual);
+
+(*=============== START OF FUNCTION_BLOCK / PROGRAMM ===============*)
+
+	bSyncEnable:=	LibDetectNewDay OR bSyncManual;
+
+
+(*=======================================================================*)
+(*							Task Times													*)
+(*=======================================================================*)
+//nCycleTime := _TaskInfo[fbGetCurTaskIdx.index].CycleTime;
+g_iOperCycleTime := _TaskInfo[1].cycleTime /10000;
+//g_fOperExecutionTime	:= SystemTaskInfoArr[1].lastExecTime;	(*Cycle time is in 100ns*)
+
+
+g_fOperCycleTime := UDINT_TO_REAL(g_iOperCycleTime);
+g_tOperCycleTime := REAL_TO_TIME(g_fOperCycleTime);
+
+(*=======================================================================*)
+(*							Local System Time											*)
+(*=======================================================================*)
+
+	fbLocalSystemTime	(sNetID:= 			'',
+						bEnable:= 			bSyncEnable,
+						dwCycle:= 			dwSyncTime,
+						tTimeout:= 			DEFAULT_ADS_TIMEOUT,
+						bValid=> 			bValid,
+						systemTime=> 		Lib_strucSystemTime);
+
+	(*
+		The "SYSTEMTIME_TO_STRING" function converts Flowows sytem time STRUC to STRING.
+		The string format is: YYYY-MM-DD-hh:mm:ss.xxx
+	*)
+	Lib_sLocalTime:= 		SYSTEMTIME_TO_STRING (Lib_strucSystemTime);
+
+	g_dtLocalTime :=		SYSTEMTIME_TO_DT(Lib_strucSystemTime);
+	g_iLocalTime :=			DT_TO_UDINT(g_dtLocalTime);
+	g_fLocalTime := 			DT_TO_LREAL(g_dtLocalTime);
+
+(*=======================================================================*)
+(*							UTC System Information						*)
+(*=======================================================================*)
+
+	fbGetTimeZoneInformation	(sNetID:= 		'',
+							bExecute:= 		bSyncEnable,
+							tTimeout:= 		DEFAULT_ADS_TIMEOUT,
+							bBusy=> 			bBusy,
+							bError=> 			bError,
+							nErrID=>			udiErrID,
+							tzID=> 			eTimeZoneID,
+							tzInfo=> 			strucTimeZoneInfo);
+
+(*=======================================================================*)
+(*							UTC offset for Heading Control            					*)
+(*=======================================================================*)
+	(*Delay for NOT Daylight savings*)(*NSM - 29.03.17*)
+	tonStandardTime(IN:=eTimeZoneID <> eTimeZoneID_Daylight,PT:=t#5s);			(*ACTION: Set all time to local in Japan and do not apply Daylight Savings - always UTC+9hrs*)
+
+
+//	g_iTimeJST := g_iLocalTime;
+
+	(*If standard time identified for 5s then set GMT to local time*)
+(*	IF tonStandardTime.Q THEN
+		g_iTimeGMT := g_iTimeJST - 3600*9;		(*9 hr difference*)
+		g_bTimeDaylightSavingsActive := FALSE;
+
+
+	(*Else assume daylight savings*)
+	ELSE
+		g_iTimeGMT := g_iTimeJST - 3600*8;
+		g_bTimeDaylightSavingsActive := TRUE;
+	END_IF
+
+	(*Convert to DT for display*)
+	g_dtTimeGMT:= UDINT_TO_DT(g_iTimeGMT);
+
+*)
+
+(*=======================================================================*)
+(*							UTC offset            										*)
+(*=======================================================================*)
+
+	IF (eTimeZoneID = eTimeZoneID_Daylight) THEN
+		diTimeZoneInfo := strucTimeZoneInfo.bias + strucTimeZoneInfo.daylightBias;
+		udTimeZoneInfo := ABS(diTimeZoneInfo);
+	ELSE
+		diTimeZoneInfo := strucTimeZoneInfo.bias ;
+		udTimeZoneInfo := ABS(diTimeZoneInfo);
+	END_IF
+	rTimeZoneInfo := UDINT_TO_REAL(udTimeZoneInfo)/60;
+	Lib_sTimeZoneInfo := REAL_TO_STRING(rTimeZoneInfo);
+
+	IF NOT (udTimeZoneInfo = diTimeZoneInfo) THEN
+		Lib_sTimeZoneInfo := CONCAT('UTC+',Lib_sTimeZoneInfo);
+		Lib_sTimeZoneInfo := CONCAT(Lib_sTimeZoneInfo,'h');
+	ELSE
+		Lib_sTimeZoneInfo := CONCAT('UTC-',Lib_sTimeZoneInfo);
+		Lib_sTimeZoneInfo := CONCAT(Lib_sTimeZoneInfo,'h');
+	END_IF
+
+(*=============== END OF FUNCTION_BLOCK / PROGRAMM ===============*)
+]]></ST>
+    </Implementation>
+    <LineIds Name="PRG_Systemtime">
+      <LineId Id="43" Count="13" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="57" Count="89" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

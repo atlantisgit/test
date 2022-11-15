@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="POU_TestBase" Id="{48a52228-1023-4f18-966a-0eb2054e3080}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM POU_TestBase
+VAR
+	fbTestIntlk:FB_Interlock;	
+	fbTestPerm:FB_Permissive;
+	fbTestRunCtrl:FB_SystemRunControl;
+	fbTestDigitalInput:fbIO_DigitalInput;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+fbTestIntlk(
+	bInterlock1:= , 
+	bInterlock2:= , 
+	bInterlock3:= , 
+	bInterlock4:= , 
+	bInterlock5:= , 
+	bInterlock6:= , 
+	bInterlock7:= , 
+	bInterlock8:= , 
+	bInterlock9:= , 
+	bInterlock10:= , 
+	bInterlock11:= , 
+	bInterlock12:= , 
+	bInterlock13:= , 
+	bInterlock14:= , 
+	bInterlock15:= , 
+	bInterlock16:= , 
+	bOutInterlockOk=> , 
+	HMI_Interlock:=GVL_HMI.stTest01_Intlk );
+
+fbTestPerm(
+	bPermissive1:= , 
+	bPermissive2:= , 
+	bPermissive3:= , 
+	bPermissive4:= , 
+	bPermissive5:= , 
+	bPermissive6:= , 
+	bPermissive7:= , 
+	bPermissive8:= , 
+	bPermissive9:= , 
+	bPermissive10:= , 
+	bPermissive11:= , 
+	bPermissive12:= , 
+	bPermissive13:= , 
+	bPermissive14:= , 
+	bPermissive15:= , 
+	bPermissive16:= , 
+	bOutPermissiveOk=>, 
+	HMI_Permissive:= GVL_HMI.stTest02_Perm);
+
+GVL_HMI.stTest01_Intlk.asInterlockNames[1]:='Valve in correct pos';
+	
+fbTestRunCtrl(
+	bInEnableStart:= , 
+	bInEnableStop:= , 
+	bInStartAuto:= , 
+	bInStopAuto:= , 
+	bOutRunCmd=> , 
+	HMI_SystemRunControl:= GVL_HMI.stTest03_RunCtrl);
+	
+fbTestDigitalInput(
+	iInMode:= , 
+	bInInput:= , 
+	tInOnDebounce:= , 
+	tInOffDebounce:= , 
+	bOutAuto=> , 
+	bOutOn=> , 
+	bOutRisingEdge=> , 
+	bOutFallingEdge=> , 
+	HMI_DigitalInput:=GVL_HMI.stTest04_DigitalInput );
+]]></ST>
+    </Implementation>
+    <LineIds Name="POU_TestBase">
+      <LineId Id="6" Count="61" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

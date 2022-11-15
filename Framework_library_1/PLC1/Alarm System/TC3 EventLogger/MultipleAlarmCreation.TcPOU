@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MultipleAlarmCreation" Id="{4f1a33af-75a4-4370-9c92-acc8dcb37926}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MultipleAlarmCreation
+VAR
+	bIsInitalized : BOOL;
+    fbAlarm : ARRAY[1..10] OF FB_TcAlarm;
+    bRaiseAlarm : ARRAY[1..10] OF BOOL;;
+    bClearAlarm : BOOL;
+	bConfirmAlarm:BOOL; 
+    fbSourceInfo : FB_TcSourceInfo;
+	index:USINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT bIsInitalized THEN
+    bIsInitalized := TRUE;
+    fbSourceInfo.Clear();
+    fbSourceInfo.sName := 'Water pump 3';
+    fbAlarm[1].CreateEx(TC_Events.AlarmSystem.B99, FALSE, fbSourceInfo);
+	fbAlarm[2].CreateEx(TC_Events.AlarmSystem.B20, FALSE, fbSourceInfo);
+	fbAlarm[3].CreateEx(TC_Events.AlarmSystem.B20, FALSE, fbSourceInfo);
+END_IF
+
+IF bRaiseAlarm[1] THEN
+    bRaiseAlarm[1] := FALSE;
+    fbAlarm[1].ipArguments.Clear().AddString('Water Pump1');
+    fbAlarm[1].Raise(0);
+END_IF
+
+IF bRaiseAlarm[2] THEN
+    bRaiseAlarm[2] := FALSE;
+    fbAlarm[2].ipArguments.Clear().AddString('B20 instance 1');
+    fbAlarm[2].Raise(0);
+END_IF
+
+IF bRaiseAlarm[3] THEN
+    bRaiseAlarm[3] := FALSE;
+    fbAlarm[3].ipArguments.Clear().AddString('B20 instance 2');
+    fbAlarm[3].Raise(0);
+END_IF
+
+(*
+IF bConfirmAlarm THEN
+    bConfirmAlarm := FALSE;
+    fbAlarm.Confirm(0);
+END_IF
+*)
+
+IF bClearAlarm THEN
+	FOR index:=1 TO 3 DO
+		 fbAlarm[index].Clear(0, TRUE);
+	END_FOR
+   // bClearAlarm := FALSE;
+   
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MultipleAlarmCreation">
+      <LineId Id="12" Count="4" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="17" Count="7" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="42" Count="3" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="46" Count="4" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="25" Count="5" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="53" Count="2" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_ResetMode" Id="{90f03465-17ea-462b-9183-7dc015bd0b96}">
+    <Declaration><![CDATA[TYPE E_ResetMode :
+(
+	AUTO			:=0,	(* Automatic after delay *)
+	MANU			:=1	(* Manual *)
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

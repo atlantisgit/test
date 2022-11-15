@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_FileState_SC" Id="{ff44ae01-acc3-46c0-b2cc-cb0ebfa59c39}">
+    <Declaration><![CDATA[TYPE E_FileState_SC :
+(
+	eInit_SC,
+	eFileOpen_SC,
+	eFileOpenExistFile_SC,
+	eFileSeek_SC,
+	eFileWrite_SC,
+	eFileClose_SC,
+	eFileCopy_SC(*12012010*)
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="P_EventLogger_TCSAlarms" Id="{ad298a10-e02d-4585-bb77-f5a974f8c8da}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_EventLogger_TCSAlarms
+
+//CREATES AND HANDLES ALARMS BASED ON THE WIN WIND ALARM STRUCTURE THAT EXISTS ALREADY
+VAR
+	fbAlarm:ARRAY[1..222] OF FB_TcAlarm;
+	fbSourceInfo : FB_TcSourceInfo;
+	binit: BOOL;
+	i:UINT; 
+	index2:UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[initAlarms();
+IF bInit THEN
+	FOR index2:=1 TO 222 DO
+		RaiseAlarms();
+		
+		ClearAlarms();
+	END_FOR
+END_IF
+]]></ST>
+    </Implementation>
+    <Action Name="ClearAlarms" Id="{e0313fea-919f-4672-90ed-89ca6a19030d}">
+      <Implementation>
+        <ST><![CDATA[// IF WIN WIND ALARM IS CLEARED, COMMAND THE INSTANCE OF THE CREATE TC3 ALARM TO CLEAR ALSO
+IF NOT arrAlarms[index2].b THEN
+	 fbAlarm[index2].Clear(0, TRUE);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="initAlarms" Id="{2d07e112-512a-4111-8f7b-521d51bd7454}">
+      <Implementation>
+        <ST><![CDATA[//Initialise alarms based on the brake program defined in the arrAlarms array of ST_ALARMSTRUCTURE
+IF NOT binit THEN
+	FOR i:=1 TO 222 DO
+		CASE arrAlarms[i].eBrakeProgram OF
+			B1:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B1, FALSE, fbSourceInfo);
+			B2:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B2, FALSE, fbSourceInfo);
+			B3:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B3, FALSE, fbSourceInfo);
+			B4:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B4, FALSE, fbSourceInfo);
+			B5:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B5, FALSE, fbSourceInfo);
+			B6:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B6, FALSE, fbSourceInfo);
+			B7:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B7, FALSE, fbSourceInfo);
+			B8:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B8, FALSE, fbSourceInfo);
+			B9:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B9, FALSE, fbSourceInfo);
+			B10:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B10, FALSE, fbSourceInfo);
+			B11:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B11, FALSE, fbSourceInfo);
+			B12:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B12, FALSE, fbSourceInfo);
+			B13:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B13, FALSE, fbSourceInfo);
+			B14:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B14, FALSE, fbSourceInfo);
+			B15:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B15, FALSE, fbSourceInfo);
+			B16:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B16, FALSE, fbSourceInfo);
+			B17:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B17, FALSE, fbSourceInfo);
+			B18:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B18, FALSE, fbSourceInfo);
+			B20:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B20, FALSE, fbSourceInfo);
+			B25:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B25, FALSE, fbSourceInfo);
+			B30:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B30, FALSE, fbSourceInfo);
+			B40:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B40, FALSE, fbSourceInfo);
+			B99:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B99, FALSE, fbSourceInfo);
+			B100:
+				fbSourceInfo.Clear();
+				fbSourceInfo.sName := arrAlarms[i].sName;
+				fbAlarm[i].CreateEx(TC_Events.AlarmSystem.B100, FALSE, fbSourceInfo);
+			
+		END_CASE
+	END_FOR
+	
+ IF i>=222 THEN
+	 bInit:=1;
+ END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="RaiseAlarms" Id="{74ed3deb-ec15-4c2b-9834-aa170c346b41}">
+      <Implementation>
+        <ST><![CDATA[// COMMAND ALARMS BASED ON THE .B OF THE WIN WIND ALARM STUCTURE
+    //bRaiseAlarm[1] := FALSE;
+	IF arrAlarms[index2].b THEN
+   		fbAlarm[index2].ipArguments.Clear().AddString(arrAlarms[index2].Comment);
+    	fbAlarm[index2].Raise(0);
+	END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="P_EventLogger_TCSAlarms">
+      <LineId Id="9" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="P_EventLogger_TCSAlarms.ClearAlarms">
+      <LineId Id="4" Count="0" />
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="P_EventLogger_TCSAlarms.initAlarms">
+      <LineId Id="65" Count="0" />
+      <LineId Id="2" Count="7" />
+      <LineId Id="66" Count="1" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="68" Count="1" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="70" Count="1" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="72" Count="1" />
+      <LineId Id="16" Count="1" />
+      <LineId Id="74" Count="1" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="76" Count="1" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="78" Count="1" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="82" Count="1" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="84" Count="1" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="86" Count="1" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="88" Count="1" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="90" Count="1" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="92" Count="1" />
+      <LineId Id="36" Count="1" />
+      <LineId Id="94" Count="1" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="100" Count="1" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="102" Count="1" />
+      <LineId Id="48" Count="1" />
+      <LineId Id="104" Count="1" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="106" Count="1" />
+      <LineId Id="52" Count="1" />
+      <LineId Id="108" Count="1" />
+      <LineId Id="54" Count="1" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="56" Count="3" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="60" Count="2" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="P_EventLogger_TCSAlarms.RaiseAlarms">
+      <LineId Id="2" Count="1" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="4" Count="1" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

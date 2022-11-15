@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="Hydair_Data_Rcv" Id="{26e87841-56e8-42c8-9e3e-d525a21e832a}">
+    <Declaration><![CDATA[TYPE Hydair_Data_Rcv :
+STRUCT
+	stRam1_Sensors:Hydair_Ram_DataType;   (*MZ Ram*)
+	stRam2_Sensors:Hydair_Ram_DataType;	  (*My Ram*) 	
+	nFaultWord:UDINT;
+	nInstrumentStatus:UINT;
+	fHydr_Oil_Temp: REAL;
+	bOilTempTooHigh:BOOL;
+	bOfflineFilterClogged:BOOL;
+	bHeartBeatEcho:BOOL;
+	bMainPressureFilterClogged:BOOL;
+	bMainReturnFilterClogged:BOOL;
+	nHydairStateMachine:BYTE;
+	bSafetyResetCmd:BOOL;
+	bPassiveCtrlPermit:BOOL;
+	bHydairReadyToOperate:BOOL;
+	bHydairReadyToStartUp:BOOL;
+	bEstopActive:BOOL;
+	bActiveCtrlMode:BOOL;
+	bRam1ModeActual:BOOL;
+	bRam2ModeActual:BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

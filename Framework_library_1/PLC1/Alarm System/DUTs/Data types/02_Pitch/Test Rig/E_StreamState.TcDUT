@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_StreamState" Id="{43a3f311-25f4-40f5-b8f2-2905f683bcc7}">
+    <Declaration><![CDATA[TYPE E_StreamState :
+(
+	e_streamState_Pause := 0,
+	e_streamState_Start		:=1,
+	e_streamState_Select	:=2
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

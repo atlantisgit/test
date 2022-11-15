@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_LATState" Id="{94fe921f-33f9-4063-b70e-f0593a12ae76}">
+    <Declaration><![CDATA[TYPE E_LATState :
+(
+	eLAT_Stop :=0,
+	eLAT_Startup:=1,
+	eLAT_Ready:=2,
+	eLAT_InOperation:=3,
+	eLAT_Passive:=4
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_HydairState" Id="{3c296ba0-65fa-4020-9aaa-2f11e96922f2}">
+    <Declaration><![CDATA[TYPE E_HydairState:
+(
+	eHCS_At_rest :=0,
+	eHCS_CAN_Bus_Ready:=1,
+	eHCS_Start_Hydraulics:=2,
+	eHCS_Hydraulics_Ready:=3,
+	eHCS_In_Operation:=4,
+	eHCS_Passive:=5,
+	eHCS_Manual:=6,
+	eHCS_Safety_Tripped:=7
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

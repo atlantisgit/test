@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="J1939_Inputs" Id="{328f4083-8dd3-43c8-848c-3ff329543388}">
+    <Declaration><![CDATA[TYPE J1939_Inputs :
+STRUCT
+	TxCounter  : UINT;
+	RxCounter  : UINT;
+	NoOfRxMessages   : UINT;
+	RxMessage  : ARRAY [0..11] OF VARTYPE_EXTCANQUEUE;
+(*	NodeState  : USINT;
+	DiagFlag   : BOOL;*)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

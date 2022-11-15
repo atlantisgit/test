@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="E_AlarmState" Id="{ba35f058-df8f-452b-9377-01da1bbe4bd7}">
+    <Declaration><![CDATA[TYPE E_AlarmState :
+(
+	ActiveUnacknowledged			:= 1,
+	InactiveUnacknowledged			:= 2,
+	ActiveAcknowledged				:= 3,
+	InactiveAcknowledged			:= 4
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_Alarm_State_Alias" Id="{8ffe85af-ec4c-40bd-9382-453a34acac4c}">
+    <Declaration><![CDATA[TYPE ST_Alarm_State_Alias :
+STRUCT
+value : INT;
+data : ST_AliasAlarms;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

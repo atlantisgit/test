@@ -18,56 +18,306 @@
     <Released>false</Released>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DUTs\IO\stError_AnalogueInput.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\E_HydairState.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\IO\stHMI_AnalogueInput.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\E_LATState.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\IO\stHMI_DigitalInput.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\E_MainState.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\IO\stIOSensorTypes.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\Hydair_Data_Rcv.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\System\stHMI_Interlock.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\Hydair_Data_Send.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\System\stHMI_Permissive.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\Hydair_Ram_DataType.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\System\stHMI_SystemRunControl.TcDUT">
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\J1939_Inputs.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\J1939_outputs.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\ST_LoadSysCtrl.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\Hydair Data\VARTYPE_EXTCANQUEUE.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\PLCStruct.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\stLoadData.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\ST_BladePositionsEncoder.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\ST_DataSetEntry.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\02_Pitch\Test Rig\E_StreamState.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\E_AlarmGroups.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\E_AlarmNames.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\E_AlarmProgram.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\E_AlarmState.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\E_BrakeProgram.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\E_ResetMode.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_AlarmStructure.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_Alarm_State.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_Alarm_State_Alias.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_AliasAlarms.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_ProcessVariables.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_Repetition.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms\ST_RepetitionArray.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\03   STATUSCODES\ARR_ListOfStatuscodesToBeSent.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_01  Status Logger Objects\Intern\E_FileState_SC.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_01  Status Logger Objects\Intern\ST_FileSetup_SC.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_02  Event Logger\Logger Objects\E_DataType.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\E_IniNames.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\E_PitchState.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\Safety\ST_SafetyGroupData.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\Safety\ST_SafetyGroupTag.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\stSSB_TCSInterface.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EmailSend.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_in.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_InputChannel.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_InputDevice.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_out.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_OutputChannel.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_SlaveIn.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\DUTs\ST_EP9224_SlaveOut.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\AlarmArrays.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\ArrIni.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\ArrLastAlarms.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\GlobVar_GeneralLog_Privat.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\GlobVar_GeneralLog_Public.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\GlobVar_LibStatuscodeLogger_Privat.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\GlobVar_ToBeReplaced_Public.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\GVL_Static.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\Operation.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\ProgramVersions.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\01_General\TurbineData.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\A. Operation\Global_Variables.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\GVLs\GVL_EventLogger.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AlarmResetAccessCtrl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AlarmResets.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AnalogueAlarm.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_BrakeProgPriority.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_HeaderForLogging.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_MakeLoggString.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_SendEmail.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_StatusCodeLogger.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_WriteEventData.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_WriteEventData_Day.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\PRG_MAIN_StatuscodeLogger.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\PRG_Systemtime.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\P_AlarmHandling.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\P_AlarmTable.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\P_MainStatesAlarmCtrl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\P_ScadaAlarmsMapping.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\MAIN_R.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\PRG_TranslatorVarNames.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\TC3 EventLogger\AlarmWithCustomSourceInfo.TcPOU">
+      <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
+    </Compile>
+    <Compile Include="Alarm System\TC3 EventLogger\MultipleAlarmCreation.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\TC3 EventLogger\OtherAlarmsWithCustomSource.TcPOU">
+      <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
+    </Compile>
+    <Compile Include="Alarm System\TC3 EventLogger\P_EventLogger_TCSAlarms.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Alarm System\TC3 EventLogger\TestAlarmFB.TcPOU">
+      <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
+    </Compile>
+    <Compile Include="Base\Example\GVL\GVL_HMI.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="Base\Example\POU\POU_TestBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\DUT\stError_AnalogueInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\DUT\stHMI_AnalogueInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\DUT\stHMI_DigitalInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\DUT\stIOSensorTypes.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\POU\fbIO_AnalogueInput.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\POU\fbIO_AnalogueOutput.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\POU\fbIO_DigitalInput.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\System\DUT\stHMI_Interlock.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\System\DUT\stHMI_Permissive.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\System\DUT\stHMI_SystemRunControl.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\System\POU\FB_Interlock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\System\POU\FB_Permissive.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\System\POU\FB_SystemRunControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GVLs\HMI.TcGVL">
+    <Compile Include="MAIN.TcPOU">
       <SubType>Code</SubType>
-      <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\IO\fbIO_AnalogueInput.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\IO\fbIO_AnalogueOutput.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\IO\fbIO_DigitalInput.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\MAIN.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\System\FB_Interlock.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\System\FB_Permissive.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\System\FB_SystemRunControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Visualization Manager.TcVMO">
@@ -91,14 +341,47 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DUTs" />
-    <Folder Include="DUTs\IO" />
-    <Folder Include="DUTs\System" />
-    <Folder Include="GVLs" />
-    <Folder Include="POUs\IO" />
-    <Folder Include="POUs\System" />
+    <Folder Include="Alarm System\DUTs" />
+    <Folder Include="Alarm System\DUTs\02_Pitch" />
+    <Folder Include="Alarm System\DUTs\02_Pitch\Hydair Data" />
+    <Folder Include="Alarm System\DUTs\02_Pitch\Test Rig" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\Alarms" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\03   STATUSCODES" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_01  Status Logger Objects" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_01  Status Logger Objects\Intern" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_02  Event Logger" />
+    <Folder Include="Alarm System\DUTs\A. Operation_Ver2.10\02_Alarm_Handling\StausCodes\08  Logging %28Harddisk%29\_02  Event Logger\Logger Objects" />
+    <Folder Include="Alarm System\DUTs\Safety" />
+    <Folder Include="Alarm System\GVLs" />
+    <Folder Include="Alarm System\GVLs\A. Operation" />
+    <Folder Include="Alarm System\GVLs\A. Operation\01_General" />
+    <Folder Include="Alarm System\POUs" />
+    <Folder Include="Alarm System\POUs\01_Main_States" />
+    <Folder Include="Alarm System\POUs\02_Alarm_Handling" />
+    <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes" />
+    <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29" />
+    <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29\___General Function Blocks" />
+    <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29\___General Function Blocks\_01  Statuscode Logger" />
+    <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29\___General Function Blocks\_01  Statuscode Logger\Intern" />
+    <Folder Include="Alarm System\TC3 EventLogger" />
+    <Folder Include="Base\Example\GVL" />
+    <Folder Include="Base\Example\POU" />
+    <Folder Include="Alarm System" />
+    <Folder Include="Base" />
+    <Folder Include="Base\IO" />
+    <Folder Include="Base\IO\DUT" />
+    <Folder Include="Base\IO\GVL" />
+    <Folder Include="Base\IO\POU" />
+    <Folder Include="Base\Example" />
+    <Folder Include="Base\System" />
+    <Folder Include="Base\System\DUT" />
+    <Folder Include="Base\System\GVL" />
+    <Folder Include="Base\System\POU" />
     <Folder Include="VISUs" />
-    <Folder Include="POUs" />
   </ItemGroup>
   <ItemGroup>
     <PlaceholderReference Include="System_VisuElemMeter">
@@ -151,6 +434,14 @@
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
     </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_EventLogger">
+      <DefaultResolution>Tc3_EventLogger, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_EventLogger</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc3_Module</Namespace>
@@ -162,6 +453,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <LibraryReference Include="Alarms Library,0.1,Atlantis">
+      <Namespace>Alarms_Library</Namespace>
+    </LibraryReference>
+    <LibraryReference Include="EASME Library Files,0.1,Atlantis">
+      <Namespace>EASME_Library_Files</Namespace>
+    </LibraryReference>
     <LibraryReference Include="VisuSymbols,3.5.10.0,System">
       <Namespace>VisuSymbols</Namespace>
     </LibraryReference>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_Repetition" Id="{6131c2f3-5d98-4fe3-8049-49e94b6b3dfa}">
+    <Declaration><![CDATA[TYPE ST_Repetition :
+STRUCT
+	Number: INT;(* Number of alarms within certain time *)
+	Period: INT; (* Time within certain number of alarms may occur, minutes *)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

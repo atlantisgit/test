@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_AnalogueAlarm" Id="{6ee55c3c-12e3-458d-ab08-934455aa064c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AnalogueAlarm
+VAR_INPUT
+	fIn: LREAL;
+	bLessThan: BOOL;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	bAlarmActive: BOOL;
+	iLT_Counter: UINT;
+	iGT_Counter: UINT;
+END_VAR
+VAR_IN_OUT
+	stAlarmStruct:ST_AlarmStructure;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bLessThan THEN
+
+	IF fIn < stAlarmStruct.Param1.Set AND NOT stAlarmStruct.b THEN
+		bAlarmActive := TRUE;
+
+	ELSIF 	(fIn >= stAlarmStruct.Param1.Set AND NOT stAlarmStruct.b) OR
+			(fIn >= stAlarmStruct.Param2.Set AND stAlarmStruct.b) THEN
+		bAlarmActive := FALSE;
+
+	END_IF
+
+	iLT_Counter := iLT_Counter + 1;
+
+ELSIF NOT bLessThan THEN
+
+	IF fIn > stAlarmStruct.Param1.Set AND NOT stAlarmStruct.b THEN
+		bAlarmActive := TRUE;
+
+	ELSIF 	(fIn <= stAlarmStruct.Param1.Set AND NOT stAlarmStruct.b) OR
+			(fIn <= stAlarmStruct.Param2.Set AND stAlarmStruct.b) THEN
+		bAlarmActive := FALSE;
+
+	END_IF
+
+	iGT_Counter := iGT_Counter + 1;
+
+END_IF
+
+stAlarmStruct.a := bAlarmActive;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_AnalogueAlarm">
+      <LineId Id="25" Count="25" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="67" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

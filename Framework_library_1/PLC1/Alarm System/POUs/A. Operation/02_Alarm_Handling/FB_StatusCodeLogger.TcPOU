@@ -1,0 +1,685 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_StatusCodeLogger" Id="{45c97ffb-3963-4c5d-85cc-52e00fae6d5f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_StatusCodeLogger
+(**********************************************************************************)
+(**********************************************************************************)
+(*  	VERSION:				001.007
+
+  	PROGRAMMED BY:		Puja
+  	Changed BY:				Hardy Patommel
+	DATE:					2009-01-21
+*)							               				 			
+(*-------------------------------------------------------------------------------------------------------*)
+ (*  	REVISIONS:
+   	Date		|	Version/Author 		|	Remark
+	----------------------------------------------------------------------------------------------------
+	25-06-2007	|	001.001     HP			|	modified error handling
+ 	2009-10-26	|	003.001 RM			|	Prepared for Library
+		                									 
+*)
+(*--------------------------------------------------------------------------------------------------------*)
+(*  	DESCRIPTION:
+	The size of  strings must correspond with the event - structure length in the ring buffer
+	memory
+	Function block------			
+	- sTimeStamp[24]			
+	- sKeyAndText[23]			sTrigEventText[80]	>> uiKeyAndTextLen; uiTextLen (*max using length is [uiKeyAndTextLen - sKeySize]*)
+	- sUserName[23]			sUserName[24]
+	- sBrakeProgram[4]
+
+	Ring buffer-----------
+	TYPE ST_LoggedEvent_SC :
+	STRUCT
+	gtTimeStampUTC	: STRING[23];	(* Time the Statuscode becomes true *)
+	gsTrigEvent		: STRING[guiKeyAndTextLen];	(* STRING[91]*)	(*max using length is [uiKeyAndTextLen - sKeySize]*) 
+	gsUserName		: STRING[24];	(* name of the user who had the Active Status to do the operation *)
+	gsBrakeProgram	: STRING[4];
+	Text
+*)
+(**********************************************************************************)
+(**********************************************************************************)
+VAR_INPUT
+	bTrigEvent				: BOOL;
+	sTimeStamp				: STRING[24];
+	sTrigEventKey			: STRING[9];					(*sKeySize*)
+	sTrigEventText			: STRING[guiKeyAndTextLen]; 	(*max using length is [uiKeyAndTextLen - sKeySize]*)
+	sUserName				: STRING[24];
+	sBrakeProgram			: STRING[4];
+	udNumberOfEventDatas	: UDINT;
+	dwArrDataAdr			: ARRAY [1..NUMBER_OF_EVENT_DATAS] OF DWORD;
+	udArrDataSize			: ARRAY [1..NUMBER_OF_EVENT_DATAS] OF UDINT;
+	eDataType				: ARRAY [1..NUMBER_OF_EVENT_DATAS] OF E_DataType;
+	sHeaderOfEventData		: ARRAY [1..giGeneralLoggerChannelInUsed] OF STRING(giGeneralLenghtOfName);
+	dwLoggedEventAdr		: DWORD;
+	udLoggedEventSize		: UDINT;
+	stFileSetup				: ST_FileSetup_SC;
+	bWriteDayFile			: BOOL;
+	stFileSetupDayFile		: ST_FileSetup_SC;
+
+	CheckLog:		BOOL;
+	ResetErrCnt:		BOOL;
+END_VAR
+VAR_OUTPUT
+	bError					: BOOL;
+	nErrID					: UDINT;
+END_VAR
+VAR
+	bInitNovRAM				: BOOL := TRUE;
+	bInit						: BOOL := TRUE; (*Used for the logger initialisation*)
+
+	sKeyAndText				: STRING[guiKeyAndTextLen];
+	udCurrentAddIndex		: UDINT;
+	udOldestAddIndex			: UDINT;
+	udUsedVal				: UDINT;
+	udNumberOfValues		: UDINT;
+	udCounter				: INT;
+	dwBufferStartAdr 			: DWORD;
+	dwBufferEndAdr			: DWORD;
+	dwTransferBufferStartAdr 	: DWORD;
+	dwTransferBufferEndAdr 	: DWORD;
+	udSizeOfeachBlock		: UDINT;
+	udOldValuesToBeCopied	: UDINT;
+	iNewValues	 			: INT;
+	iNumberOfValues			: INT;
+	iNumberOfEventDatas		: INT;
+	i						: INT;
+	bWriteData				: BOOL; (* indicate ready to write *)
+	sTab					: STRING[2] := '$T';
+	sLineFeed				: STRING[4] := '$R$N';
+	iEntriesWritten			: INT;
+	iAddOffset				: INT;
+	bCheck					: BOOL;
+	iIdx						: INT := 1;
+	state					: INT;
+	fbWriteEventData			: FB_WriteEventData;
+	fbWriteEventData_Day		: FB_WriteEventData_Day;
+	bWriteDayFileCopy		: BOOL;
+	bInitError					: BOOL;
+	rTrigErrorWriteData1		: R_TRIG; (*for diagnostic*)
+	rTrigErrorWriteData2		: R_TRIG; (*for diagnostic*)
+	iErrCounterEventData		: UINT;
+	iErrCounterEventData_Day	: UINT;
+	ar_iAddOffset				: ARRAY [1..4] OF INT;
+	udValuesNotWritten		: UDINT;
+	strPathNameTemp		: T_MaxString;
+	uiCheckEntryLength		: UINT;		(*for check the length for ring buffer entry size*)
+	iSizeOf					: INT;
+	uiCheckLenghtError		: UINT;		(*Counter of length error*)
+	strLastKeyError			: STRING[guiKeyAndTextLen];
+	uiLENsTrigEventText		: UINT;		(*actual length of Statuscode description*)
+	uiLENsMaxText			: UINT;
+END_VAR
+VAR PERSISTENT
+	nNextPointerLoc			: DINT; (*next entry line ring buffer Statuscode, persistent declaration for pc system without novram*)
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*========== START OF FUNCTION_BLOCK / PROGRAMM ============*)
+
+	(*==========================================================*)
+	(*  				Initialisation (Read from Novram)				       *)
+	(*==========================================================*)
+(*	IF gbReadFromNovram AND NOT gbRestoreFromNovram_StatuscodeLogger THEN							(*NEEDED?*)
+		nNextPointerLoc:= strucFromNOVRAM.iRingBuffer_NextPointerLocation;
+		gbRestoreFromNovram_StatuscodeLogger:= TRUE;
+		bInitNovRAM:= FALSE;
+	ELSIF NOT gbReadFromNovram THEN
+		bInitNovRAM:= FALSE;
+	END_IF;
+	
+*)
+		bInitNovRAM:= FALSE;																				(*NEEDED? just added; when oben aktiviert, nicht benötigt*)
+
+	(*==========================================================*)
+	(*  Counter for diagnostic   *)
+	(*==========================================================*)
+	IF ResetErrCnt THEN																					(*NEEDED?*)
+		iErrCounterEventData 		:= 0;
+		iErrCounterEventData_Day 	:= 0;
+	END_IF
+
+
+	CASE state OF
+		0:
+		(* wait for the entries *)
+		fbWriteEventData( bExecute:= FALSE,nNextPointerLoc	:= nNextPointerLoc,);
+		IF bWriteData AND NOT bInitNovRAM THEN (* if entries available and sorted *)
+			fbWriteEventData(
+				bExecute				:= bWriteData,
+				sNetId					:= stFileSetup.sNetId,
+				sPathName				:= stFileSetup.sPathName,
+				dwTransferBufferStartAdr	:= dwTransferBufferStartAdr,
+				iNewValues				:= (iIdx-1),
+				udNumberofValues		:= udNumberofValues,
+				udArrDataSize			:= udArrDataSize,
+				udNumberOfEventDatas	:= udNumberOfEventDatas,
+				sHeaderOfEventData	:= sHeaderOfEventData,
+				iHeaderLEN				:= giRingBufferFileHeaderLEN,
+				eDataType				:= eDataType,
+				nNextPointerLoc			:= nNextPointerLoc,
+				bBusy					=> ,
+				bDone					=> ,
+				bError					=> bError,
+				nErrId					=> nErrId );
+
+			IF bWriteDayFile THEN
+
+				(* Get the right name by initialization and
+				   Change the path name by every day for the unlimited event logger file..*)
+				(*+++++++++++++++++++++++++++++++++++++++++++++++++++++*)
+				IF Lib_strucSystemTime.wDay <> gwNewDayForLogger THEN
+					strPathNameTemp :='j'(*  FUN_DateFileNameWithSpace(gsSC_PathName, Lib_strucSystemTime,'')ACTION*) ;
+					strPathNameTemp := CONCAT(strPathNameTemp ,'  ');
+					fbSCLogger.stFileSetupDayFile.sTotalName :=  CONCAT(strPathNameTemp,fbSCLogger.stFileSetupDayFile.sName);
+				END_IF
+				gwNewDayForLogger := Lib_strucSystemTime.wDay;
+
+				fbWriteEventData_Day(
+					bExecute				:= bWriteData,
+					sNetId					:= stFileSetupDayFile.sNetId,
+					sPathName				:= stFileSetupDayFile.sTotalName,
+					dwTransferBufferStartAdr:= dwTransferBufferStartAdr,
+					iNewValues				:= (iIdx-1),
+					udNumberofValues		:= udNumberofValues,
+					udArrDataSize			:= udArrDataSize,
+					udNumberOfEventDatas	:= udNumberOfEventDatas,
+					sHeaderOfEventData		:= sHeaderOfEventData,
+					eDataType				:= eDataType,
+					bBusy					=> ,
+					bDone					=> ,
+					bError					=> bError,
+					nErrId					=> nErrId );
+				bWriteDayFileCopy		:= TRUE;
+			ELSE
+				bWriteDayFileCopy		:= FALSE;
+			END_IF
+
+			bWriteData := FALSE;
+			state := 1;
+		END_IF
+
+		1:
+		(* wait for the entries to be written *)
+		fbWriteEventData( nNextPointerLoc:= nNextPointerLoc,);
+		IF bWriteDayFileCopy THEN
+			fbWriteEventData_Day( );
+		END_IF
+		IF NOT fbWriteEventData.bBusy
+	           AND ( (bWriteDayFileCopy AND NOT fbWriteEventData_Day.bBusy) OR NOT bWriteDayFileCopy)
+		    THEN
+			fbWriteEventData( bExecute:= FALSE,nNextPointerLoc	:= nNextPointerLoc,);
+			fbWriteEventData_Day(bExecute := FALSE);
+
+			(*==========================================================*)
+			(*  Counter for diagnostic   *)
+			(*==========================================================*)
+			rTrigErrorWriteData1(CLK:=fbWriteEventData.bError);
+			IF rTrigErrorWriteData1.Q THEN
+				iErrCounterEventData := iErrCounterEventData + 1;
+			END_IF
+			rTrigErrorWriteData2(CLK:=fbWriteEventData_Day.bError);
+			IF rTrigErrorWriteData2.Q THEN
+				iErrCounterEventData_Day := iErrCounterEventData_Day + 1;
+			END_IF
+
+
+			IF NOT fbWriteEventData.bBusy
+			    AND ( (bWriteDayFileCopy AND NOT fbWriteEventData_Day.bError) OR NOT bWriteDayFileCopy)
+	                  THEN
+				(* discard the values already written in file from transfer buffer;
+				    move the next values up to the first memory place [first place in the second memory part],make space for later entries *)
+				udValuesNotWritten := iIdx-1-fbWriteEventData.udValuesWritten;
+				MEMMOVE(
+					dwTransferBufferStartAdr,
+					dwTransferBufferStartAdr+(fbWriteEventData.udValuesWritten * iOneEntrySize) ,
+					udValuesNotWritten * iOneEntrySize);
+				(* clear the later space after the values are not written *)
+
+				MEMSET(
+					dwTransferBufferStartAdr+(udValuesNotWritten * iOneEntrySize),
+					00,
+					(udNumberofValues - 1 - udValuesNotWritten) * iOneEntrySize);
+
+	iIdx := iIdx - UDINT_TO_INT(fbWriteEventData.udValuesWritten);
+				state := 0;
+			END_IF
+
+			IF  NOT fbWriteEventData.bBusy AND NOT  fbWriteEventData.bBusy AND
+		 	     NOT	fbWriteEventData.bError AND NOT fbWriteEventData_Day.bError THEN
+				state := 0;
+			ELSIF (fbWriteEventData.bError OR fbWriteEventData_Day.bError) THEN
+				bError:=TRUE;
+				state := 0;
+			END_IF
+		END_IF
+
+	END_CASE
+
+
+	(*==========================================================*)
+	(*  Write to Novram  *)
+	(*==========================================================*)
+(*	IF NOT bInitNovRAM  AND gbEmbeddedHardwareDetected THEN											(*NEEDED?*)
+	
+		strucToNOVRAM.iRingBuffer_NextPointerLocation:= nNextPointerLoc;
+
+	END_IF
+*)
+(*=========== END OF FUNCTION_BLOCK / PROGRAMM =============*)]]></ST>
+    </Implementation>
+    <Action Name="M_AddEvent" Id="{d29b1d33-41dc-485c-b91c-431df5803bdc}">
+      <Implementation>
+        <ST><![CDATA[IF bInit THEN
+	M1_Init( );
+END_IF
+
+(* Perform various checks *)
+M2_Check( );
+
+(* if no error and trigger event then add the entries *)
+IF NOT bInitError AND bTrigEvent
+THEN
+	iNewValues := iNewValues + 1;		(* count the number of new entries added *)
+	IF udCurrentAddIndex = 0 THEN
+		udCurrentAddIndex := 1;			(* current index; where the newest entry is located *)
+	ELSE
+		udCurrentAddIndex := udCurrentAddIndex + 1;
+		IF udCurrentAddIndex > udNumberofValues THEN (* current index; wrap around if max reached *)
+			udCurrentAddIndex := 1;
+		END_IF
+	END_IF
+	IF udCounter < udNumberOfValues THEN
+		udUsedVal := udUsedVal + 1;			(* used index; the number of used entries; once udNumberOfValues reached remains constant to udNumberOfValues *)
+	ELSE
+		udUsedVal := udNumberofValues;
+	END_IF
+
+	IF udUsedVal < udNumberofValues THEN
+		udOldestAddIndex := 1;				(* oldest index; wrap around if max reached *)
+	ELSIF udUsedVal = udNumberofValues THEN
+		udOldestAddIndex := udCurrentAddIndex + 1;
+		IF udOldestAddIndex > udNumberofValues THEN		(* oldest index; where the oldest entry is located *)
+			udOldestAddIndex := udOldestAddIndex - udNumberofValues;
+		END_IF
+	END_IF
+
+(*========================================================================*)
+(*		 limit description to    STRING[guiKeyAndTextLen];						   *)
+(*		 max using length is [uiKeyAndTextLen - sKeySize]                                                     *)
+(*=========================================================================*)
+	sKeyAndText 			:= CONCAT(sTrigEventKey,'   ');  (* 3 spaces *)
+	uiLENsTrigEventText 	:= LEN(sTrigEventText);
+	uiLENsMaxText 		:= SIZEOF(sTrigEventText) - LEN(sKeyAndText);
+	IF (uiLENsTrigEventText>uiLENsMaxText) THEN
+		sTrigEventText := MID(sTrigEventText,0,uiLENsMaxText);
+	END_IF
+	sKeyAndText := CONCAT(sKeyAndText,sTrigEventText);
+
+	iAddOffset := UDINT_TO_INT(udCurrentAddIndex-1) * iOneEntrySize; (* calculate the offset to be added according to the current index number *)
+
+(*========================================================================*)
+(*     fuse the key and text for trigger event together into one string, copy other values        *)
+(*========================================================================*)
+	(* Add the entry into the buffer *)
+	(* Timestamp ------------------------------------- *)
+
+	MEMCPY(dwBufferStartAdr + iAddOffset,ADR(sTimeStamp),SIZEOF(sTimeStamp));
+	iSizeOf 			:= SIZEOF(sTimeStamp);
+	iAddOffset 		:= iAddOffset + iSizeOf;
+	uiCheckEntryLength:= iSizeOf; 					(* check entry length *)
+
+	(* Key and the description -------------------- *)
+	MEMCPY(dwBufferStartAdr + iAddOffset,ADR(sKeyAndText),SIZEOF(sKeyAndText));
+	iSizeOf 			:= SIZEOF(sKeyAndText);
+	iAddOffset 		:= iAddOffset + iSizeOf;
+	uiCheckEntryLength:= uiCheckEntryLength + iSizeOf; 	(* check entry length *)
+
+	(* User name --------------------------------------- *)
+	MEMCPY(dwBufferStartAdr + iAddOffset,ADR(sUserName),SIZEOF(sUserName));
+	iSizeOf 			:= SIZEOF(sUserName);
+	iAddOffset 		:= iAddOffset + iSizeOf;
+	uiCheckEntryLength:= uiCheckEntryLength + iSizeOf; 	(* check entry length *)
+
+	(* Brake program --------------------------------------- *)
+	MEMCPY(dwBufferStartAdr + iAddOffset,ADR(sBrakeProgram),SIZEOF(sBrakeProgram));
+	iSizeOf 			:= SIZEOF(sBrakeProgram);
+	iAddOffset 		:= iAddOffset + iSizeOf;
+	uiCheckEntryLength:= uiCheckEntryLength + iSizeOf; 	(* check entry length *)
+
+
+
+(*========================================================================*)
+(*				 process value for logging only for real-type                                                  *)
+(*=========================================================================*)
+	(* copy the event datas into memory *)
+	FOR i := 1 TO iNumberOfEventDatas DO
+
+		CASE eDataType[i] OF
+			(* Delete other type of data*)
+
+
+			eReal :
+
+				MEMCPY(dwBufferStartAdr + iAddOffset, dwArrDataAdr[i], udArrDataSize[i]);
+				ar_iAddOffset[i] := iAddOffset;
+				iAddOffset := iAddOffset + UDINT_TO_INT(udArrDataSize[i]);
+
+		END_CASE
+
+
+		iSizeOf 		:= UDINT_TO_INT(udArrDataSize[i]);
+		uiCheckEntryLength:= uiCheckEntryLength + iSizeOf; 	(* check entry length *)
+
+	END_FOR
+
+(*========================================================================*)
+(*				 Check length of data and the buffer entry size in the array		              *)
+(*=========================================================================*)
+	IF (uiCheckEntryLength>iOneEntrySize ) THEN
+		uiCheckLenghtError := uiCheckLenghtError + 1;
+		strLastKeyError := sKeyAndText;
+	END_IF
+
+	bCheck := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="M_CheckEvent" Id="{be44c7c5-bd1f-4702-959b-d948e9b7ce33}">
+      <Implementation>
+        <ST><![CDATA[(* At the end of the PLC cycle Check the data and order in ascending sequence *)
+IF bCheck THEN (* bcheck is set to true by M_AddEvent; which means when no events or M_AddEvent not called, no data exists and hence no check performed *)
+
+	iNumberOfValues := UDINT_TO_INT(udNumberofValues);		(* copy udint into int form *)
+
+	(* if fill the buffer from beginning then reset the whole buffer *)
+	IF iIdx = 1 THEN
+		MEMSET(dwTransferBufferStartAdr,00,udSizeOfeachBlock);		(* reset the buffer *)
+	END_IF
+
+	(* see if all the new values fit into transfer buffer, else reassign New values to fitting number of values *)
+	IF (iIdx + iNewValues) > (iNumberOfValues - 1) THEN
+		iNewValues := (iNumberOfValues - 1) - iIdx;
+	END_IF
+
+	(* Copy the entries into transfer buffer *)
+	IF udCurrentAddIndex >= iNewValues THEN 				(* If current index went once round the ring and is less then the new events added, which means some new events at the end of Ring Buffer and some in the beginning *)
+		(* if New values are less than the current index that means all the values are in the beginning *)
+		MEMCPY(
+			dwTransferBufferStartAdr+((iIdx-1)*iOneEntrySize),
+			dwBufferStartAdr+((udCurrentAddIndex - iNewValues)*iOneEntrySize),
+			iNewValues*iOneEntrySize);
+
+
+	ELSE
+		(* if new values is greater than the current index that means some are at the end and rest in the beginning of the bufffer *)
+		udOldValuesToBeCopied := iNewValues - udCurrentAddIndex;
+
+		MEMCPY(
+			dwTransferBufferStartAdr+((iIdx-1)*iOneEntrySize),
+			dwBufferStartAdr+((udNumberofValues - udOldValuesToBeCopied)*iOneEntrySize),
+			udOldValuesToBeCopied*iOneEntrySize);
+
+		MEMCPY(
+			dwTransferBufferStartAdr+((iIdx-1+udOldValuesToBeCopied)*iOneEntrySize),
+			dwBufferStartAdr,
+			udCurrentAddIndex*iOneEntrySize);
+	END_IF
+
+(*========================================================================*)
+(*                                                      to sort out key number                                                                      *)
+(*========================================================================*)
+(*																									(*WIESO ausgeklammert?*)
+	jIdx := iIdx;
+	FOR i := iIdx TO (iIdx - 1 + iNewValues) DO		(* for loop from new index value to the number of new values *)
+
+		MEMCPY(
+			ADR(sKeyAndText_1),
+			dwTransferBufferStartAdr+((i-1)*iOneEntrySize)+ SIZEOF(sTimeStamp),
+			SIZEOF(sTrigEvent));
+
+		sKeyAndText_1 := LEFT (sKeyAndText_1,(FIND(sKeyAndText_1,'   '))-1); (*01_05_001*)
+		sKeyAndText_1 := DELETE (sKeyAndText_1,1,3);(*0105_001*)
+		sKeyAndText_1 := DELETE (sKeyAndText_1,1,5); (*0105001*)
+		udKeyAndText_1 := STRING_TO_UDINT(sKeyAndText_1);
+		(* Arrange the key in an ascending order *)
+		FOR j := jIdx TO (jIdx -1 + iNewValues) DO
+			MEMCPY(
+				ADR(sKeyAndText_2),
+				dwTransferBufferStartAdr+((j-1)*iOneEntrySize)+SIZEOF(sTimeStamp),
+				SIZEOF(sTrigEvent));
+
+			sKeyAndText_2 := LEFT (sKeyAndText_2,(FIND(sKeyAndText_2,'   '))-1); (*01_05_001*)
+			sKeyAndText_2 := DELETE (sKeyAndText_2,1,3);(*0105_001*) (* delete underscore *)
+			sKeyAndText_2 := DELETE (sKeyAndText_2,1,5); (*0105001*) (* delete underscore *)
+			udKeyAndText_2 := STRING_TO_INT(sKeyAndText_2);	(* convert string to a number for the necessary checks to sort *)
+			IF udKeyAndText_1 < udKeyAndText_2 THEN
+				(* use last memory address as temp memory space for comparison *)
+				MEMCPY(
+					dwTransferBufferStartAdr+((iNumberOfValues-1)*iOneEntrySize),
+					dwTransferBufferStartAdr+((j-1)*iOneEntrySize),
+					iOneEntrySize);
+				MEMCPY(
+					dwTransferBufferStartAdr+((j-1)*iOneEntrySize),
+					dwTransferBufferStartAdr+((i-1)*iOneEntrySize),
+					iOneEntrySize);
+				MEMCPY(
+					dwTransferBufferStartAdr+((i-1)*iOneEntrySize),
+					dwTransferBufferStartAdr +((iNumberOfValues-1)*iOneEntrySize),
+					iOneEntrySize);
+
+				udKeyAndText_1 := udKeyAndText_2;			(*exchange the strings *)
+			END_IF
+		END_FOR
+	END_FOR
+	(*========================================================================*)
+	(*                                                 end  to sort out key number                                                                  *)
+	(*========================================================================*)
+*)
+	bCheck := FALSE;			(* Checking done *)
+	iIdx := iIdx + iNewValues;	(* calculate where the index stands; increment the value of index by number of new values *)
+
+	iEntriesWritten := iEntriesWritten + iNewValues;		(* Count the number of entries written *)
+	IF iEntriesWritten > udNumberofValues THEN				(* If overflow then calculate relative count *)
+		iEntriesWritten := UDINT_TO_INT(udNumberofValues - INT_TO_UDINT(iEntriesWritten));
+	END_IF
+
+	IF (iIdx-1) > 0 AND state = 0 THEN
+		bWriteData := TRUE;
+	END_IF
+	iNewValues := 0;				(* reset the new values counter to zero *)
+
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="M1_Init" Id="{ce1b376a-3325-446c-8db2-6e15fbe146bd}">
+      <Implementation>
+        <ST><![CDATA[bInit := FALSE;
+
+iOneEntrySize := 0;				(* size of event in memory *)
+iOneEntrySize := 	SIZEOF(sTimeStamp)+
+				SIZEOF(sTrigEventText)+  (*before sTrigEvent*)
+					SIZEOF(sUserName) +
+					SIZEOF(sBrakeProgram);
+
+iOneEntryLength := 0;			(* length of the event when written in file *)
+iOneEntryLength :=	SIZEOF(sTimeStamp) +
+					LEN(sTab) +
+				SIZEOF(sTrigEventText)+  (*before SIZEOF(sTrigEventKey) + SIZEOF(sTrigEventText)+*)
+					LEN(sTab) +
+					SIZEOF(sUserName) +
+					LEN(sTab) +
+					SIZEOF(sBrakeProgram) +
+					LEN(sTab);
+
+iNumberOfEventDatas := UDINT_TO_INT(udNumberOfEventDatas);
+
+(* Check the data type of all the required event datas; calculate entry length and size accordingly *)
+FOR i := 1 TO iNumberOfEventDatas DO
+	CASE eDataType[i] OF
+		eBool :
+			iOneEntryLength := iOneEntryLength + 5;			(* when converted into string *)
+			iOneEntrySize := iOneEntrySize +  UDINT_TO_INT(udArrDataSize[i]);
+
+		eReal :
+			iOneEntryLength := iOneEntryLength + 17;		(* when converted into string *)
+			iOneEntrySize := iOneEntrySize +  UDINT_TO_INT(udArrDataSize[i]);
+
+	END_CASE
+	IF i < udNumberOfEventDatas THEN
+		iOneEntryLength := iOneEntryLength + LEN(sTab);	(* calculate the tabs too into the length of string *)
+	ELSE
+		iOneEntryLength := iOneEntryLength + LEN(sLineFeed);	(* calculate the linefeed too into the length of string *)
+	END_IF
+
+END_FOR
+
+IF ((udLoggedEventSize/2) MOD iOneEntrySize) = 0 THEN		(* Check if all the data fits into the given memory block *)
+	udSizeOfeachBlock := udLoggedEventSize/2;
+	udNumberofValues := udLoggedEventSize/ (iOneEntrySize *2);	(* calculate the number of events that can be logged *)
+	(* calulate the start and end addresses of the buffer *)
+	dwBufferStartAdr := dwLoggedEventAdr;
+	dwBufferEndAdr	:= dwLoggedEventAdr + udLoggedEventSize/2;
+	dwTransferBufferStartAdr := dwBufferEndAdr;
+	dwTransferBufferEndAdr := dwLoggedEventAdr + udLoggedEventSize;
+ELSE
+	bInitError := TRUE;	(* size not appropriate *)
+	nErrId := 1;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="M2_Check" Id="{58c5249c-757b-4e15-aae0-57347c87f0e0}">
+      <Implementation>
+        <ST><![CDATA[(* check if the file path is given *)
+IF LEN(stFileSetup.sPathName)= 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: FilePath is empty; %s',
+				strArg := stFileSetup.sPathName);
+	RETURN;
+END_IF
+(* check if the file path is given for Day file *)
+IF bWriteDayFile AND LEN(stFileSetupDayFile.sPathName)= 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: FilePath_DayFile is empty; %s',
+				strArg := stFileSetupDayFile.sPathName);
+	RETURN;
+END_IF
+(* If same file name for RingBufferFile and for EventDayFile *)
+IF bWriteDayFile AND (stFileSetup.sPathName = stFileSetupDayFile.sPathName)
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Same file path given; %s',
+				strArg := stFileSetupDayFile.sPathName);
+	RETURN;
+END_IF
+
+(* Check the start, end addresses of buffers *)
+IF dwBufferStartAdr = 0 OR dwBufferEndAdr = 0 OR
+   dwTransferBufferStartAdr = 0 OR dwTransferBufferEndAdr = 0
+THEN
+	ADSLOGDINT( msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer Size does not match; Buffer Addresses zero; %s',
+				dintArg := MIN(dwBufferStartAdr,MIN(dwBufferEndAdr,MIN(dwTransferBufferStartAdr,dwTransferBufferEndAdr))));
+	RETURN;
+END_IF
+
+(* If entry length in file larger than 255, string operations like CONCAT, LEN do not work *)
+IF iOneEntryLength > 255
+THEN
+	ADSLOGDINT( msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Entry of one event is greater 255; %s',
+				dintArg := iOneEntryLength);
+	RETURN;
+END_IF
+
+(* Check the entry size in memory *)
+IF iOneEntrySize = 0
+THEN
+	ADSLOGDINT( msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer size is Zero; %d',
+				dintArg := iOneEntrySize);
+	RETURN;
+END_IF
+
+(* Check if the trigger event key is not empty *)
+IF sTrigEventKey = ''
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: TrigEventKey is empty; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF
+
+(* Check if the trigger event key is according to the format*)
+IF LEN(sTrigEventKey) < SIZEOF(sTrigEventKey)-1
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: TrigEventKey length not as per defined; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF
+
+(* Check if the Buffer start address is not zero; nonassigned *)
+IF dwBufferStartAdr = 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer start address is 0; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF
+
+(* Check if the Buffer end address is not zero; nonassigned *)
+IF dwBufferEndAdr = 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer end address is 0; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF
+
+(* Check if the transfer Buffer start address is not zero; nonassigned *)
+IF dwTransferBufferStartAdr = 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer start address is 0; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF
+
+(* Check if the transfer Buffer end address is not zero; nonassigned *)
+IF dwTransferBufferEndAdr = 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer end address is 0; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF
+
+(* Check if the size of block is nonzero; nonassigned *)
+IF udSizeOfeachBlock = 0
+THEN
+	ADSLOGSTR( 	msgCtrlMask := ADSLOG_MSGTYPE_WARN,
+				msgFmtStr := 'PLC Msg: Buffer size is 0; %s',
+				strArg := sTrigEventKey);
+	RETURN;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="FB_StatusCodeLogger">
+      <LineId Id="112" Count="151" />
+    </LineIds>
+    <LineIds Name="FB_StatusCodeLogger.M_AddEvent">
+      <LineId Id="0" Count="112" />
+    </LineIds>
+    <LineIds Name="FB_StatusCodeLogger.M_CheckEvent">
+      <LineId Id="0" Count="102" />
+    </LineIds>
+    <LineIds Name="FB_StatusCodeLogger.M1_Init">
+      <LineId Id="0" Count="51" />
+    </LineIds>
+    <LineIds Name="FB_StatusCodeLogger.M2_Check">
+      <LineId Id="0" Count="114" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

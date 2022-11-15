@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_LoadSysCtrl" Id="{1bba93fe-88f2-44d8-a1f0-e1d23773265f}">
+    <Declaration><![CDATA[TYPE ST_LoadSysCtrl :
+STRUCT
+	bDisablePassive: BOOL; (* Returns to AT_REST_POWER_ON *)
+	rRam1_LoadDemand: REAL;
+	rRam2_LoadDemand: REAL;
+	rRam3_LoadDemand: REAL;
+	bHeartbeat: BOOL;
+	bStartUpCmd: BOOL; (* Start Hydraulics *)
+	bOperateCmd: BOOL; (* Activate Load Control *)
+	bPitchEFCActive: BOOL;
+	bSafetyResetCmd: BOOL;
+	bPassiveCtrlActive: BOOL;
+	bGoToReady: BOOL;
+	bGoToStop: BOOL;
+	bRampDemand: BOOL;
+	bStepDemand: BOOL;
+	bStopCmd: BOOL; (* Stop Hydraulics *)
+	bProfileStreamDemand: BOOL;
+	bRam1ModeCmd: BOOL;   (*Mz Ram, 1=Float, 0=Closed loop*)
+	bRam2ModeCmd: BOOL;	   (*My Ram 1= Float , 0=Closed Loop*)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>
