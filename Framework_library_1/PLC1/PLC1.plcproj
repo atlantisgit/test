@@ -195,6 +195,7 @@
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AlarmResetAccessCtrl.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AlarmResets.TcPOU">
       <SubType>Code</SubType>
@@ -207,9 +208,11 @@
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_HeaderForLogging.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_MakeLoggString.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_SendEmail.TcPOU">
       <SubType>Code</SubType>
@@ -220,9 +223,11 @@
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_WriteEventData.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_WriteEventData_Day.TcPOU">
       <SubType>Code</SubType>
+      <ExcludeFromBuild>true</ExcludeFromBuild>
     </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\PRG_MAIN_StatuscodeLogger.TcPOU">
       <SubType>Code</SubType>
