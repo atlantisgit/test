@@ -193,6 +193,9 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
+    <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AlarmHandler.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Alarm System\POUs\02_Alarm_Handling\FB_AlarmResetAccessCtrl.TcPOU">
       <SubType>Code</SubType>
       <ExcludeFromBuild>true</ExcludeFromBuild>

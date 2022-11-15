@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_AlarmHandler" Id="{f8f9d536-2dd6-4f1e-aac0-64df76a303ea}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AlarmHandler
+VAR_INPUT
+	sInTimeOcc:STRING[24];
+	stInTimeOcc:TIMESTRUCT;
+	
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	i: DINT;	// index for alarm array
+END_VAR
+	
+VAR_IN_OUT
+	arrAlarms: ARRAY[*] OF ST_AlarmStructure;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i := LOWER_BOUND(arrAlarms,1) TO UPPER_BOUND(arrAlarms,1) BY 1 DO
+	
+END_FOR]]></ST>
+    </Implementation>
+    <Action Name="SetAlarms" Id="{3317222d-8fd9-4a9a-aa52-2a00bbc6d1db}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="FB_AlarmHandler">
+      <LineId Id="9" Count="0" />
+      <LineId Id="16" Count="1" />
+    </LineIds>
+    <LineIds Name="FB_AlarmHandler.SetAlarms">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
