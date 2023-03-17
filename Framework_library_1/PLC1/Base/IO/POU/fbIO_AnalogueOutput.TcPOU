@@ -3,9 +3,24 @@
   <POU Name="fbIO_AnalogueOutput" Id="{19ccdb33-0c10-46c5-a008-b409d48dd41a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK fbIO_AnalogueOutput
 VAR_INPUT
-END_VAR
+	iInMode: INT; //Mode input
+	iInSensorType :INT;		//Enumerated value of of sensor types
+	iInEstopFunction: INT; 	(*maximum set point (rInEngUnitsMin), and ‘Estop.HMISetPoint’ sets to an HMIspecified value that can be in between the min and max*)
+	bInEstop:BOOL;			//Emergency stop input
+	bInEnable:BOOL;			//Interlock for the Analog Output. If this bit is false, then output will be 0
+	rInValue:REAL;			//Auto mode value of output
+	rInEngUnitsMin	:REAL; 	//Engineering units scale min
+	rInEngUnitsMax: REAL;	//Engineering units scale max
+	bInResetError: BOOL;	(*If an error condition exists, the error must be fixed first, then set this bit high to reset 
+							the internal error*)
 VAR_OUTPUT
+	bOutAuto:BOOL;			//	bOutAuto:BOOL;			
+	bOutError:BOOL;			//Error exists
+	wOutValue:BOOL;			//Value to output to Analog Output
+	ERROR_IO_AnalogueOut: stError_AnalogueOutput;  (*This output UDT has one bit for every type of error. It should be mapped to 
+													the HMI’s error list. It can also be used for advanced debugging of the error state*)
 END_VAR
+
 VAR
 END_VAR
 ]]></Declaration>

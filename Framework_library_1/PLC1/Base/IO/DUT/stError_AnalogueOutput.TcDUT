@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stError_AnalogueOutput" Id="{cc192774-7426-4e7b-b022-46961ac77e78}">
+    <Declaration><![CDATA[TYPE stError_AnalogueOutput :
+STRUCT
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

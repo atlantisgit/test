@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Interlock" Id="{17567209-c7ad-45ce-92ca-d7611b58dd92}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Interlock
+VAR_INPUT
+	bInterlock1:BOOL;
+	bInterlock2:BOOL;
+	bInterlock3:BOOL;
+	bInterlock4:BOOL;
+	bInterlock5:BOOL;
+	bInterlock6:BOOL;
+	bInterlock7:BOOL;
+	bInterlock8:BOOL;
+	bInterlock9:BOOL;
+	bInterlock10:BOOL;
+	bInterlock11:BOOL;
+	bInterlock12:BOOL;
+	bInterlock13:BOOL;
+	bInterlock14:BOOL;
+	bInterlock15:BOOL;
+	bInterlock16:BOOL;
+END_VAR
+
+VAR_OUTPUT
+	bOutInterlockOk:BOOL;	(*1=System ok to operate*)
+END_VAR
+
+VAR_IN_OUT
+	HMI_Interlock:stHMI_Interlock;
+END_VAR
+
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[;
+HMI_Interlock.bInterlockOk:=1;
+
+(*Map interlock status*)
+HMI_Interlock.abInterlocks[1]:=bInterlock1;
+HMI_Interlock.abInterlocks[2]:=bInterlock2;
+HMI_Interlock.abInterlocks[3]:=bInterlock3;
+HMI_Interlock.abInterlocks[4]:=bInterlock4;
+HMI_Interlock.abInterlocks[5]:=bInterlock5;
+HMI_Interlock.abInterlocks[6]:=bInterlock6;
+HMI_Interlock.abInterlocks[7]:=bInterlock7;
+HMI_Interlock.abInterlocks[8]:=bInterlock8;
+HMI_Interlock.abInterlocks[9]:=bInterlock9;
+HMI_Interlock.abInterlocks[10]:=bInterlock10;
+HMI_Interlock.abInterlocks[11]:=bInterlock11;
+HMI_Interlock.abInterlocks[12]:=bInterlock12;
+HMI_Interlock.abInterlocks[13]:=bInterlock13;
+HMI_Interlock.abInterlocks[14]:=bInterlock14;
+HMI_Interlock.abInterlocks[15]:=bInterlock15;
+HMI_Interlock.abInterlocks[16]:=bInterlock16;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Interlock">
+      <LineId Id="9" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="72" Count="1" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="74" Count="9" />
+      <LineId Id="85" Count="2" />
+      <LineId Id="84" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

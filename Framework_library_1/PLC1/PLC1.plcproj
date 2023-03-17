@@ -271,10 +271,6 @@
     <Compile Include="Alarm System\TC3 EventLogger\P_EventLogger_TCSAlarms.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Alarm System\TC3 EventLogger\TestAlarmFB.TcPOU">
-      <SubType>Code</SubType>
-      <ExcludeFromBuild>true</ExcludeFromBuild>
-    </Compile>
     <Compile Include="Base\Example\GVL\GVL_HMI.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
@@ -285,7 +281,13 @@
     <Compile Include="Base\IO\DUT\stError_AnalogueInput.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\IO\DUT\stError_AnalogueOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\IO\DUT\stHMI_AnalogueInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\IO\DUT\stHMI_AnalogueOutput.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Base\IO\DUT\stHMI_DigitalInput.TcDUT">
@@ -303,22 +305,22 @@
     <Compile Include="Base\IO\POU\fbIO_DigitalInput.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Base\System\DUT\stHMI_Interlock.TcDUT">
+    <Compile Include="Base\General Control\DUT\stHMI_Interlock.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Base\System\DUT\stHMI_Permissive.TcDUT">
+    <Compile Include="Base\General Control\DUT\stHMI_Permissive.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Base\System\DUT\stHMI_SystemRunControl.TcDUT">
+    <Compile Include="Base\General Control\DUT\stHMI_SystemRunControl.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Base\System\POU\FB_Interlock.TcPOU">
+    <Compile Include="Base\General Control\POU\FB_Interlock.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Base\System\POU\FB_Permissive.TcPOU">
+    <Compile Include="Base\General Control\POU\FB_Permissive.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Base\System\POU\FB_SystemRunControl.TcPOU">
+    <Compile Include="Base\General Control\POU\FB_SystemRunControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
@@ -387,10 +389,10 @@
     <Folder Include="Base\IO\GVL" />
     <Folder Include="Base\IO\POU" />
     <Folder Include="Base\Example" />
-    <Folder Include="Base\System" />
-    <Folder Include="Base\System\DUT" />
-    <Folder Include="Base\System\GVL" />
-    <Folder Include="Base\System\POU" />
+    <Folder Include="Base\General Control" />
+    <Folder Include="Base\General Control\DUT" />
+    <Folder Include="Base\General Control\GVL" />
+    <Folder Include="Base\General Control\POU" />
     <Folder Include="VISUs" />
   </ItemGroup>
   <ItemGroup>
