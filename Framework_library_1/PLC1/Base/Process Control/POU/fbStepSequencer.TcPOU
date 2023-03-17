@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fbStepSequencer" Id="{8babe64d-6080-4eb6-874b-84824d287606}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fbStepSequencer
+VAR_INPUT
+	iInStep:		INT;	//Constant, the step which this block instance represents
+	iInNextStep:	INT;	//Next step to go to when this step is done. Will be moved into iCurrentStep when bInStepDone is true
+	bInStepDone:	BOOL;	//If true and iCurrentStep = iInStep, then we move to the next step.
+	tInStepDelay:	TIME;	//Time between when the bInStepDone rises to when we move states, set to 0 to disable.
+	bInStepMode:	BOOL;	//This input will pause the state machine at the completion of the current step until bInStepAdvance is set high. 
+	bInStepAdvance:	BOOL;	//When the state machine is paused, this input will trigger the next step.
+	bInit:			BOOL;	//Initializes the state machine to step iInitStep.
+	iInitStep:		INT;	//Step that the machine will be initialized to when bInit is true. 
+END_VAR
+VAR_OUTPUT
+	bOutEnterEvent:	BOOL;	//High for one scan when the state machine enters the state specified by iInStep for a single block usage.
+	bOutExitEvent:	BOOL;	//High for one scan when the state machine leaves iInStep
+	bOutPaused:		BOOL;	//Indicates if the sequencer is paused and waiting on a bInStepAdvance signal. 
+	iOutCurrentStep:BOOL;	//Current state/step
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="fbStepSequencer">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

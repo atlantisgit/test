@@ -323,6 +323,12 @@
     <Compile Include="Base\General Control\POU\FB_SystemRunControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Process Control\POU\fbStepSequencer.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Process Control\POU\POU.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
@@ -393,6 +399,10 @@
     <Folder Include="Base\General Control\DUT" />
     <Folder Include="Base\General Control\GVL" />
     <Folder Include="Base\General Control\POU" />
+    <Folder Include="Base\Devices" />
+    <Folder Include="Base\Process Control" />
+    <Folder Include="Base\Process Control\POU" />
+    <Folder Include="Base\Valve Control" />
     <Folder Include="VISUs" />
   </ItemGroup>
   <ItemGroup>

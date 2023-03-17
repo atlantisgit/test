@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="POU" Id="{66f959ed-f67b-4157-a024-45284c088de0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM POU
+VAR
+		edjefj:fbstepsequencer;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[edjefj(
+	iInStep:= , 
+	iInNextStep:= , 
+	bInStepDone:= , 
+	tInStepDelay:= , 
+	bInStepMode:= , 
+	bInStepAdvance:= , 
+	bInit:= , 
+	iInitStep:= , 
+	bOutEnterEvent=> , 
+	bOutExitEvent=> , 
+	bOutPaused=> , 
+	iOutCurrentStep=> );]]></ST>
+    </Implementation>
+    <LineIds Name="POU">
+      <LineId Id="8" Count="11" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
