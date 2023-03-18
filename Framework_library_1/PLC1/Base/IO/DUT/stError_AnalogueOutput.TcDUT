@@ -3,6 +3,8 @@
   <DUT Name="stError_AnalogueOutput" Id="{cc192774-7426-4e7b-b022-46961ac77e78}">
     <Declaration><![CDATA[TYPE stError_AnalogueOutput :
 STRUCT
+	Out_Of_Range:BOOL;			//Input Value is outside range of Engineering Units
+	Configuration_Error:BOOL;	//Engineering Units are not properly configured
 END_STRUCT
 END_TYPE
 ]]></Declaration>

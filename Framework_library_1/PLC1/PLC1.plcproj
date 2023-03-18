@@ -329,6 +329,9 @@
     <Compile Include="Base\Process Control\POU\POU.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Process Control\stStep.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>

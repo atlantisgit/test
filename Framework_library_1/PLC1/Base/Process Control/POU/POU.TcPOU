@@ -3,28 +3,77 @@
   <POU Name="POU" Id="{66f959ed-f67b-4157-a024-45284c088de0}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM POU
 VAR
-		edjefj:fbstepsequencer;
-	
+		fbstep01:fbstepsequencer;
+		step01Done:BOOL;
+		step02Done:BOOL;
+		step03Done:BOOL;
+		step01Advance:BOOL;
+		step01:stStep;
+		step02:stStep;
+		step03:stStep;
+		iCurrentStep:INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[edjefj(
-	iInStep:= , 
-	iInNextStep:= , 
-	bInStepDone:= , 
-	tInStepDelay:= , 
-	bInStepMode:= , 
+      <ST><![CDATA[step01.tInStepDelay:=T#10S;
+step02.tInStepDelay:=T#10S;
+step03.tInStepDelay:=T#10S;
+
+fbstep01(
+	iInStep:=1 , 
+	iInNextStep:=2 , 
+	bInStepDone:=step01.bStepDone , 
+	tInStepDelay:=T#10S , 
+	bInStepMode:=1 , 
+	bInStepAdvance:=step01.bInStepAdvance , 
+	bInit:= , 
+	iInitStep:= 1, 
+	bOutEnterEvent=> , 
+	bOutExitEvent=> , 
+	bOutPaused=>, 
+	iOutCurrentStep=>iCurrentStep );
+
+	fbstep01(
+	iInStep:= 2, 
+	iInNextStep:=3 , 
+	bInStepDone:=step02.bStepDone , 
+	tInStepDelay:=T#10S , 
+	bInStepMode:=step02.bInStepMode , 
 	bInStepAdvance:= , 
 	bInit:= , 
 	iInitStep:= , 
 	bOutEnterEvent=> , 
 	bOutExitEvent=> , 
-	bOutPaused=> , 
-	iOutCurrentStep=> );]]></ST>
+	bOutPaused=>, 
+	iOutCurrentStep=>iCurrentStep );
+
+	fbstep01(
+	iInStep:=3 , 
+	iInNextStep:=1 , 
+	bInStepDone:=step03.bStepDone , 
+	tInStepDelay:= , 
+	bInStepMode:=step03.bInStepMode , 
+	bInStepAdvance:=step03.bInStepAdvance , 
+	bInit:= , 
+	iInitStep:= , 
+	bOutEnterEvent=> , 
+	bOutExitEvent=> , 
+	bOutPaused=>, 
+	iOutCurrentStep=>iCurrentStep );
+	
+CASE fbstep01.iOutCurrentStep OF
+	
+END_CASE]]></ST>
     </Implementation>
     <LineIds Name="POU">
+      <LineId Id="61" Count="3" />
       <LineId Id="8" Count="11" />
       <LineId Id="5" Count="0" />
+      <LineId Id="30" Count="12" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="44" Count="12" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="65" Count="3" />
     </LineIds>
   </POU>
 </TcPlcObject>

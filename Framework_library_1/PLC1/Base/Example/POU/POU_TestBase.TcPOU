@@ -72,10 +72,12 @@ fbTestDigitalInput(
 	bOutRisingEdge=> , 
 	bOutFallingEdge=> , 
 	HMI_DigitalInput:=GVL_HMI.stTest04_DigitalInput );
-]]></ST>
+
+	POu();]]></ST>
     </Implementation>
     <LineIds Name="POU_TestBase">
       <LineId Id="6" Count="61" />
+      <LineId Id="75" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

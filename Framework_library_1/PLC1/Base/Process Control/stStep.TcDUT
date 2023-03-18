@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stStep" Id="{bbb93a74-8ab1-492f-bfc3-05804917904a}">
+    <Declaration><![CDATA[TYPE stStep :
+STRUCT
+	bStepDone:	BOOL;	//Step actions have been achieved
+	tInStepDelay:	TIME;	//Time between when the bInStepDone rises to when we move states, set to 0 to disable.
+	bInStepMode:	BOOL;	//This input will pause the state machine at the completion of the current step until bInStepAdvance is set high.
+	bInStepAdvance:	BOOL;	//When the state machine is paused, this input will trigger the next step. 
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
