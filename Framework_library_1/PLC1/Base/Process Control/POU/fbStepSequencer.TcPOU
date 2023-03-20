@@ -19,13 +19,10 @@ VAR_OUTPUT
 	iOutCurrentStep:INT;	//Current state/step
 END_VAR
 VAR
-	bStepActive:BOOL;
 	bNextStepCondition:BOOL;
 	bMonitorState:BOOL;
 	TONStepDelay:TON;
 	
-	i:INT;
-	iActiveStep:INT;
 	tempbInStepDone:BOOL;
 	tempbInStepAdvance:BOOL;
 	tempbInStepMode:BOOL;
@@ -33,6 +30,7 @@ VAR
 	
 	bBlipEnterEvent:BOOL;
 	bBlipExitEvent: BOOL;
+	tempiInitStep: INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -40,7 +38,7 @@ END_VAR
 
 IF  (iInStep = iOutCurrentStep) THEN
 	
-	(*SET bOutEnterEvent on first entry to state*)
+	(*Set bOutEnterEvent on first entry to state*)
 	IF NOT bBlipEnterEvent THEN
 		bBlipEnterEvent:=1;
 		bOutEnterEvent:=1;
@@ -48,34 +46,33 @@ IF  (iInStep = iOutCurrentStep) THEN
 		bOutEnterEvent:=0;
 	END_IF
 	
-	
-	temptInStepDelay:=tInStepDelay;
+	(*sample the input only when we are in current step as using the same instance function block*)
+	temptInStepDelay:=tInStepDelay;				
 	tempbInStepDone:=bInStepDone;
 	tempbInStepAdvance:=bInStepAdvance;
 	tempbInStepMode:=bInStepMode;
+	tempiInitStep:=iInitStep;
 	TONStepDelay.IN:=1;
 	
+	(*next step condition*)
 	bNextStepCondition:=  TONStepDelay.Q AND(NOT(tempbInStepMode) OR (tempbInStepMode AND tempbInStepAdvance));
 	
+	(*step complete map transition*)
 	IF bNextStepCondition THEN
-		TONStepDelay.IN:=0;
-		bBlipEnterEvent:=0;
-		bOutExitEvent:=1;
-			i:=i+1;
-		iOutCurrentStep:=iInNextStep;
+		TONStepDelay.IN:=0;              // reset step delay timer
+		bBlipEnterEvent:=0;             //reset the one shot control for enter event
+		bOutExitEvent:=1;				//Set only for one cycle 
+		iOutCurrentStep:=iInNextStep;	//transition
 	END_IF
 	
 ELSE
 	bOutExitEvent:=0;
 END_IF
 
-
-
-
-
+(*if binit received make initp step the state we move to*)
 IF bInit THEN
 		bInit:=0;
-		iOutCurrentStep:=iInitStep;
+		iOutCurrentStep:=tempiInitStep;
 END_IF
 
 TONStepDelay(PT:=tInStepDelay);
@@ -92,20 +89,20 @@ TONStepDelay(PT:=tInStepDelay);
       <LineId Id="495" Count="1" />
       <LineId Id="367" Count="0" />
       <LineId Id="404" Count="2" />
+      <LineId Id="507" Count="0" />
       <LineId Id="379" Count="0" />
       <LineId Id="487" Count="0" />
+      <LineId Id="505" Count="0" />
       <LineId Id="477" Count="1" />
+      <LineId Id="506" Count="0" />
       <LineId Id="481" Count="1" />
       <LineId Id="494" Count="0" />
       <LineId Id="499" Count="0" />
-      <LineId Id="504" Count="0" />
       <LineId Id="483" Count="0" />
       <LineId Id="479" Count="1" />
       <LineId Id="302" Count="0" />
       <LineId Id="501" Count="1" />
       <LineId Id="436" Count="0" />
-      <LineId Id="127" Count="0" />
-      <LineId Id="467" Count="1" />
       <LineId Id="96" Count="0" />
       <LineId Id="392" Count="2" />
       <LineId Id="56" Count="0" />
