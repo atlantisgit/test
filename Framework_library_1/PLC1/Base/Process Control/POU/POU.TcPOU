@@ -51,7 +51,7 @@ fbstep01(
 	iInStep:=3 , 
 	iInNextStep:=9 , 
 	bInStepDone:=step03.bStepDone , 
-	tInStepDelay:= , 
+	tInStepDelay:=t#20s , 
 	bInStepMode:=step03.bInStepMode , 
 	bInStepAdvance:=step03.bInStepAdvance , 
 	bInit:= , 
