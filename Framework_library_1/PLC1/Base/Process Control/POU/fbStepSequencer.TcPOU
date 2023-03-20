@@ -72,7 +72,7 @@ END_IF
 (*if binit received make initp step the state we move to*)
 IF bInit THEN
 		bInit:=0;
-		iOutCurrentStep:=tempiInitStep;
+		iOutCurrentStep:=iInitStep;
 END_IF
 
 TONStepDelay(PT:=tInStepDelay);
