@@ -191,7 +191,8 @@
 		<System>
 			<Licenses>
 				<Target>
-					<ManualSelect>{304D006A-8299-4560-AB79-438534B50288}</ManualSelect>
+					<ManualSelect>{3EBB9639-5FF3-42B6-8847-35C70DC013C8}</ManualSelect>
+					<ManualSelect>{6952449D-F68C-49A2-ADE4-8639D85B33A4}</ManualSelect>
 				</Target>
 			</Licenses>
 			<Tasks>
@@ -202,7 +203,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{475E2DF4-6C51-4CE5-81D6-79401ACEB2A8}" Name="PLC1" PrjFilePath="PLC1\PLC1.plcproj" TmcFilePath="PLC1\PLC1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC1\PLC1.tmc" TmcHash="{6FCBC1C4-8DD4-276D-F0CC-B777CCF75E3F}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PLC1\PLC1.tmc" TmcHash="{51E10BD3-90D3-3434-DF2C-A1A513CAD01B}">
 					<Name>PLC1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
