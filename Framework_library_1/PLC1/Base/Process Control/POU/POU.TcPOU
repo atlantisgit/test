@@ -3,7 +3,7 @@
   <POU Name="POU" Id="{66f959ed-f67b-4157-a024-45284c088de0}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM POU
 VAR
-		fbstep01:fbstepsequencer;
+		fbStateMachineCtrl:fbstepsequencer;
 		step01Done:BOOL;
 		step02Done:BOOL;
 		step03Done:BOOL;
@@ -11,6 +11,9 @@ VAR
 		step01:stStep;
 		step02:stStep;
 		step03:stStep;
+		step04:stStep;
+		step05:stStep;
+		step06:stStep;
 		iCurrentStep:INT;
 		
 END_VAR
@@ -19,26 +22,30 @@ END_VAR
       <ST><![CDATA[step01.tInStepDelay:=T#10S;
 step02.tInStepDelay:=T#10S;
 step03.tInStepDelay:=T#10S;
+step04.tInStepDelay:=T#10S;
+step05.tInStepDelay:=T#10S;
+step06.tInStepDelay:=T#10S;
 
-fbstep01(
+fbStateMachineCtrl(
 	iInStep:=1 , 
 	iInNextStep:=2 , 
 	bInStepDone:=step01.bStepDone , 
-	tInStepDelay:=T#10S , 
+	tInStepDelay:=step01.tInStepDelay , 
 	bInStepMode:=step01.bInStepMode , 
 	bInStepAdvance:=step01.bInStepAdvance , 
 	bInit:= , 
 	iInitStep:= 1, 
 	bOutEnterEvent=>step01.bOutEnterEvent , 
-	bOutExitEvent=>step01.bOutExitEvent , 
+	bOutExitEvent=>step01.bOutExitEvent ,
 	bOutPaused=>step01.bOutPaused, 
+	
 	iOutCurrentStep=>iCurrentStep );
 
-	fbstep01(
+fbStateMachineCtrl(
 	iInStep:= 2, 
 	iInNextStep:=3 , 
 	bInStepDone:=step02.bStepDone , 
-	tInStepDelay:=T#10S , 
+	tInStepDelay:=step02.tInStepDelay , 
 	bInStepMode:=step02.bInStepMode , 
 	bInStepAdvance:=step02.bInStepAdvance , 
 	bInit:= , 
@@ -48,33 +55,91 @@ fbstep01(
 	bOutPaused=>step02.bOutPaused, 
 	iOutCurrentStep=>iCurrentStep );
 
-	fbstep01(
-	iInStep:=3 , 
-	iInNextStep:=9 , 
+fbStateMachineCtrl(
+	iInStep:= 3, 
+	iInNextStep:=4 , 
 	bInStepDone:=step03.bStepDone , 
-	tInStepDelay:=T#20S , 
+	tInStepDelay:=step03.tInStepDelay , 
 	bInStepMode:=step03.bInStepMode , 
 	bInStepAdvance:=step03.bInStepAdvance , 
 	bInit:= , 
-	iInitStep:=1 , 
+	iInitStep:= 1, 
 	bOutEnterEvent=>step03.bOutEnterEvent , 
 	bOutExitEvent=>step03.bOutExitEvent , 
 	bOutPaused=>step03.bOutPaused, 
 	iOutCurrentStep=>iCurrentStep );
 
+fbStateMachineCtrl(
+	iInStep:= 4, 
+	iInNextStep:=5 , 
+	bInStepDone:=step04.bStepDone , 
+	tInStepDelay:=step04.tInStepDelay , 
+	bInStepMode:=step04.bInStepMode , 
+	bInStepAdvance:=step04.bInStepAdvance , 
+	bInit:= , 
+	iInitStep:= 1, 
+	bOutEnterEvent=>step04.bOutEnterEvent , 
+	bOutExitEvent=>step04.bOutExitEvent , 
+	bOutPaused=>step04.bOutPaused, 
+	iOutCurrentStep=>iCurrentStep );
 
+fbStateMachineCtrl(
+	iInStep:= 5, 
+	iInNextStep:=6 , 
+	bInStepDone:=step05.bStepDone , 
+	tInStepDelay:=step05.tInStepDelay , 
+	bInStepMode:=step05.bInStepMode , 
+	bInStepAdvance:=step05.bInStepAdvance , 
+	bInit:= , 
+	iInitStep:= 1, 
+	bOutEnterEvent=>step05.bOutEnterEvent , 
+	bOutExitEvent=>step05.bOutExitEvent , 
+	bOutPaused=>step05.bOutPaused,
+	iOutCurrentStep=>iCurrentStep );
+
+
+fbStateMachineCtrl(
+	iInStep:= 6, 
+	iInNextStep:=1 , 
+	bInStepDone:=step06.bStepDone , 
+	tInStepDelay:=step06.tInStepDelay , 
+	bInStepMode:=step06.bInStepMode , 
+	bInStepAdvance:=step06.bInStepAdvance , 
+	bInit:= , 
+	iInitStep:= 1, 
+	bOutEnterEvent=>step06.bOutEnterEvent , 
+	bOutExitEvent=>step06.bOutExitEvent , 
+	bOutPaused=>step06.bOutPaused,
+	iOutCurrentStep=>iCurrentStep );
+	
+	
+CASE fbStateMachineCtrl.iOutCurrentStep OF
+	
+END_CASE
 ]]></ST>
     </Implementation>
     <LineIds Name="POU">
-      <LineId Id="61" Count="3" />
+      <LineId Id="61" Count="2" />
+      <LineId Id="111" Count="1" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="113" Count="0" />
       <LineId Id="8" Count="11" />
+      <LineId Id="86" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="30" Count="12" />
       <LineId Id="28" Count="0" />
-      <LineId Id="44" Count="12" />
-      <LineId Id="43" Count="0" />
-      <LineId Id="83" Count="0" />
+      <LineId Id="97" Count="12" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="114" Count="12" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="129" Count="12" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="159" Count="12" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="143" Count="1" />
       <LineId Id="68" Count="0" />
+      <LineId Id="90" Count="1" />
       <LineId Id="82" Count="0" />
     </LineIds>
   </POU>

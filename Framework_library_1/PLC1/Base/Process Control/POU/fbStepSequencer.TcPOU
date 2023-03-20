@@ -57,6 +57,8 @@ IF  (iInStep = iOutCurrentStep) THEN
 	(*next step condition*)
 	bNextStepCondition:=  TONStepDelay.Q AND(NOT(tempbInStepMode) OR (tempbInStepMode AND tempbInStepAdvance));
 	
+	bOutPaused :=  TONStepDelay.Q AND (tempbInStepMode AND NOT(tempbInStepAdvance));
+	
 	(*step complete map transition*)
 	IF bNextStepCondition THEN
 		TONStepDelay.IN:=0;              // reset step delay timer
@@ -67,6 +69,7 @@ IF  (iInStep = iOutCurrentStep) THEN
 	
 ELSE
 	bOutExitEvent:=0;
+	bOutPaused :=  0;
 END_IF
 
 (*if binit received make initp step the state we move to*)
@@ -94,6 +97,7 @@ TONStepDelay(PT:=tInStepDelay);
       <LineId Id="487" Count="0" />
       <LineId Id="505" Count="0" />
       <LineId Id="477" Count="1" />
+      <LineId Id="509" Count="1" />
       <LineId Id="506" Count="0" />
       <LineId Id="481" Count="1" />
       <LineId Id="494" Count="0" />
@@ -101,7 +105,9 @@ TONStepDelay(PT:=tInStepDelay);
       <LineId Id="483" Count="0" />
       <LineId Id="479" Count="1" />
       <LineId Id="302" Count="0" />
-      <LineId Id="501" Count="1" />
+      <LineId Id="501" Count="0" />
+      <LineId Id="511" Count="0" />
+      <LineId Id="514" Count="0" />
       <LineId Id="436" Count="0" />
       <LineId Id="96" Count="0" />
       <LineId Id="392" Count="2" />
