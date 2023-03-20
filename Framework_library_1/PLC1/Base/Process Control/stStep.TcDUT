@@ -7,6 +7,9 @@ STRUCT
 	tInStepDelay:	TIME;	//Time between when the bInStepDone rises to when we move states, set to 0 to disable.
 	bInStepMode:	BOOL;	//This input will pause the state machine at the completion of the current step until bInStepAdvance is set high.
 	bInStepAdvance:	BOOL;	//When the state machine is paused, this input will trigger the next step. 
+	bOutEnterEvent:	BOOL;	//High for one scan when the state machine enters the state specified by iInStep for a single block usage.
+	bOutExitEvent:	BOOL;	//High for one scan when the state machine leaves iInStep
+	bOutPaused:		BOOL;	//Indicates if the sequencer is paused and waiting on a bInStepAdvance signal.
 END_STRUCT
 END_TYPE
 ]]></Declaration>

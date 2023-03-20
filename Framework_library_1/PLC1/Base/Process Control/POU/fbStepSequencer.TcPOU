@@ -20,67 +20,118 @@ VAR_OUTPUT
 END_VAR
 VAR
 	bStepActive:BOOL;
+	bNextStepCondition:BOOL;
+	bMonitorState:BOOL;
 	TONStepDelay:TON;
 	latch:RS;
 	rtrigStepActive:R_TRIG;
 	fTrigStepActive:F_TRIG;
+	rTRIG01:R_TRIG;
+	rTRIG02:R_TRIG;
+	i:INT;
+	iActiveStep:INT;
+	tofStepActive:TOF;
+	tempbInStepDone:BOOL;
+	tempbInStepAdvance:BOOL;
+	tempbInStepMode:BOOL;
+	
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[//are we in the active step
+(*bStepActive := iOutCurrentStep=iInStep;
+rTRIG01(CLK:=bStepActive , Q=> );
+IF bStepActive AND NOT(bMonitorState) THEN
+	bMonitorState:=1;
+	//iActiveStep:=iOutCurrentStep;
+END_IF
+*)
 
-
-
-//update the next step the current step if step done and delay
-IF bInit THEN
-	iOutCurrentStep:=iInitStep;
-	latch.RESET1;
-ELSIF latch.Q1 AND bInStepDone AND TONStepDelay.Q 
-	 AND NOT(bInit)
-	 AND (NOT(bInStepMode) OR (bInStepMode AND bInStepAdvance)) THEN  // if the step is active and the stepdone is true
-	iOutCurrentStep:=iInNextStep;	// the current step#
-	latch.RESET1;
+IF  (iInStep = iOutCurrentStep) THEN
+	 
+	TONStepDelay.IN:=1;
+	tempbInStepDone:=bInStepDone;
+	tempbInStepAdvance:=bInStepAdvance;
+	tempbInStepMode:=bInStepMode;
+	
 END_IF
 
 
-//are we in the active step
-bStepActive := iOutCurrentStep=iInStep;
-	
-latch(SET:=bStepActive , RESET1:= , Q1=> );
-//call step delay timer
-TONStepDelay(IN:=latch.Q1, PT:=tInStepDelay);
 
+bNextStepCondition:= tempbInStepDone AND TONStepDelay.Q AND(NOT(tempbInStepMode) OR (tempbInStepMode AND tempbInStepAdvance));
+
+IF 	bNextStepCondition THEN
+		iOutCurrentStep:=iInNextStep;	// the current step#
+		TONStepDelay.IN:=0;
+END_IF
+
+//call step delay timer
+TONStepDelay(PT:=tInStepDelay);
+
+(*
 //output bOutEnterEvent
-rtrigStepActive(CLK:=latch.Q1, Q=>bOutEnterEvent );
+rtrigStepActive(CLK:=bMonitorState, Q=>bOutEnterEvent );
 
 //output bOutExitEvent
-ftrigStepActive(CLK:=latch.Q1, Q=>bOutExitEvent );
+ftrigStepActive(CLK:=bMonitorState, Q=>bOutExitEvent );
 
 //bOutPaused
-bOutPaused:=latch.Q1 AND (bInStepMode AND bInStepAdvance) AND bInStepDone;]]></ST>
+bOutPaused:=latch.Q1 AND (bInStepMode AND NOT(bInStepAdvance)) AND bInStepDone;
+*)
+IF bInit THEN
+	bInit:=0;
+	iOutCurrentStep:=iInitStep;
+END_IF
+
+
+
+
+
+
+
+
+]]></ST>
     </Implementation>
     <LineIds Name="fbStepSequencer">
-      <LineId Id="38" Count="0" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="263" Count="1" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="265" Count="0" />
+      <LineId Id="294" Count="0" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="295" Count="0" />
+      <LineId Id="304" Count="0" />
+      <LineId Id="310" Count="0" />
+      <LineId Id="303" Count="0" />
+      <LineId Id="307" Count="1" />
+      <LineId Id="301" Count="1" />
+      <LineId Id="311" Count="1" />
+      <LineId Id="309" Count="0" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="291" Count="0" />
+      <LineId Id="184" Count="1" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="196" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="135" Count="1" />
+      <LineId Id="128" Count="6" />
+      <LineId Id="117" Count="0" />
       <LineId Id="68" Count="0" />
       <LineId Id="61" Count="0" />
-      <LineId Id="40" Count="0" />
-      <LineId Id="37" Count="0" />
-      <LineId Id="43" Count="1" />
-      <LineId Id="58" Count="0" />
-      <LineId Id="30" Count="0" />
-      <LineId Id="50" Count="0" />
-      <LineId Id="49" Count="0" />
-      <LineId Id="33" Count="0" />
-      <LineId Id="59" Count="0" />
-      <LineId Id="34" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="95" Count="1" />
       <LineId Id="56" Count="0" />
       <LineId Id="65" Count="0" />
-      <LineId Id="87" Count="1" />
-      <LineId Id="51" Count="0" />
-      <LineId Id="84" Count="1" />
-      <LineId Id="76" Count="0" />
       <LineId Id="86" Count="0" />
-      <LineId Id="77" Count="6" />
       <LineId Id="75" Count="0" />
     </LineIds>
   </POU>
