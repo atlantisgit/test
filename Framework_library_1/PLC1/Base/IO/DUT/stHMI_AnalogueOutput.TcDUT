@@ -3,16 +3,16 @@
   <DUT Name="stHMI_AnalogueOutput" Id="{023fa31e-70f2-4f41-8857-c84d2cf7b04d}">
     <Declaration><![CDATA[TYPE stHMI_AnalogueOutput :
 STRUCT
-	iMode: INT;			//Current mode
-	iErrorCode:	INT; 	//error code	
-	rValue:	REAL;		//Output Value
-	rAutoValue:	REAL:	//Auto Mode Value
-	rManualValue:	REAL;	//Manual mode value
-	rEstopValue:	REAL;	//Estop condition custom value
-	bPB_ResetError:	BOOL;	//Reset errors pushbutton
+	iMode: 			INT;		//Current mode
+	iErrorCode:		INT; 		//error code	
+	rValue:			REAL;		//Output Value
+	rManualValue:	REAL;		//Manual mode value
+	rAutoValue:		REAL;		 //Auto Mode Value
+	rEstopValue:	REAL;		//Estop condition custom value
+	bPB_ResetError:	BOOL;		//Reset errors pushbutton
 	bPBEN_ResetError:	BOOL;	//Reset error pushbutton enabled
-	bError:	BOOL;	//Overall error
-	bInterlock:	BOOL:	//Analogue output is interlocked
+	bError:	BOOL;				//Overall error
+	bInterlock:	BOOL;	//Analogue output is interlocked
 	iEstopFunction:INT;	//Enumerated value of E-Stop response constant
 END_STRUCT
 END_TYPE

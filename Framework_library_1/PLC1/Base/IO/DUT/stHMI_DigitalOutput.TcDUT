@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stHMI_DigitalOutput" Id="{a6ecede7-216a-4545-8aac-a8b9ee6875b8}">
+    <Declaration><![CDATA[TYPE stHMI_DigitalOutput :
+STRUCT
+	iMode:INT;			(*Current mode*)
+	bCommand: BOOL;		(*Output command status*)
+	bCommandAuto:BOOL;	(*the output command from the PLC, ignoring manual overrides*)
+	bInterlock:BOOL;	(*Digital output is interlocked*)
+	bPB_On:BOOL;		(*Command on override pushbutton*)
+	bPB_Off:BOOL;		(*Command off override pushbutton*)
+	bPBEN_On:BOOL;		(*Command on override pushbutton enabled*)
+	bPBEN_Off:BOOL;		(*Command off override pushbutton enabled*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

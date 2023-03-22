@@ -14,21 +14,50 @@ VAR_INPUT
 	bInResetError: BOOL;	//If an error condition exists, the error must be fixed first, then set this bit high to reset the internal error
 END_VAR
 VAR_OUTPUT
-	bOutAuto:BOOL;			//	Block in auto mode		
-	bOutError:BOOL;			//Error exists
-	wOutValue:BOOL;			//Value to output to Analog Output
-	ERROR_IO_AnalogueOut: stError_AnalogueOutput;  //This output UDT has one bit for every type of error. It should be mapped to 
+	bOutAuto:BOOL;									//Block in auto mode		
+	bOutError:BOOL;									//Error exists
+	wOutValue:WORD;									//Value to output to Analog Output
+	ERROR_IO_AnalogueOut: stError_AnalogueOutput;   //This output UDT has one bit for every type of error. It should be mapped to 
 													//the HMI’s error list. It can also be used for advanced debugging of the error state*)
 END_VAR
-
+VAR_IN_OUT
+	HMI_IO_AnalogOutput:stHMI_AnalogueOutput;		//struct used to communicate with the HMI
+END_VAR
 VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[;]]></ST>
+      <ST><![CDATA[(*Map HMI structures elements*)
+HMI_IO_AnalogOutput.bInterlock:=bInEnable;
+HMI_IO_AnalogOutput.rAutoValue:=rInValue;
+
+
+CASE iInMode OF
+	0:
+		;
+	1:	// Auto mode
+		wOutValue:=0;
+	2:	// Manual Mode
+		//wOutValue:=HMI_IO_AnalogOutput.rManualValue;
+	3:	// Independant
+	;
+END_CASE
+
+(*Map ERROR_IO_AnalogueOut Structure*)
+]]></ST>
     </Implementation>
     <LineIds Name="fbIO_AnalogueOutput">
       <LineId Id="9" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="41" Count="6" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="35" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

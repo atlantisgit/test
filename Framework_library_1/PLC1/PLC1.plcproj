@@ -293,6 +293,9 @@
     <Compile Include="Base\IO\DUT\stHMI_DigitalInput.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\IO\DUT\stHMI_DigitalOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\IO\DUT\stIOSensorTypes.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -323,13 +326,16 @@
     <Compile Include="Base\General Control\POU\FB_SystemRunControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\IO\POU\fbIO_DigitalOutput.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Process Control\DUT\stStep.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\Process Control\POU\fbStepSequencer.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Base\Process Control\POU\POU.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Base\Process Control\stStep.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
@@ -404,6 +410,7 @@
     <Folder Include="Base\General Control\POU" />
     <Folder Include="Base\Devices" />
     <Folder Include="Base\Process Control" />
+    <Folder Include="Base\Process Control\DUT" />
     <Folder Include="Base\Process Control\POU" />
     <Folder Include="Base\Valve Control" />
     <Folder Include="VISUs" />

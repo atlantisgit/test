@@ -3,7 +3,7 @@
   <DUT Name="stError_AnalogueInput" Id="{80860b6f-e61c-42b0-8546-7e1cad739aa2}">
     <Declaration><![CDATA[TYPE stError_AnalogueInput :
 STRUCT
-	LowLowAlarm:BOOL 	(*Value below low low set point*)
+	LowLowAlarm:BOOL; 	(*Value below low low set point*)
 	HighHighAlarm:BOOL; (*Value above high high set point*)
 	Invalid:BOOL; 		(*Invalid input*)
 END_STRUCT

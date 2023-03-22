@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fbIO_DigitalOutput" Id="{3a95440e-cc1a-4e61-a388-df1954919aa5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fbIO_DigitalOutput
+VAR_INPUT
+	iInMode:INT;	
+	bInEstop:BOOL;		(* Emergency stop input*)
+	bInEnable:BOOL;		(*Interlock for the digital output. If this bit is false, then output will be 0*)
+	bInCommand:BOOL;	(*The command to the digital output*)
+END_VAR
+VAR_OUTPUT
+	bOutAuto:BOOL;		(*Block in auto mode*)
+	bOutCommand:BOOL;	(*Command to digital output*)
+END_VAR
+VAR_IN_OUT
+	HMI_IO_DigitalOutput
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="fbIO_DigitalOutput">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -3,15 +3,43 @@
   <POU Name="POU_TestBase" Id="{48a52228-1023-4f18-966a-0eb2054e3080}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM POU_TestBase
 VAR
+	fbTestAI:fbIO_AnalogueInput;
 	fbTestIntlk:FB_Interlock;	
 	fbTestPerm:FB_Permissive;
 	fbTestRunCtrl:FB_SystemRunControl;
 	fbTestDigitalInput:fbIO_DigitalInput;
+	HMI_AI_001:stHMI_AnalogueInput;
+	ERROR_AI_001:stError_AnalogueInput;
+	fbTestAO:fbIO_AnalogueOutput;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-
+      <ST><![CDATA[fbTestAI(
+	iInMode:= , 
+	iInValue:= , 
+	iInSensorType:= , 
+	rInEngUnitsMin:= , 
+	rInEngUnitsMax:= , 
+	rInLowLow:= , 
+	rInLow:= , 
+	rInHigh:= , 
+	rInHighHigh:= , 
+	rInLowLowDeadband:= , 
+	rInLowDeadband:= , 
+	rInHighDeadband:= , 
+	rInHighHighDeadband:= , 
+	bInResetError:= , 
+	rOutEngUnitsValue=> , 
+	bOutLowLow=> , 
+	bOutLow=> , 
+	bOutHigh=> , 
+	bOutHighHigh=> , 
+	bOutAuto=> , 
+	bOutError=> , 
+	ERROR_IO_AnalogueIn=>ERROR_AI_001 , 
+	HMI_IO_AnalogueInput:=HMI_AI_001 );
+	
+	
 fbTestIntlk(
 	bInterlock1:= , 
 	bInterlock2:= , 
@@ -76,7 +104,10 @@ fbTestDigitalInput(
 	POu();]]></ST>
     </Implementation>
     <LineIds Name="POU_TestBase">
-      <LineId Id="6" Count="61" />
+      <LineId Id="85" Count="22" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="108" Count="1" />
+      <LineId Id="8" Count="59" />
       <LineId Id="75" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>

@@ -4,7 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK fbIO_AnalogueInput
 VAR_INPUT
 	iInMode:		INT;
-	wInValue:		WORD;
+	iInValue:		INT;
 	iInSensorType:	INT;
 	rInEngUnitsMin:	REAL;
 	rInEngUnitsMax:	REAL;
@@ -19,26 +19,112 @@ VAR_INPUT
 	bInResetError:BOOL;
 END_VAR
 VAR_OUTPUT
-	rOutEngUnitsValue:REAL (*Engineering units scaled value*)
-	bOutLowLow:BOOL (*Low low alarm is active*)
-	bOutLow:BOOL (*Low warning is active*)
-	bOutHigh:BOOL (*High warning is active*)
-	bOutHighHigh:BOOL (*High high alarm is active*)
-	bOutAuto:BOOL (*Input is in auto mode*)
-	bOutError:BOOL (*Error Exists*)
+	rOutEngUnitsValue:REAL; (*Engineering units scaled value*)
+	bOutLowLow:BOOL; (*Low low alarm is active*)
+	bOutLow:BOOL; (*Low warning is active*)
+	bOutHigh:BOOL; (*High warning is active*)
+	bOutHighHigh:BOOL; (*High high alarm is active*)
+	bOutAuto:BOOL; (*Input is in auto mode*)
+	bOutError:BOOL; (*Error Exists*)
 	ERROR_IO_AnalogueIn:stError_AnalogueInput;
-END_VAR
-VAR
 END_VAR
 
 VAR_IN_OUT
 	HMI_IO_AnalogueInput:stHMI_AnalogueInput;
-END_VAR]]></Declaration>
+END_VAR
+
+VAR
+	fScaled16:REAL;
+	fTempScaled16:REAL;
+	ftempScaled16_a:REAL;
+	ftempScaled16_b:REAL;
+	bTest:BOOL;
+END_VAR
+
+]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[//Process Alarms limits
+bOutLowLow:= (rOutEngUnitsValue<=(rInLowLow-rInLowLowDeadband));  	// LL Alarm
+bOutLow:= (rOutEngUnitsValue<=(rInLow-rInLowDeadband));  			// LL Warning
+bOutHighHigh:= (rOutEngUnitsValue>=(rInHigh+rInHighHighDeadband));  	// HH Alarm	
+bOutHigh:= (rOutEngUnitsValue>=(rInHighHigh+rInHighDeadband));  		// HH Warning	
+	
+bOutAuto := iInMode=1;
+
+(***************************SCALING ANALOGUE************************
+ftempScaled16_a:=
+ftempScaled16_b:=
+IF fTempScaled32 THEN
+	
+END_IF
+*)
+
+CASE iInMode OF
+	0:
+		;
+	1:	// Auto mode
+		rOutEngUnitsValue:=fScaled16;
+	2:	// Manual Mode
+		rOutEngUnitsValue:=HMI_IO_AnalogueInput.rManualValue;
+		
+	3:	// Independant
+	END_CASE
+	
+(*Map Error bits*)
+ERROR_IO_AnalogueIn.LowLowAlarm:=bOutLowLow;			//HH alarm
+ERROR_IO_AnalogueIn.HighHighAlarm:=bOutHighHigh;		//LL Alarm	
+	
+(*map active value to the scada*)
+HMI_IO_AnalogueInput.rInputValue:=fScaled16;
+HMI_IO_AnalogueInput.rActiveValue:=rOutEngUnitsValue;
+
+(*Error Code*)
+HMI_IO_AnalogueInput.iErrorCode.0:=ERROR_IO_AnalogueIn.LowLowAlarm;	
+HMI_IO_AnalogueInput.iErrorCode.1:=ERROR_IO_AnalogueIn.HighHighAlarm;	
+HMI_IO_AnalogueInput.iErrorCode.2:=ERROR_IO_AnalogueIn.LowLowAlarm;	
+HMI_IO_AnalogueInput.iErrorCode.3:=bTest;
+	
+HMI_IO_AnalogueInput.bError:=(HMI_IO_AnalogueInput.iErrorCode<>0);
+
+																				]]></ST>
     </Implementation>
     <LineIds Name="fbIO_AnalogueInput">
       <LineId Id="9" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="44" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="61" Count="1" />
+      <LineId Id="71" Count="1" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="67" Count="1" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="73" Count="1" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="89" Count="1" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="86" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

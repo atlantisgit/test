@@ -5,10 +5,11 @@
 {attribute 'strict'}
 TYPE stIOSensorTypes :
 (
-	AIType_4To20ma := 0,
-	AIType_PT100	:= 1,
-	AIType_0To10V	:=2,
-	AIType_0To5V	:=3
+	AI_4To20ma := 0,
+	AI_PT100	:= 1,
+	AI_0To10V	:=2,
+	AI_0To5V	:=3
+	
 );
 END_TYPE
 ]]></Declaration>
