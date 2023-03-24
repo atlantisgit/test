@@ -3,7 +3,7 @@
   <POU Name="fbIO_DigitalOutput" Id="{3a95440e-cc1a-4e61-a388-df1954919aa5}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK fbIO_DigitalOutput
 VAR_INPUT
-	iInMode:INT;	
+	iInMode:INT;		(*global mode input*)
 	bInEstop:BOOL;		(* Emergency stop input*)
 	bInEnable:BOOL;		(*Interlock for the digital output. If this bit is false, then output will be 0*)
 	bInCommand:BOOL;	(*The command to the digital output*)

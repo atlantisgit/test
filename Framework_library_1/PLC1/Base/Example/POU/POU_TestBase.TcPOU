@@ -11,10 +11,22 @@ VAR
 	HMI_AI_001:stHMI_AnalogueInput;
 	ERROR_AI_001:stError_AnalogueInput;
 	fbTestAO:fbIO_AnalogueOutput;
+	HMI_DI_001:stHMI_DigitalInput;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[fbTestAI(
+      <ST><![CDATA[fbTestDigitalInput(
+	iInMode:= , 
+	bInInput:= , 
+	tInOnDebounce:= , 
+	tInOffDebounce:= , 
+	bOutAuto=> , 
+	bOutOn=> , 
+	bOutRisingEdge=> , 
+	bOutFallingEdge=> , 
+	HMI_DigitalInput:=HMI_DI_001 );
+
+fbTestAI(
 	iInMode:= , 
 	iInValue:= , 
 	iInSensorType:= , 
@@ -38,7 +50,6 @@ END_VAR
 	bOutError=> , 
 	ERROR_IO_AnalogueIn=>ERROR_AI_001 , 
 	HMI_IO_AnalogueInput:=HMI_AI_001 );
-	
 	
 fbTestIntlk(
 	bInterlock1:= , 
@@ -90,24 +101,18 @@ fbTestRunCtrl(
 	bOutRunCmd=> , 
 	HMI_SystemRunControl:= GVL_HMI.stTest03_RunCtrl);
 	
-fbTestDigitalInput(
-	iInMode:= , 
-	bInInput:= , 
-	tInOnDebounce:= , 
-	tInOffDebounce:= , 
-	bOutAuto=> , 
-	bOutOn=> , 
-	bOutRisingEdge=> , 
-	bOutFallingEdge=> , 
-	HMI_DigitalInput:=GVL_HMI.stTest04_DigitalInput );
+
 
 	POu();]]></ST>
     </Implementation>
     <LineIds Name="POU_TestBase">
+      <LineId Id="136" Count="8" />
+      <LineId Id="134" Count="1" />
       <LineId Id="85" Count="22" />
       <LineId Id="7" Count="0" />
-      <LineId Id="108" Count="1" />
-      <LineId Id="8" Count="59" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="8" Count="49" />
+      <LineId Id="67" Count="0" />
       <LineId Id="75" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
