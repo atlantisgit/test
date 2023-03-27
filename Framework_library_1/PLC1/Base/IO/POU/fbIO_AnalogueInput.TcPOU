@@ -58,7 +58,7 @@ IF fTempScaled32 THEN
 	
 END_IF
 *)
-
+(*
 CASE iInMode OF
 	0:
 		;
@@ -69,7 +69,23 @@ CASE iInMode OF
 		
 	3:	// Independant
 	END_CASE
+*)
+
+(*control bOut based on the global input and HMI input mode*)
+(*if in independant mode allow control of the output based on HMI commands (MANUAL) AND digital input (AUTO)*)
+IF iInMode=10 THEN
+	//if HMI requests manual mode 
+	IF HMI_IO_AnalogueInput.iMode=2 THEN
+		;
+	ELSE
+		;
+	END_IF
+ELSE
+	//bOutOn:=tonInOnDebounce.Q OR tofInOnDebounce.Q;
+END_IF
 	
+
+
 (*Map Error bits*)
 ERROR_IO_AnalogueIn.LowLowAlarm:=bOutLowLow;			//HH alarm
 ERROR_IO_AnalogueIn.HighHighAlarm:=bOutHighHigh;		//LL Alarm	
@@ -110,6 +126,12 @@ HMI_IO_AnalogueInput.bError:=(HMI_IO_AnalogueInput.iErrorCode<>0);
       <LineId Id="57" Count="0" />
       <LineId Id="88" Count="0" />
       <LineId Id="75" Count="0" />
+      <LineId Id="143" Count="5" />
+      <LineId Id="153" Count="5" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="159" Count="0" />
       <LineId Id="91" Count="1" />
       <LineId Id="89" Count="1" />
       <LineId Id="56" Count="0" />

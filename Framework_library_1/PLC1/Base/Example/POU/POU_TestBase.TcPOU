@@ -12,6 +12,7 @@ VAR
 	ERROR_AI_001:stError_AnalogueInput;
 	fbTestAO:fbIO_AnalogueOutput;
 	HMI_DI_001:stHMI_DigitalInput;
+	pulseTest:fbPulser;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -102,7 +103,15 @@ fbTestRunCtrl(
 	HMI_SystemRunControl:= GVL_HMI.stTest03_RunCtrl);
 	
 
-
+pulseTest(
+	bInRun:= , 
+	tInTimeOn:=T#5S , 
+	tInTimeOff:=T#10S , 
+	iInNumPulses:= , 
+	bOutPulse=> , 
+	bOutDone=> , 
+	iOutCount=> );
+	
 	POu();]]></ST>
     </Implementation>
     <LineIds Name="POU_TestBase">
@@ -113,7 +122,9 @@ fbTestRunCtrl(
       <LineId Id="109" Count="0" />
       <LineId Id="8" Count="49" />
       <LineId Id="67" Count="0" />
+      <LineId Id="158" Count="6" />
       <LineId Id="75" Count="0" />
+      <LineId Id="165" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

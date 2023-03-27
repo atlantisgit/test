@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fbPulser" Id="{4768702a-1f4e-47c6-a6fa-2989d4e8390c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fbPulser
+VAR_INPUT
+	bInRun:		BOOL;	(*Enables the pulsing output*)
+	tInTimeOn:	TIME;	(*Amount of time output is turned on each period*)
+	tInTimeOff:	TIME;	(*Amount of time output is off each period*)
+	iInNumPulses: INT;	(*Number of pulses to output (0 for infinite)*)
+END_VAR
+VAR_OUTPUT
+	bOutPulse:	BOOL;	(*The pulsing output*)
+	bOutDone:	BOOL;	(*Pulsing complete, iNumPulses achieved*)
+	iOutCount:	INT;	(*Current number of pulses complete*)
+
+END_VAR
+VAR
+	rTrigbRun:R_TRIG;
+	nState: INT;
+	tonTimerOn:TON;
+	tonTimerOff:TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[rTrigbRun(CLK:=bInRun , Q=> );
+
+//When a new run command is issued the pulsing sequence is restarted
+IF rTrigbRun.Q THEN
+	nState:=10;
+END_IF
+
+CASE nstate OF
+	0:
+		bOutPulse:=0;
+		iOutCount:=0;
+		
+	10:
+		bOutPulse:=1;
+		IF NOT(bInRun) OR bOutDone THEN
+			nState:=0;
+		ELSIF tonTimerOn.Q THEN
+			iOutCount:=iOutCount+1;
+			nState:=20;
+		END_IF	
+	20:
+		bOutPulse:=0;
+		IF NOT(bInRun) OR bOutDone THEN
+			nState:=0;
+		ELSIF tonTimerOff.Q THEN
+			nState:=10;
+		END_IF	
+		
+END_CASE
+
+bOutDone:=(iOutCount>=iInNumPulses) AND NOT(iInNumPulses=0);  // run infinitely if inumpulse=0
+tonTimerOn(IN:=(nState=10) , PT:=tInTimeOn , Q=> , ET=> );	  // time in state 10 -- time pulse on	
+tonTimerOff(IN:=(nState=20) , PT:=tInTimeOff , Q=> , ET=> );	  // time in state 20 -- time pulse off]]></ST>
+    </Implementation>
+    <LineIds Name="fbPulser">
+      <LineId Id="9" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="43" Count="2" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="54" Count="1" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="63" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

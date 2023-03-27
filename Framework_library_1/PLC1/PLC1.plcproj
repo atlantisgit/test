@@ -332,6 +332,9 @@
     <Compile Include="Base\Process Control\DUT\stStep.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Process Control\POU\fbPulser.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\Process Control\POU\fbStepSequencer.TcPOU">
       <SubType>Code</SubType>
     </Compile>
