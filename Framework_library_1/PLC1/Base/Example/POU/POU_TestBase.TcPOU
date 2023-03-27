@@ -13,6 +13,8 @@ VAR
 	fbTestAO:fbIO_AnalogueOutput;
 	HMI_DI_001:stHMI_DigitalInput;
 	pulseTest:fbPulser;
+	HMI_DO_001:stHMI_DigitalOutput;
+	fbTestDO:fbIO_DigitalOutput;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -102,6 +104,14 @@ fbTestRunCtrl(
 	bOutRunCmd=> , 
 	HMI_SystemRunControl:= GVL_HMI.stTest03_RunCtrl);
 	
+fbTestDO(
+	iInMode:= , 
+	bInEstop:= , 
+	bInEnable:= , 
+	bInCommand:= , 
+	bOutAuto=> , 
+	bOutCommand=> , 
+	HMI_IO_DigitalOutput:=HMI_DO_001 );
 
 pulseTest(
 	bInRun:= , 
@@ -121,6 +131,8 @@ pulseTest(
       <LineId Id="7" Count="0" />
       <LineId Id="109" Count="0" />
       <LineId Id="8" Count="49" />
+      <LineId Id="178" Count="6" />
+      <LineId Id="169" Count="0" />
       <LineId Id="67" Count="0" />
       <LineId Id="158" Count="6" />
       <LineId Id="75" Count="0" />

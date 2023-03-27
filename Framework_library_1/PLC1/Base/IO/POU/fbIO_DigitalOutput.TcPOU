@@ -4,7 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK fbIO_DigitalOutput
 VAR_INPUT
 	iInMode:INT;		(*global mode input*)
-	bInEstop:BOOL;		(* Emergency stop input*)
+	bInEstop:BOOL;		(* Emergency stop input 0=Estop Active*)
 	bInEnable:BOOL;		(*Interlock for the digital output. If this bit is false, then output will be 0*)
 	bInCommand:BOOL;	(*The command to the digital output*)
 END_VAR
@@ -13,16 +13,74 @@ VAR_OUTPUT
 	bOutCommand:BOOL;	(*Command to digital output*)
 END_VAR
 VAR_IN_OUT
-	HMI_IO_DigitalOutput
+	HMI_IO_DigitalOutput:stHMI_DigitalOutput;
 END_VAR
 VAR
+	bTempOutCommand:BOOL;
+	bSetHMICommandsOFF:BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[(*control bOut based on the global input and HMI input mode*)
+(*if in independant mode allow control of the output based on HMI commands (MANUAL) AND digital input (AUTO)*)
+IF iInMode=10 THEN
+	//if HMI requests manual mode 
+	IF HMI_IO_DigitalOutput.iMode=2 THEN
+		bOutAuto:=0;
+		bSetHMICommandsOFF:=0;
+		IF HMI_IO_DigitalOutput.bPBEN_On AND HMI_IO_DigitalOutput.bPB_On THEN
+			bTempOutCommand:=1;
+		ELSIF HMI_IO_DigitalOutput.bPBEN_Off AND HMI_IO_DigitalOutput.bPB_Off THEN
+			bTempOutCommand:=0;
+		END_IF
+	ELSE
+		bTempOutCommand:=bInCommand;   /// auto output
+		bOutAuto:=1;
+		bSetHMICommandsOFF:=1;
+	END_IF
+ELSE
+	bTempOutCommand:=bInCommand;   /// auto output
+	bSetHMICommandsOFF:=1;
+	bOutAuto:=1;
+END_IF
+
+bOutCommand := bTempOutCommand AND  bInEnable AND bInEstop;//allow output when interlocked and Estop ok
+
+HMI_IO_DigitalOutput.bCommandAuto:=bInCommand;
+HMI_IO_DigitalOutput.bCommand:=bTempOutCommand;
+HMI_IO_DigitalOutput.bInterlock:=bInEnable;
+
+IF bSetHMICommandsOFF THEN
+	HMI_IO_DigitalOutput.iMode:=1;
+	HMI_IO_DigitalOutput.bPBEN_On:=0;
+	HMI_IO_DigitalOutput.bPBEN_Off:=0;
+	HMI_IO_DigitalOutput.bPB_On:=0;
+	HMI_IO_DigitalOutput.bPB_Off:=0;
+END_IF]]></ST>
     </Implementation>
     <LineIds Name="fbIO_DigitalOutput">
+      <LineId Id="26" Count="4" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="31" Count="6" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="40" Count="0" />
       <LineId Id="9" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="49" Count="1" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="60" Count="2" />
+      <LineId Id="59" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
