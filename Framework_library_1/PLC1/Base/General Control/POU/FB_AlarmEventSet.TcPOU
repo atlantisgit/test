@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_AlarmEventSet" Id="{9a118d40-c5aa-4df4-aa51-269f418c9e9d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AlarmEventSet
+VAR_INPUT
+	bAlarmEventTrigger:BOOL;
+	tSetDelay:TIME;
+	tResetDelay:TIME;
+	bManualReset:BOOL;
+	bResetError:BOOL;
+	bEnableAlarm:BOOL;
+END_VAR
+VAR_OUTPUT
+	bOutAlarmEvent:	BOOL;
+END_VAR
+VAR
+	
+	bReset:BOOL;
+	TON_SetDelay:TON;
+	TON_ResetDelay:TOF;
+	Latch:SR;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF (bManualReset AND bResetError AND NOT(bAlarmEventTrigger))
+	OR (NOT(bManualReset) AND NOT(bAlarmEventTrigger))  OR NOT(bEnableAlarm) THEN
+	bReset:=1;
+ELSE
+	bReset:=0;
+END_IF
+
+Latch(SET1:=TON_SetDelay.Q , 
+	  RESET:=bReset , 
+	  Q1=> );
+
+TON_ResetDelay(IN:=Latch.Q1 , PT:=tResetDelay , Q=> , ET=> );
+TON_SetDelay(IN:=bAlarmEventTrigger AND bEnableAlarm, PT:=tSetDelay , Q=> , ET=> );
+
+bOutAlarmEvent:=TON_ResetDelay.Q;
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_AlarmEventSet">
+      <LineId Id="26" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="31" Count="4" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

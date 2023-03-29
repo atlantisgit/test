@@ -15,10 +15,13 @@ VAR
 	pulseTest:fbPulser;
 	HMI_DO_001:stHMI_DigitalOutput;
 	fbTestDO:fbIO_DigitalOutput;
+	testAlarmset:FB_AlarmEventSet;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[fbTestDigitalInput(
+      <ST><![CDATA[testAlarmset(bAlarmEventTrigger:= , tSetDelay:= , tResetDelay:= , bOutAlarmEvent=> );
+
+fbTestDigitalInput(
 	iInMode:= , 
 	bInInput:= , 
 	tInOnDebounce:= , 
@@ -125,6 +128,7 @@ pulseTest(
 	POu();]]></ST>
     </Implementation>
     <LineIds Name="POU_TestBase">
+      <LineId Id="201" Count="1" />
       <LineId Id="136" Count="8" />
       <LineId Id="134" Count="1" />
       <LineId Id="85" Count="22" />

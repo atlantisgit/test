@@ -278,6 +278,9 @@
     <Compile Include="Base\Example\POU\POU_TestBase.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\General Control\POU\FB_AlarmEventSet.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\IO\DUT\stError_AnalogueInput.TcDUT">
       <SubType>Code</SubType>
     </Compile>
