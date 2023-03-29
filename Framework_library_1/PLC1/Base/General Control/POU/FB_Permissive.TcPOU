@@ -30,7 +30,6 @@ VAR_IN_OUT
 END_VAR
 
 VAR
-	index: INT;
 	wPermissive:WORD;
 	wPermissiveMask:WORD:=16#FFFF;
 END_VAR

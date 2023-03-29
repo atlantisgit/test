@@ -30,40 +30,41 @@ VAR_IN_OUT
 END_VAR
 
 VAR
+	wInterlock:WORD;
+	wInterlockMask:WORD:=16#FFFF;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[;
-HMI_Interlock.bInterlockOk:=1;
+      <ST><![CDATA[(*Map interlock status*)
+wInterlock.0:=HMI_Interlock.abInterlocks[1]:=bInterlock1;
+wInterlock.1:=HMI_Interlock.abInterlocks[2]:=bInterlock2;
+wInterlock.2:=HMI_Interlock.abInterlocks[3]:=bInterlock3;
+wInterlock.3:=HMI_Interlock.abInterlocks[4]:=bInterlock4;
+wInterlock.4:=HMI_Interlock.abInterlocks[5]:=bInterlock5;
+wInterlock.5:=HMI_Interlock.abInterlocks[6]:=bInterlock6;
+wInterlock.6:=HMI_Interlock.abInterlocks[7]:=bInterlock7;
+wInterlock.7:=HMI_Interlock.abInterlocks[8]:=bInterlock8;
+wInterlock.8:=HMI_Interlock.abInterlocks[9]:=bInterlock9;
+wInterlock.9:=HMI_Interlock.abInterlocks[10]:=bInterlock10;
+wInterlock.10:=HMI_Interlock.abInterlocks[11]:=bInterlock11;
+wInterlock.11:=HMI_Interlock.abInterlocks[12]:=bInterlock12;
+wInterlock.12:=HMI_Interlock.abInterlocks[13]:=bInterlock13;
+wInterlock.13:=HMI_Interlock.abInterlocks[14]:=bInterlock14;
+wInterlock.14:=HMI_Interlock.abInterlocks[15]:=bInterlock15;
+wInterlock.15:=HMI_Interlock.abInterlocks[16]:=bInterlock16;
 
-(*Map interlock status*)
-HMI_Interlock.abInterlocks[1]:=bInterlock1;
-HMI_Interlock.abInterlocks[2]:=bInterlock2;
-HMI_Interlock.abInterlocks[3]:=bInterlock3;
-HMI_Interlock.abInterlocks[4]:=bInterlock4;
-HMI_Interlock.abInterlocks[5]:=bInterlock5;
-HMI_Interlock.abInterlocks[6]:=bInterlock6;
-HMI_Interlock.abInterlocks[7]:=bInterlock7;
-HMI_Interlock.abInterlocks[8]:=bInterlock8;
-HMI_Interlock.abInterlocks[9]:=bInterlock9;
-HMI_Interlock.abInterlocks[10]:=bInterlock10;
-HMI_Interlock.abInterlocks[11]:=bInterlock11;
-HMI_Interlock.abInterlocks[12]:=bInterlock12;
-HMI_Interlock.abInterlocks[13]:=bInterlock13;
-HMI_Interlock.abInterlocks[14]:=bInterlock14;
-HMI_Interlock.abInterlocks[15]:=bInterlock15;
-HMI_Interlock.abInterlocks[16]:=bInterlock16;
-]]></ST>
+(*check active interlocks with the interlock mask set interlock ok status*)
+IF (wInterlock AND wInterlockMask)=wInterlockMask THEN
+	bOutInterlockOk:=1;
+END_IF]]></ST>
     </Implementation>
     <LineIds Name="FB_Interlock">
       <LineId Id="9" Count="0" />
-      <LineId Id="40" Count="0" />
-      <LineId Id="89" Count="0" />
-      <LineId Id="88" Count="0" />
       <LineId Id="72" Count="1" />
       <LineId Id="71" Count="0" />
       <LineId Id="74" Count="9" />
       <LineId Id="85" Count="2" />
+      <LineId Id="122" Count="3" />
       <LineId Id="84" Count="0" />
     </LineIds>
   </POU>
