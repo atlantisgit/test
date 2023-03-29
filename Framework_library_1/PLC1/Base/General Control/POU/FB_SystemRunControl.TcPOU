@@ -17,13 +17,23 @@ VAR_IN_OUT
 END_VAR
 
 VAR
+	bStart:BOOL;
+	bStop:BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[bStart := (bInEnableStart) AND (bInStartAuto OR (HMI_SystemRunControl.bPBEN_Start AND HMI_SystemRunControl.bPB_Start));
+bStop  := (bInEnableStop) AND (bInStopAuto OR (HMI_SystemRunControl.bPBEN_Stop AND HMI_SystemRunControl.bPBEN_Stop));
+
+bOutRunCmd := HMI_SystemRunControl.bRunning := bStart AND NOT(bStop);
+]]></ST>
     </Implementation>
     <LineIds Name="FB_SystemRunControl">
       <LineId Id="9" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="27" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
