@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_TagAlarmProps" Id="{24e515fe-b607-4c7c-91fb-668bda84b8a0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TagAlarmProps
+VAR_INPUT
+	sInTimeOcc:STRING[24];
+	stInTimeOcc:TIMESTRUCT;
+	bInAlarm:BOOL;
+	rInturbineStatus:ST_ProcessVariables;
+END_VAR
+VAR_OUTPUT
+	sOutTimeOcc:STRING[24];
+	stOutTimeOcc:TIMESTRUCT;
+	rOutturbineStatus:ST_ProcessVariables;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bInAlarm THEN
+	sOutTimeOcc:=sInTimeOcc;
+	stOutTimeOcc:=stInTimeOcc;
+	rOutturbineStatus.fFlowSpeed:=rInturbineStatus.fFlowSpeed;
+	rOutturbineStatus.fGeneratorSpeed:=rInturbineStatus.fGeneratorSpeed;
+	rOutturbineStatus.fPitchAngle:=rInturbineStatus.fPitchAngle;
+	rOutturbineStatus.fPower:=rInturbineStatus.fPower;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_TagAlarmProps">
+      <LineId Id="9" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="32" Count="3" />
+      <LineId Id="16" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
