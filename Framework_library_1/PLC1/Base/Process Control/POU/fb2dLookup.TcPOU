@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fb2dLookup" Id="{12455da9-0979-4683-9ac5-2b57aa0a542e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fb2dLookup
+VAR_INPUT
+    x : REAL; (* Input value for the x-axis *)
+    y : REAL; (* Input value for the y-axis *)
+    table : ARRAY [1..20, 1..20] OF REAL; (* 2-D lookup table *)
+END_VAR
+VAR_OUTPUT
+    result : REAL; (* Output value from the lookup table *)
+END_VAR
+VAR
+    i : INT; (* Index variable for the rows *)
+    j : INT; (* Index variable for the columns *)
+    x_low : REAL; (* Lower boundary of x-axis interval *)
+    x_high : REAL; (* Upper boundary of x-axis interval *)
+    y_low : REAL; (* Lower boundary of y-axis interval *)
+    y_high : REAL; (* Upper boundary of y-axis interval *)
+    x_index : INT; (* Index of the x-axis interval *)
+    y_index : INT; (* Index of the y-axis interval *)
+    x_factor : REAL; (* Interpolation factor for x-axis *)
+    y_factor : REAL; (* Interpolation factor for y-axis *)
+    fx1 : REAL; (* Value at lower boundary of x-axis interval *)
+    fx2 : REAL; (* Value at upper boundary of x-axis interval *)
+    fy1 : REAL; (* Value at lower boundary of y-axis interval *)
+    fy2 : REAL; (* Value at upper boundary of y-axis interval *)
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Find the x-axis interval *)
+    x_index := 1;
+    FOR i := 1 TO 20 DO
+        IF x >= table[i, 1] THEN
+            x_index := i;
+        ELSE
+            EXIT;
+        END_IF
+    END_FOR
+    
+    (* Find the y-axis interval *)
+    y_index := 1;
+    FOR j := 1 TO 20 DO
+        IF y >= table[1, j] THEN
+            y_index := j;
+        ELSE
+            EXIT;
+        END_IF
+    END_FOR
+    
+    (* Calculate the interpolation factors *)
+    x_low := table[x_index, 1];
+    x_high := table[x_index+1, 1];
+    y_low := table[1, y_index];
+    y_high := table[1, y_index+1];
+    x_factor := (x - x_low) / (x_high - x_low);
+    y_factor := (y - y_low) / (y_high - y_low);
+    
+    (* Perform the 2-D interpolation *)
+    fx1 := table[x_index, y_index] + (table[x_index+1, y_index] - table[x_index, y_index]) * x_factor;
+    fx2 := table[x_index, y_index+1] + (table[x_index+1, y_index+1] - table[x_index, y_index+1]) * x_factor;
+    fy1 := fx1 + (fx2 - fx1) * y_factor;
+    fx1 := table[x_index+1, y_index] + (table[x_index+1, y_index+1] - table[x_index+1, y_index]) * x_factor;
+    fx2 := table[x_index+1, y_index] + (table[x_index+1, y_index+1] - table[x_index+1, y_index]) * x_factor;
+    fy2 := fx1 + (fx2 - fx1) * y_factor;
+    result := fy1 + (fy2 - fy1) * x_factor;
+]]></ST>
+    </Implementation>
+    <LineIds Name="fb2dLookup">
+      <LineId Id="32" Count="35" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

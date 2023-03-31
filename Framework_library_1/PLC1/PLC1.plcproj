@@ -338,7 +338,16 @@
     <Compile Include="Base\Process Control\DUT\stStep.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Process Control\POU\fb1dLookup.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Process Control\POU\fb2dLookup.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\Process Control\POU\fbPulser.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Process Control\POU\fbRateCalc.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Base\Process Control\POU\fbStepSequencer.TcPOU">
@@ -360,6 +369,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="VISUs\Visualization.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Vis_AnalogueOutput_Symbol.TcVIS">
       <SubType>Code</SubType>
       <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
     </Compile>

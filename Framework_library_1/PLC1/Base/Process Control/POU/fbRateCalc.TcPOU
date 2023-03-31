@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fbRateCalc" Id="{6577d166-1ff9-40b4-b221-3261d6546151}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fbRateCalc
+FUNCTION_BLOCK Derivative
+VAR_INPUT
+    ProcessValue : REAL; (* The process value to calculate the derivative for *)
+    SamplingPeriod : TIME := T#1S; (* The time between samples, default is 1 second *)
+    AveragingPeriod : TIME := T#10S; (* The time period over which to average the samples, default is 10 seconds *)
+END_VAR
+VAR_OUTPUT
+    Derivative : REAL; (* The calculated derivative value *)
+END_VAR
+VAR
+    SampleTimes : ARRAY [1..10] OF TIME := [T#0S, T#0S, T#0S, T#0S, T#0S, T#0S, T#0S, T#0S, T#0S, T#0S]; (* The times at which each sample was taken *)
+    Samples : ARRAY [1..10] OF REAL := [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]; (* The sample values *)
+    SampleIndex : INT := 0; (* The index of the current sample in the sample arrays *)
+    SampleCount : INT := 0; (* The number of samples taken so far *)
+    SampleSum : REAL := 0.0; (* The sum of all samples *)
+    LastSampleTime : TIME := T#0S; (* The time at which the last sample was taken *)
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+(* Calculate the derivative *)
+IF SampleCount > 1 THEN
+    Derivative := (Samples[SampleIndex] - Samples[(SampleIndex - 1) MOD 10]) / TIME_TO_REAL(SampleTimes[SampleIndex] - SampleTimes[(SampleIndex - 1) MOD 10]);
+ELSE
+    Derivative := 0.0;
+END_IF
+
+(* Update the sample arrays *)
+SampleIndex := (SampleIndex MOD 10) + 1;
+SampleTimes[SampleIndex] := LastSampleTime;
+Samples[SampleIndex] := ProcessValue;
+SampleCount := SampleCount + 1;
+
+IF SampleCount > 10 THEN
+    SampleSum := SampleSum - Samples[(SampleIndex + 1) MOD 10] + ProcessValue;
+ELSE
+    SampleSum := SampleSum + ProcessValue;
+END_IF
+
+(* Update the averaging period *)
+IF TIME_TO_REAL(LastSampleTime - SampleTimes[(SampleIndex - 1) MOD 10]) >= TIME_TO_REAL(AveragingPeriod) THEN
+    Derivative := SampleSum / REAL_TO_DWORD(TIME_TO_REAL(LastSampleTime - SampleTimes[(SampleIndex - 1) MOD 10]));
+    SampleSum := ProcessValue;
+    SampleCount := 1;
+END_IF
+
+(* Update the last sample time *)
+LastSampleTime := LastSampleTime + SamplingPeriod;]]></ST>
+    </Implementation>
+    <LineIds Name="fbRateCalc">
+      <LineId Id="27" Count="27" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

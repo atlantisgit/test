@@ -15,7 +15,9 @@ VAR
 		step05:stStep;
 		step06:stStep;
 		iCurrentStep:INT;
-		
+		lookuptable:fb1dLookup;
+		aXvals: ARRAY [1..10] OF REAL :=[1,2,3,4,5,6,7,8,9,10]; (* Array of x values *)
+		aYVals: ARRAY [1..10] OF REAL:=[3,9,12,11,14,16,18,19,21,23];	(* Array of x values *)
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -116,7 +118,8 @@ fbStateMachineCtrl(
 CASE fbStateMachineCtrl.iOutCurrentStep OF
 	
 END_CASE
-]]></ST>
+
+lookuptable(x:= , xValues:= aXvals, yValues:=aYVals , y=> );]]></ST>
     </Implementation>
     <LineIds Name="POU">
       <LineId Id="61" Count="2" />
@@ -140,6 +143,7 @@ END_CASE
       <LineId Id="143" Count="1" />
       <LineId Id="68" Count="0" />
       <LineId Id="90" Count="1" />
+      <LineId Id="190" Count="0" />
       <LineId Id="82" Count="0" />
     </LineIds>
   </POU>

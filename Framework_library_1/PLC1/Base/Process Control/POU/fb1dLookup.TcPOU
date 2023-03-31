@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="fb1dLookup" Id="{eeacbfff-0e6b-4810-a29e-468e2fcabd9a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fb1dLookup
+VAR_INPUT
+    x : REAL; (* Input value to lookup *)
+    xValues : ARRAY [1..10] OF REAL; (* Array of x values *)
+    yValues : ARRAY [1..10] OF REAL; (* Array of y values *)
+END_VAR
+VAR_OUTPUT
+    y : REAL; (* Interpolated output value *)
+END_VAR
+VAR
+    i : INT := 0; (* Index of the lower bound of the interpolation interval *)
+    slope : REAL := 0.0; (* Slope of the interpolation interval *)
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Perform the 1-d lookup *)
+i := 1;
+WHILE i < 10 AND x > xValues[i+1] DO
+    i := i + 1;
+END_WHILE
+
+slope := (yValues[i+1] - yValues[i]) / (xValues[i+1] - xValues[i]);
+y := yValues[i] + slope * (x - xValues[i]);]]></ST>
+    </Implementation>
+    <LineIds Name="fb1dLookup">
+      <LineId Id="20" Count="6" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
