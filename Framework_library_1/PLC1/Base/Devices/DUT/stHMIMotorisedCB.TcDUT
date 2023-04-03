@@ -3,6 +3,21 @@
   <DUT Name="stHMIMotorisedCB" Id="{a4c8b693-efa3-426d-8c95-d3cb6ef3ad2b}">
     <Declaration><![CDATA[TYPE stHMIMotorisedCB :
 STRUCT
+	iMode: 			 INT;
+	iErrorCode:		 INT;		
+	iStatus	:		 INT;	
+	bPB_ResetError:	 BOOL; (*Reset errors pushbutton*)
+	bPBEN_ResetError:BOOL; (*Reset Error pushbutton enable*)
+	bPBOpen: 		 BOOL; (*Pushbutton command open from HMI*)
+	bPBClose:		 BOOL; (*Pushbutton command close from HMI*)
+	bPBEN_Open:		 BOOL; (*Pushbuton enable open command from HMI*)
+	bPBEN_Close: 	 BOOL; (*Pushbuton enable open command from HMI*)
+	bSignalClosed:	 BOOL; (*MCB closed feedback*)
+	bSignalOpened: 	 BOOL; (*MCB Opened feedback*)
+	bCloseON:		 BOOL; (*Close command is ON*)
+	bOpenON:		 BOOL; (*Open command is ON*)
+	bError:			 BOOL; (*Error Status*)
+	bInterlock: 	 BOOL;	(*MCB Interlocked*)
 END_STRUCT
 END_TYPE
 ]]></Declaration>

@@ -6,7 +6,7 @@ STRUCT
 	iMode	:		 INT;		//Current mode				
 	iErrorCode:		 INT;		//
 	iStatus	:		 INT;		//
-	bPB_ResetError:	 INT;		//Reset errors pushbutton
+	bPB_ResetError:	 BOOL;		//Reset errors pushbutton
 	bPB_Home:		 BOOL;		//Move to home in manual mode pushbutton
 	bPB_Work:		 BOOL;		//Move to work in manual mode pushbutton
 	bPBEN_ResetError:BOOL;		//Reset Error pushbutton enable
