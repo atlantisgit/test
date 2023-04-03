@@ -271,6 +271,9 @@
     <Compile Include="Alarm System\TC3 EventLogger\P_EventLogger_TCSAlarms.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Devices\DUT\stError_VFD.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\Example\GVL\GVL_HMI.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
@@ -356,6 +359,15 @@
     <Compile Include="Base\Process Control\POU\POU.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Valve Control\DUT\stError_Valve.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Valve Control\DUT\stHMI_ValveControl.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Valve Control\POU\fbValve_Solenoid.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
@@ -417,6 +429,7 @@
     <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29\___General Function Blocks\_01  Statuscode Logger" />
     <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29\___General Function Blocks\_01  Statuscode Logger\Intern" />
     <Folder Include="Alarm System\TC3 EventLogger" />
+    <Folder Include="Base\Devices\DUT" />
     <Folder Include="Base\Example\GVL" />
     <Folder Include="Base\Example\POU" />
     <Folder Include="Alarm System" />
@@ -435,6 +448,9 @@
     <Folder Include="Base\Process Control\DUT" />
     <Folder Include="Base\Process Control\POU" />
     <Folder Include="Base\Valve Control" />
+    <Folder Include="Base\Valve Control\DUT" />
+    <Folder Include="Base\Valve Control\GVL" />
+    <Folder Include="Base\Valve Control\POU" />
     <Folder Include="VISUs" />
   </ItemGroup>
   <ItemGroup>

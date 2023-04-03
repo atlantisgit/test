@@ -4,7 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK fbIO_DigitalOutput
 VAR_INPUT
 	iInMode:INT;		(*global mode input*)
-	bInEstop:BOOL;		(* Emergency stop input 0=Estop Active*)
+	bInEstop:BOOL;		(* Emergency stop input 1=Estop Active*)
 	bInEnable:BOOL;		(*Interlock for the digital output. If this bit is false, then output will be 0*)
 	bInCommand:BOOL;	(*The command to the digital output*)
 END_VAR

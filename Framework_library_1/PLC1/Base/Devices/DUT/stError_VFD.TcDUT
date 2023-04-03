@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stError_VFD" Id="{642823ea-893c-4396-8f58-dc17b154ad6c}">
+    <Declaration><![CDATA[TYPE stError_VFD :
+STRUCT
+	MotorProtectorTripped: BOOL; (*Motor Protector tripped*)
+	LocalDisconnectOff: BOOL; (*Motor Local switch OFF*)
+	ClutchTripped: BOOL; 	(*Clutch error*)
+	NoContactorFeedback: BOOL; (*No feedback from motor contactor*)
+	ContactorStillOn: BOOL; (*Contactor still ON*)
+	NoSignalForward: BOOL; (*No SIGNAL Forward from VFD*)
+	NoSignalReverse: BOOL; (*No SIGNAL Reverse from VFD*)
+	MotorNotStopped: BOOL; (*Motor doesn't stop*)
+	MaxFrequencyReached: BOOL; (*Max frequency reached*)
+	Overcurrent: BOOL; (*VFD overcurrent*)
+	MotorOverload: BOOL; (*Motor overload*)
+	VFDOverload: BOOL; (*VFD overload*)
+	GeneralFault: BOOL; (*VFD fault*)
+	NoCoolingFanFeedback: BOOL; (*Cooling fan did not come on within 30 seconds*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stHMI_ValveControl" Id="{ebc4fa38-888c-4ee1-88b7-28221ce41c43}">
+    <Declaration><![CDATA[TYPE stHMI_ValveControl :
+STRUCT
+	iMode	:		 INT;		//Current mode				
+	iErrorCode:		 INT;		//
+	iStatus	:		 INT;		//
+	bPB_ResetError:	 INT;		//Reset errors pushbutton
+	bPB_Home:		 BOOL;		//Move to home in manual mode pushbutton
+	bPB_Work:		 BOOL;		//Move to work in manual mode pushbutton
+	bPBEN_ResetError:BOOL;		//Reset Error pushbutton enable
+	bPBEN_Home:		 BOOL;		//Home pushbutton enabled
+	bPBEN_Work:		 BOOL;		//Work pushbutton enabledv
+	bHomeOn:		 BOOL;		//Home command is on
+	bWorkOn:		 BOOL;		//Work command is on
+	bSignalHome:	 BOOL;		//Home feedback
+	bSignalWork:	 BOOL;		//Work feedback
+	bError:			 BOOL;		//Error Status
+	bInterlock: 	 BOOL;		//Valve Interlocked
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

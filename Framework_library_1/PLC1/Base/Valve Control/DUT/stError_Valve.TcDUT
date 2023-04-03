@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="stError_Valve" Id="{ee34333c-3f7f-4a82-9369-e14be8a127ac}">
+    <Declaration><![CDATA[TYPE stError_Valve :
+STRUCT
+	NoHomeFeedback:BOOL;			//Home position feedback not active
+	NoWorkFeedback:BOOL;			//Work position feedback not active
+	HomeFeedbackStillActive: BOOL;	//Home position feedback still active when commanded to Work Position
+	WorkFeedbackStillActive: BOOL;	//Work position feedback still active when commanded to Home Position
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
