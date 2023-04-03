@@ -274,6 +274,12 @@
     <Compile Include="Base\Devices\DUT\stError_VFD.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Devices\DUT\stHMIMotorisedCB.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Devices\POU\fbMotorisedCB.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\Example\GVL\GVL_HMI.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
@@ -430,6 +436,7 @@
     <Folder Include="Alarm System\POUs\02_Alarm_Handling\StatusCodes\08   Logging %28Harddisk%29\___General Function Blocks\_01  Statuscode Logger\Intern" />
     <Folder Include="Alarm System\TC3 EventLogger" />
     <Folder Include="Base\Devices\DUT" />
+    <Folder Include="Base\Devices\POU" />
     <Folder Include="Base\Example\GVL" />
     <Folder Include="Base\Example\POU" />
     <Folder Include="Alarm System" />
