@@ -16,10 +16,35 @@ VAR
 	HMI_DO_001:stHMI_DigitalOutput;
 	fbTestDO:fbIO_DigitalOutput;
 	testAlarmset:FB_AlarmEventSet;
+	bHMITest:BOOL;
+	bPLCTest:BOOL;
+	
+	test_Valve:fbValve_Solenoid;
+	HMI_XV_001:stHMI_ValveControl;
+	Error_XV_001:stError_Valve;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[testAlarmset(bAlarmEventTrigger:= , tSetDelay:= , tResetDelay:= , bOutAlarmEvent=> );
+
+test_Valve(
+	tInTimeout:= , 
+	iInMode:= , 
+	bInEstop:= , 
+	bInSignalHome:= , 
+	bInSignalWork:= , 
+	bInEnable:= , 
+	bInCommandWork:= , 
+	bInResetError:= , 
+	bInSimulate:= , 
+	bOutCommandHome=> , 
+	bOutCommandWork=> , 
+	bOutActiveHome=> , 
+	bOutActiveWork=> , 
+	bOutAuto=> , 
+	bOutError=> , 
+	ERROR_Valve=>Error_XV_001 , 
+	HMI_ValveControl:=HMI_XV_001 );
 
 fbTestDigitalInput(
 	iInMode:= , 
@@ -128,7 +153,11 @@ pulseTest(
 	POu();]]></ST>
     </Implementation>
     <LineIds Name="POU_TestBase">
-      <LineId Id="201" Count="1" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="225" Count="16" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="202" Count="0" />
       <LineId Id="136" Count="8" />
       <LineId Id="134" Count="1" />
       <LineId Id="85" Count="22" />

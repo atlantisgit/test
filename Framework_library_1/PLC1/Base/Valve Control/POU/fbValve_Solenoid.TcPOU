@@ -29,107 +29,222 @@ END_VAR
 
 VAR
 	tonTimeOut:TON;
-	bSetHMICommandsOFF:BOOL;
-	bTempHomeCommand:BOOL;
-	bTempWorkCommand:BOOL;
 	iErrorCode:INT;
+	bNewMode:BOOL;	 (*new mode selected*)
+	bAutoMode:BOOL;	 (*Automode active*)
+	bManualMode:BOOL; (*Manual Mode active*)
+	iLastMode:INT;	(*last mode code*)
+	bEnableHome:BOOL;	 (*home position enabled*)
+	bEnableWork:BOOL;	 (*work position enabled*)
+	bPB_Home:BOOL;		 (*PB Move to home in manual mode*)
+	bPB_Work:BOOL;		 (*PB Move to work in manual mode*)
+	bPB_ResetError:BOOL; (*PB Reset error*)
+	bReset: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[tonTimeOut(IN:=bOutCommandHome OR bOutCommandWork , PT:= , Q=> , ET=> );
+      <ST><![CDATA[
 
-IF iInMode=10 THEN
-	//If HMI requests manual mode
-	IF HMI_ValveControl.iMode=2 THEN
-		bOutAuto:=0;
-		bSetHMICommandsOFF:=0;
-		IF HMI_ValveControl.bPBEN_Work AND HMI_ValveControl.bPB_Work THEN
-			bTempWorkCommand:=1;
-			bTempHomeCommand:=0;
-		ELSIF  HMI_ValveControl.bPBEN_Home AND HMI_ValveControl.bPB_Home THEN
-			bTempWorkCommand:=0;
-			bTempHomeCommand:=1;
-		ELSE
-			bTempWorkCommand:=bInCommandWork;
-			bTempHomeCommand:=NOT(bInCommandWork);
-			bSetHMICommandsOFF:=1;
-			bOutAuto:=1;
-		END_IF
-ELSE
-	bTempWorkCommand:=bInCommandWork;
-	bTempHomeCommand:=NOT(bInCommandWork);
-	bSetHMICommandsOFF:=1;
-	bOutAuto:=1;
+(*****************************INPUTS*************************************************)
+(*Read HMI input button*)
+
+fcHMIBit(bInToggle:=0 , bInLatch:=0 , bHMI:=HMI_ValveControl.bPB_Home , bPLC:=bPB_Home );
+fcHMIBit(bInToggle:=0 , bInLatch:=0 , bHMI:=HMI_ValveControl.bPB_Work , bPLC:=bPB_Work );
+fcHMIBit(bInToggle:=0 , bInLatch:=0 , bHMI:=HMI_ValveControl.bPB_ResetError , bPLC:=bPB_ResetError );
+(*update the signal home bit*)
+HMI_ValveControl.bSignalHome:=bInSignalHome;
+
+(*update the signal work bit*)
+HMI_ValveControl.bSignalWork:=bInSignalWork;
+
+(**************************CONTROL LOGIC************************************************)
+(*Clear all errors*)
+IF (bInResetError OR bPB_ResetError) AND HMI_ValveControl.bPB_ResetError THEN
+	bReset:=1;
+ELSE 
+	bReset:=0;
 END_IF
 
-(*HMI outputs*)
+
+(*override HMI mode if not in Independant mode*)
+IF iInMode<>10 THEN
+	HMI_ValveControl.iMode:=iInMode;
+END_IF
+
+(*detect change in mode*)
+bNewMode:=HMI_ValveControl.iMode<>iLastMode;
+
+(*keep track of last mode*)
+iLastMode:=HMI_ValveControl.iMode;
+
+(*Determine if auto or manual mode Active*)
+bManualMode:=NOT(bInEstop) AND NOT(bNewMode) AND (HMI_ValveControl.iMode=2);
+bAutoMode:=NOT(bInEstop) AND NOT(bNewMode) AND (HMI_ValveControl.iMode=1);
+
+(*Enable home and work positions*)
+bEnableWork:=bEnableHome:= NOT(HMI_ValveControl.bError) AND (bManualMode OR bAutoMode);
+
+HMI_ValveControl.bPBEN_Home:=HMI_ValveControl.bPBEN_Work:=bManualMode AND NOT(HMI_ValveControl.bError);
+
+(*enable error reset button if error present*)
+HMI_ValveControl.bPBEN_ResetError:=HMI_ValveControl.bPB_ResetError;
+
+(*Command Home position*)
+IF (bManualMode AND bPB_Home AND  NOT(bPB_Work) AND HMI_ValveControl.bPBEN_Home) OR
+	(bAutoMode AND NOT(bInCommandWork) AND bEnableHome) THEN
+	HMI_ValveControl.bHomeOn:=1;
+	HMI_ValveControl.bWorkOn:=0;
+END_IF
+
+(*command work position*)
+IF (bManualMode AND bPB_Work AND  NOT(bPB_Home) AND HMI_ValveControl.bPBEN_Work) OR
+	(bAutoMode AND bInCommandWork AND bEnableWork) THEN
+	HMI_ValveControl.bWorkOn:=1;
+	HMI_ValveControl.bHomeOn:=0;
+END_IF
+
+(*reset work if not enabled*)
+IF bAutoMode AND NOT(bEnableWork) THEN
+	HMI_ValveControl.bWorkOn:=0;
+END_IF
+
+(*reset home if not enabled*)
+IF bAutoMode AND NOT(bEnableHome) THEN
+	HMI_ValveControl.bHomeOn:=0;
+END_IF
+
+(*if Not in auto or manual reset both*)
+IF NOT(bAutoMode OR bManualMode) THEN
+	HMI_ValveControl.bHomeOn:=0;
+	HMI_ValveControl.bWorkOn:=0;
+END_IF
+
+(************************************ERRORS*************************************************************)
+(*set timeout errors*)
+tonTimeOut(IN:=HMI_ValveControl.bHomeOn OR HMI_ValveControl.bWorkOn , PT:= , Q=> , ET=> );
+
+(*Error: Work Feedback not active*)
+ERROR_Valve.NoWorkFeedback:=NOT(bInEstop) AND tonTimeOut.Q AND HMI_ValveControl.bWorkOn AND NOT(HMI_ValveControl.bSignalWork);
+
+(*Error: Home feedback not active*)
+ERROR_Valve.NoHomeFeedback:=NOT(bInEstop) AND tonTimeOut.Q AND HMI_ValveControl.bHomeOn AND NOT(HMI_ValveControl.bSignalHome);
+
+(*Error: Home position still active*)
+ERROR_Valve.HomeFeedbackStillActive:=NOT(bInEstop) AND tonTimeOut.Q AND HMI_ValveControl.bWorkOn AND HMI_ValveControl.bSignalHome;
+
+(*Error: Work position still active*)
+ERROR_Valve.WorkFeedbackStillActive:=NOT(bInEstop) AND tonTimeOut.Q AND HMI_ValveControl.bHomeOn AND HMI_ValveControl.bSignalWork;
+
+HMI_ValveControl.iErrorCode.0:=ERROR_Valve.NoWorkFeedback;
+HMI_ValveControl.iErrorCode.1:=ERROR_Valve.NoHomeFeedback;
+HMI_ValveControl.iErrorCode.2:=ERROR_Valve.HomeFeedbackStillActive;
+HMI_ValveControl.iErrorCode.3:=ERROR_Valve.WorkFeedbackStillActive;
+
+HMI_ValveControl.bError:=HMI_ValveControl.iErrorCode<>0;
+
+(*Interlock*)
 HMI_ValveControl.bInterlock:=bInEnable;
-HMI_ValveControl.bSignalHome:=bInSignalHome;
-HMI_ValveControl.bSignalWork:=bInSignalWork;
-HMI_ValveControl.iErrorCode:=iErrorCode;
-HMI_ValveControl.bWorkOn:=bOutCommandWork;
-HMI_ValveControl.bHomeOn:=bOutCommandHome;
 
-(*fb output*)
-bOutCommandHome:=bTempHomeCommand AND bInEnable AND bInEstop;
-bOutCommandWork:=bTempWorkCommand AND bInEnable AND bInEstop;
-bOutActiveHome:=bOutCommandHome AND bInSignalHome;
-bOutActiveWork:=bOutCommandWork AND bInSignalWork;
-bOutError:=iErrorCode<>0;
+(************************************OUTPUTS**********************************************************************************)
+(*Output Home*)
+bOutCommandHome:=HMI_ValveControl.bHomeOn;
 
-(*map error codes*)
-iErrorCode.0:=ERROR_Valve.NoHomeFeedback:= (bOutCommandHome) AND tonTimeOut.Q;
-iErrorCode.1:=ERROR_Valve.NoWorkFeedback:= (bOutCommandWork) AND tonTimeOut.Q;
-iErrorCode.2:=ERROR_Valve.HomeFeedbackStillActive;
-iErrorCode.3:=ERROR_Valve.WorkFeedbackStillActive;
+(*Output Work*)
+bOutCommandWork:=HMI_ValveControl.bWorkOn;
 
+(*Output Auto*)
+bOutAuto:=(HMI_ValveControl.iMode=1);
 
-(*release all manual inputs if in auto mode*)
-IF bSetHMICommandsOFF THEN
-	HMI_ValveControl.bPB_Home:=0;
-	HMI_ValveControl.bPB_Work:=0;
-	HMI_ValveControl.bPBEN_Work:=0;
-	HMI_ValveControl.bPBEN_Work:=0;
-END_IF]]></ST>
+(*Output error*)
+bOutError:=HMI_ValveControl.bError;
+
+]]></ST>
     </Implementation>
     <LineIds Name="fbValve_Solenoid">
-      <LineId Id="38" Count="0" />
-      <LineId Id="45" Count="0" />
-      <LineId Id="44" Count="0" />
-      <LineId Id="46" Count="0" />
-      <LineId Id="48" Count="1" />
-      <LineId Id="51" Count="0" />
-      <LineId Id="53" Count="1" />
-      <LineId Id="59" Count="3" />
-      <LineId Id="55" Count="0" />
-      <LineId Id="64" Count="0" />
-      <LineId Id="66" Count="1" />
-      <LineId Id="72" Count="0" />
-      <LineId Id="65" Count="0" />
-      <LineId Id="50" Count="0" />
-      <LineId Id="69" Count="1" />
-      <LineId Id="68" Count="0" />
-      <LineId Id="71" Count="0" />
+      <LineId Id="240" Count="1" />
+      <LineId Id="219" Count="1" />
+      <LineId Id="281" Count="1" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="283" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="228" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="232" Count="0" />
+      <LineId Id="235" Count="1" />
+      <LineId Id="238" Count="1" />
+      <LineId Id="145" Count="5" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="159" Count="1" />
+      <LineId Id="152" Count="0" />
+      <LineId Id="167" Count="1" />
+      <LineId Id="164" Count="1" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="175" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="178" Count="3" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="189" Count="1" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="194" Count="3" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="199" Count="0" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="204" Count="1" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="206" Count="2" />
+      <LineId Id="202" Count="0" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="215" Count="1" />
+      <LineId Id="243" Count="2" />
+      <LineId Id="249" Count="1" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="251" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="253" Count="1" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="274" Count="1" />
+      <LineId Id="277" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="279" Count="0" />
+      <LineId Id="278" Count="0" />
+      <LineId Id="280" Count="0" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="258" Count="1" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="262" Count="1" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="265" Count="0" />
+      <LineId Id="267" Count="0" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="271" Count="1" />
       <LineId Id="47" Count="0" />
+      <LineId Id="273" Count="0" />
       <LineId Id="105" Count="0" />
-      <LineId Id="80" Count="3" />
-      <LineId Id="85" Count="0" />
-      <LineId Id="97" Count="2" />
-      <LineId Id="96" Count="0" />
-      <LineId Id="84" Count="0" />
-      <LineId Id="87" Count="2" />
-      <LineId Id="109" Count="0" />
-      <LineId Id="111" Count="0" />
-      <LineId Id="110" Count="0" />
-      <LineId Id="106" Count="2" />
-      <LineId Id="95" Count="0" />
-      <LineId Id="74" Count="0" />
-      <LineId Id="104" Count="0" />
-      <LineId Id="103" Count="0" />
-      <LineId Id="73" Count="0" />
-      <LineId Id="75" Count="0" />
-      <LineId Id="77" Count="2" />
-      <LineId Id="76" Count="0" />
+      <LineId Id="218" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

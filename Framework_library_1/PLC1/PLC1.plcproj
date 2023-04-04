@@ -365,6 +365,9 @@
     <Compile Include="Base\Process Control\POU\POU.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base\Resource\fbHMIBit.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Base\Valve Control\DUT\stError_Valve.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -372,6 +375,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Base\Valve Control\POU\fbValve_Solenoid.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Base\Valve Control\POU\fcHMIBit.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
@@ -451,6 +457,7 @@
     <Folder Include="Base\General Control\GVL" />
     <Folder Include="Base\General Control\POU" />
     <Folder Include="Base\Devices" />
+    <Folder Include="Base\Resource" />
     <Folder Include="Base\Process Control" />
     <Folder Include="Base\Process Control\DUT" />
     <Folder Include="Base\Process Control\POU" />
