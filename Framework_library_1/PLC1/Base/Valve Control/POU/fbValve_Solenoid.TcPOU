@@ -40,6 +40,7 @@ VAR
 	bPB_Work:BOOL;		 (*PB Move to work in manual mode*)
 	bPB_ResetError:BOOL; (*PB Reset error*)
 	bReset: BOOL;
+	handleHMIBit1,handleHMIBit2,handleHMIBit3:fbHMIBit;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -48,9 +49,11 @@ END_VAR
 (*****************************INPUTS*************************************************)
 (*Read HMI input button*)
 
-fcHMIBit(bInToggle:=0 , bInLatch:=0 , bHMI:=HMI_ValveControl.bPB_Home , bPLC:=bPB_Home );
-fcHMIBit(bInToggle:=0 , bInLatch:=0 , bHMI:=HMI_ValveControl.bPB_Work , bPLC:=bPB_Work );
-fcHMIBit(bInToggle:=0 , bInLatch:=0 , bHMI:=HMI_ValveControl.bPB_ResetError , bPLC:=bPB_ResetError );
+handleHMIBit1(bInToggle:=1 , bHMI:=HMI_ValveControl.bPB_Home , bPLC:=bPB_Home );  
+handleHMIBit2(bInToggle:=1 , bHMI:=HMI_ValveControl.bPB_Work , bPLC:=bPB_Work ); 
+handleHMIBit2(bInToggle:=1 , bHMI:=HMI_ValveControl.bPB_ResetError , bPLC:=bPB_ResetError ); 
+
+
 (*update the signal home bit*)
 HMI_ValveControl.bSignalHome:=bInSignalHome;
 
@@ -163,9 +166,12 @@ bOutError:=HMI_ValveControl.bError;
     <LineIds Name="fbValve_Solenoid">
       <LineId Id="240" Count="1" />
       <LineId Id="219" Count="1" />
-      <LineId Id="281" Count="1" />
-      <LineId Id="226" Count="0" />
+      <LineId Id="327" Count="0" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="325" Count="0" />
       <LineId Id="283" Count="0" />
+      <LineId Id="326" Count="0" />
+      <LineId Id="328" Count="0" />
       <LineId Id="225" Count="0" />
       <LineId Id="231" Count="0" />
       <LineId Id="228" Count="0" />

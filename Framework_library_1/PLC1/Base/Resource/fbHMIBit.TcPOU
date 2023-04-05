@@ -3,7 +3,7 @@
   <POU Name="fbHMIBit" Id="{54195508-1a4e-45f3-8be6-b212bf29d5eb}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK fbHMIBit
 VAR_INPUT
-	bInToggle:BOOL:
+	bInToggle:BOOL;
 	bInLatch:BOOL;
 END_VAR
 VAR_OUTPUT
@@ -18,7 +18,7 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[RTrigHMI(CLK:=bHMI , Q=> );
 
-IF bIntoggle:BOOL:	
+IF bIntoggle THEN
 	IF RTrigHMI.Q AND NOT bPLC THEN
 		bPLC:=1;
 	END_IF
